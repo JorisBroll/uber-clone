@@ -1,11 +1,10 @@
 Rails.application.routes.draw do
-  root 'backoffice#login'
+  resources :users
+  resources :sessions, only: [:new, :create, :destroy]
 
-  get 'backoffice/login'
-
-  get 'backoffice/home'
+  root 'application#home'
   
-  get 'users/new'
+  match '/login', to: 'application#login', via: 'get'
 
 
   # Example of regular route:
