@@ -30,7 +30,7 @@ def sign_in(user)
 
   end
 
-  def home
+  def homez
   	#if !signed_in?
   		#redirect_to '/login'
   	#end

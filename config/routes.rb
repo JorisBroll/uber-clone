@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   resources :users
   resources :sessions, only: [:new, :create, :destroy]
 
-  root 'application#home'
+  root 'application#homez'
   
   match '/login', to: 'application#login', via: 'get'
 
