@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
+
   resources :users
+  resources :partners
+  resources :cars
   resources :sessions, only: [:new, :create, :destroy]
 
   root 'application#home'
