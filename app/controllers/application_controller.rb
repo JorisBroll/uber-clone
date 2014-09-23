@@ -31,9 +31,9 @@ def sign_in(user)
   end
 
   def home
-  	if !signed_in?
+  	#if !signed_in?
   		redirect_to '/login'
-  	end
+  	#end
   end
 
     private
