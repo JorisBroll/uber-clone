@@ -1,2 +1,16 @@
-<h1>Cars#index</h1>
-<p>Find me in app/views/cars/index.html.erb</p>
+<h1>Liste des voitures de l'entreprise</h1>
+<table>
+<% @cars.each do |car| %>
+	<tr>
+		<td><%= car.id %></td>
+		<td><%= car.name %></td>
+		<td><%= car.email %></td>
+		<td><%#= car.cars[1] %></td>
+		<td><%= link_to "Editer", edit_car_path(car) %></td>
+		<td><% if current_user.account_type == 'admin'  && !current_user?(user) %><%= link_to "Supprimer", car, method: :delete, data: { confirm: "You sure?" } %>
+  <% end %></td>
+	</tr>
+<% end %>
+</table>
+<%= link_to "Retour à l'accueil", root_url %>
+<%= link_to "Ajouter une voiture", new_car_path %>

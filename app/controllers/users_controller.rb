@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
 	before_action :signed_in_user
   	#before_action :correct_user
-  	before_action :is_admin, only: [:edit, :destroy]
+  	before_action :drivers_only
   	before_action :password_check, only: [:update]
 		
 
@@ -59,10 +59,5 @@ class UsersController < ApplicationController
 		    def correct_user # Make a user unable to edit anyone but himself
 				@user = User.find(params[:id])
 				redirect_to(root_url) unless current_user?(@user)
-	        end
-	        def is_admin
-	        	if current_user.account_type != 'admin'
-					redirect_to(root_url)
-				end
 	        end
 end

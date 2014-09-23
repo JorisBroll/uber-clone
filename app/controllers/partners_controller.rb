@@ -1,5 +1,5 @@
 class PartnersController < ApplicationController
-	before_action :redirect_nonadmins
+	before_action :admins_only
 
 	def index
 		@partners = Partner.all

@@ -1,8 +1,11 @@
 Rails.application.routes.draw do
 
   resources :users
-  resources :partners
-  resources :cars
+
+  resources :partners do
+    resources :cars, shallow: true
+  end
+  
   resources :sessions, only: [:new, :create, :destroy]
 
   root 'application#home'

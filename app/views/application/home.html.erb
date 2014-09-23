@@ -1,3 +1,5 @@
+<script>var init = [];</script>
+<!-- Demo script --> <script src="http://groupe-elephant.fr/naveco_stuff/demo.js"></script> <!-- / Demo script -->
 <div id="main-wrapper">
 
 
@@ -21,7 +23,7 @@
 
 				<!-- Main navbar toggle -->
 				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar-collapse"><i class="navbar-icon fa fa-bars"></i></button>
-
+  
 			</div> <!-- / .navbar-header -->
 
 			<div id="main-navbar-collapse" class="collapse navbar-collapse main-navbar-collapse">
@@ -520,7 +522,6 @@
 				<p>Loggé en tant que <%= current_user.name %></p>
 				<p>Type de compte : <%= current_user.account_type %></p>
 				<%= link_to 'Gérer les utilisateurs', users_path %>
-				<%= link_to 'Gérer les partenaires', partners_path %>
 				<!-- Page header, center on small screens -->
 				<h1 class="col-xs-12 col-sm-4 text-center text-left-sm"><i class="fa fa-dashboard page-header-icon"></i>&nbsp;&nbsp;Dashboard</h1>
 

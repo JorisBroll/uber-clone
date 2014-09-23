@@ -5,6 +5,7 @@
 		<td><%= partner.id %></td>
 		<td><%= partner.name %></td>
 		<td><%= partner.email %></td>
+		<td><%#= partner.cars[1] %></td>
 		<td><%= link_to "Editer", edit_partner_path(partner) %></td>
 		<td><% if current_user.account_type == 'admin' && !current_user?(partner) %><%= link_to "Supprimer", partner, method: :delete, data: { confirm: "You sure?" } %>
   <% end %></td>
