@@ -8,9 +8,8 @@ Bundler.require(*Rails.groups)
 
 module Naveco
   class Application < Rails::Application
-	I18n.default_locale = :fr
-	I18n.locale = :fr
-	config.i18n.default_locale = :fr
-	config.i18n.locale = :fr
+  	config.i18n.enforce_available_locales = true
+	#config.i18n.default_locale = :fr
+	#config.i18n.locale = :fr
   end
 end
