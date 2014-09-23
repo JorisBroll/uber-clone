@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   protect_from_forgery with: :exception
-  before_action :set_locale
+  #before_action :set_locale
 
 def sign_in(user)
     cookies[:user_id] = user.id
