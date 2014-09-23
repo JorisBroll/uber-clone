@@ -40,12 +40,4 @@ class PartnersController < ApplicationController
 		    	params.require(:partner).permit(:name, :email)
 		    end
 
-	        def redirect_nonadmins
-	        	if current_user.account_type != 'admin'
-	        		flash[:error] = "Vous devez être admin pour consulter cette page."
-					redirect_to(root_url)
-				end
-	        end
-
-	        
 end
