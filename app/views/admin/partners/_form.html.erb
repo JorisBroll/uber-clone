@@ -1,0 +1,13 @@
+<%= form_for [:admin, @partner] do |f| %>
+	<%= render 'common/error_messages', object: f.object %>
+	<%= f.label :name %>
+	<%= f.text_field :name, :placeholder => "Nom" %>
+
+	<%= f.label :email, "Email :" %>
+	<%= f.text_field :email, :placeholder => "Email" %>
+
+	<%= f.label :note, "Ajouter une note :" %>
+	<%= f.text_area :note, :placeholder => "Note" %>
+
+	<%= f.submit action, class: "btn btn-large btn-primary" %>
+<% end %>

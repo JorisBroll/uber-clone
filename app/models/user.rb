@@ -1,7 +1,8 @@
 class User < ActiveRecord::Base
+	belongs_to :partner, inverse_of: :users
 	before_save { self.email = email.downcase }
-	enum account_type: [ :admin, :driver, :client ]
-	Account_type_alias = [ ['Administrateur', :admin], ['Conducteur', :driver], ['Client', :client] ]
+	enum account_type: [ :admin, :partneradmin, :driver, :client ]
+	Account_type_alias = [ ['Administrateur', :admin], ["Administrateur d'entreprise", :partneradmin], ['Conducteur', :driver], ['Client', :client] ]
 	validates :name, presence: true, length: { maximum: 50 }
 	VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
 	validates :email, presence:   true,

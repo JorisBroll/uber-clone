@@ -3,12 +3,12 @@
 // --------------------------------------------------
 
 // ### Variables
-//@import "./../../libs/bootstrap-sass-3.1.1/bootstrap/variables"; // Default _variables.scss
-//@import "./../variables";
+@import "./../../libs/bootstrap-sass-3.1.1/bootstrap/variables"; // Default _variables.scss
+@import "./../variables";
 
 // ### Bootstrap"s mixins
-//@import "./../../libs/bootstrap-sass-3.1.1/bootstrap/mixins";
-//@import "./../mixins";
+@import "./../../libs/bootstrap-sass-3.1.1/bootstrap/mixins";
+@import "./../mixins";
 
 @import "./support_tickets";
 @import "./comments";

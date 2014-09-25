@@ -1,0 +1,15 @@
+<h1>Liste des entreprises partenaires</h1>
+<table>
+<% @partners.each do |partner| %>
+	<tr>
+		<td><%= partner.id %></td>
+		<td><%= partner.name %></td>
+		<td><%= partner.email %></td>
+		<td><%= link_to "Voir", admin_partner_path(partner) %></td>
+		<td><%= link_to "Editer", edit_admin_partner_path(partner) %></td>
+		<td><%= link_to "Supprimer", admin_partner_path(partner), method: :delete, data: { confirm: "You sure?" } %></td>
+	</tr>
+<% end %>
+</table>
+<%= link_to "Retour à l'accueil", root_url %>
+<%= link_to "Ajouter une entreprise partenaire", new_admin_partner_path %>

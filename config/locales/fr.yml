@@ -1,4 +1,13 @@
 fr:
+  activerecord:
+    attributes:
+      partner:
+        name: "Le nom"
+      user:
+        name: "Le nom"
+        account_type: "Type de compte"
+        password: "Mot de passe"
+        password_confirmation: "Confirmation du mot de passe"
   date:
     abbr_day_names:
       - dim
@@ -138,6 +147,11 @@ fr:
         one:   "Impossible d'enregistrer ce(tte) %{model} : 1 erreur"
         other: "Impossible d'enregistrer ce(tte) %{model} : %{count} erreurs"
   helpers:
+    label:
+      partner:
+        name: "Nom"
+      user:
+        name: "Nom"
     select:
       prompt: "Veuillez sélectionner"
     submit:

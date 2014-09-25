@@ -1,0 +1,17 @@
+<%= form_for([:partner_admin, @user]) do |f| %>
+	<%= render 'common/error_messages', object: f.object %>
+
+	<%= f.label :name %>
+	<%= f.text_field :name, :placeholder => "Nom" %>
+
+	<%= f.label :email %>
+	<%= f.text_field :email, :placeholder => "Email" %>
+
+	<%= f.label :password%>
+	<%= f.password_field :password, :placeholder => "Mot de passe" %>
+
+	<%= f.label :password_confirmation%>
+	<%= f.password_field :password_confirmation, :placeholder => "Confirmation" %>
+
+	<%= f.submit action, class: "btn btn-large btn-primary" %>
+<% end %>

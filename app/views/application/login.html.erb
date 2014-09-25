@@ -1,16 +1,102 @@
-<h1>Connexion</h1>
-<%= render 'common/flashes' %>
-<div class="row">
-  <div class="span6 offset3">
-    <%= form_for(:session, url: sessions_path) do |f| %>
+	<!-- FIX MAIN MENU BG -->
+		<style type="text/css">#main-menu-bg{display: none;}</style>
+	<!-- END FIX MAIN MENU BG -->
+	<!-- Page background -->
+	<div id="page-signin-bg">
+		<!-- Background overlay -->
+		<div class="overlay"></div>
+		<!-- Replace this with your bg image -->
+		<img src="<%= image_path('pages/signin-bg.jpg') %>" alt="">
+	</div>
+	<!-- / Page background -->
 
-      <%= f.label :email %>
-      <%= f.text_field :email %>
+	<!-- Container -->
+	<div class="signin-container">
 
-      <%= f.label :password %>
-      <%= f.password_field :password %>
+		<!-- Left side -->
+		<div class="signin-info">
+			<a href="index.html" class="logo">
+				<img src="<%= image_path('pixel-admin/main-navbar-logo.png') %>" alt="" style="margin-top: -5px;" height="50px">&nbsp;
+				Naveco
+			</a> <!-- / .logo -->
+			<div class="slogan">
+				Simple. Flexible. Powerful.
+			</div> <!-- / .slogan -->
+			<ul>
+				<li><i class="fa fa-phone signin-icon"></i> 7j/7 et 24h/24</li>
+				<li><i class="fa fa-star signin-icon"></i> Confortable</li>
+				<li><i class="fa fa-thumbs-o-up signin-icon"></i> Économique</li>
+				<li><i class="fa fa-lightbulb-o signin-icon"></i> Pratique</li>
+				
+			</ul> <!-- / Info list -->
+		</div>
+		<!-- / Left side -->
 
-      <%= f.submit "Sign in", class: "btn btn-large btn-primary" %>
-    <% end %>
-  </div>
-</div>
+		<!-- Right side -->
+		<div class="signin-form">
+
+
+			<!-- Form -->
+			<%= render 'common/flashes' %>
+				<%= form_for(:session, url: sessions_path) do |f| %>
+				<div class="signin-text">
+					<span>Connectez vous à votre compte</span>
+				</div> <!-- / .signin-text -->				
+
+				<div class="form-group w-icon">
+					<%= f.text_field :email, class: "form-control input-lg", placeholder: "Email" %>
+					<!-- <input type="text" name="signin_username" id="username_id" class="form-control input-lg" placeholder="Username or email"> -->
+					<span class="fa fa-user signin-form-icon"></span>
+				</div> <!-- / Username -->
+
+				<div class="form-group w-icon">
+					<%= f.password_field :password, class: "form-control input-lg", placeholder: "Mot de passe" %>
+					<!-- <input type="password" name="signin_password" id="password_id" class="form-control input-lg" placeholder="Password"> -->
+					<span class="fa fa-lock signin-form-icon"></span>
+				</div> <!-- / Password -->
+
+
+				<div class="form-actions">
+					<%= f.submit "Connexion", class: "signin-btn bg-primary" %>
+					<a href="#" class="forgot-password" id="forgot-password-link">Mot de passe oublié ?</a>
+				</div> <!-- / .form-actions -->
+
+
+				<% end %>
+			</form>
+			<!-- / Form -->
+
+			<!-- "Sign In with" block -->
+			<div class="signin-with">
+				<!-- Facebook -->
+				<a href="index.html" class="signin-with-btn" style="background:#4f6faa;background:rgba(79, 111, 170, .8);">Se connecter avec <span>Facebook</span></a>
+			</div>
+			<!-- / "Sign In with" block -->
+
+			<!-- Password reset form -->
+			<div class="password-reset-form" id="password-reset-form">
+				<div class="header">
+					<div class="signin-text">
+						<span>Password reset</span>
+						<div class="close">&times;</div>
+					</div> <!-- / .signin-text -->
+				</div> <!-- / .header -->
+				
+				<!-- Form -->
+				<form action="index.html" id="password-reset-form_id">
+					<div class="form-group w-icon">
+						<input type="text" name="password_reset_email" id="p_email_id" class="form-control input-lg" placeholder="Enter your email">
+						<span class="fa fa-envelope signin-form-icon"></span>
+					</div> <!-- / Email -->
+
+					<div class="form-actions">
+						<input type="submit" value="SEND PASSWORD RESET LINK" class="signin-btn bg-primary">
+					</div> <!-- / .form-actions -->
+				</form>
+				<!-- / Form -->
+			</div>
+			<!-- / Password reset form -->
+		</div>
+		<!-- Right side -->
+	</div>
+	<!-- / Container -->

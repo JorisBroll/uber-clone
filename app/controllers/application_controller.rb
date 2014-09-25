@@ -10,10 +10,16 @@ class ApplicationController < ActionController::Base
 
   end
 
+  def logout
+    sign_out
+    redirect_to '/login'
+  end
+
   def home
   	if !signed_in?
   		redirect_to '/login'
   	end
+    @users = User.all
   end
 
     private

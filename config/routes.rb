@@ -1,16 +1,20 @@
 Rails.application.routes.draw do
-
-  resources :users
-
-  resources :partners do
-    resources :cars, shallow: true
-  end
-  
-  resources :sessions, only: [:new, :create, :destroy]
-
   root 'application#home'
+
+  namespace :admin do
+    resources :users
+    resources :partners
+  end
+
+  namespace :partner_admin do
+    resources :users
+    resources :cars
+  end
+
+  resources :sessions, only: [:new, :create, :destroy]
   
   match '/login', to: 'application#login', via: 'get'
+  match '/logout', to: 'application#logout', via: 'get'
 
 
   # Example of regular route:
