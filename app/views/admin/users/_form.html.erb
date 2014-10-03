@@ -90,12 +90,20 @@
 			}
 		});
 	});
+
+init.push(function () {
+	// Single select
+	$("#user_account_type").select2({
+		allowClear: true,
+		placeholder: "Select a State"
+	});
+});
 </script>
 <!-- / Javascript -->
 
 <div class="panel">
 	<div class="panel-heading">
-		<span class="panel-title">Ajouter un nouvel utilisateur</span>
+		<span class="panel-title">Informations</span>
 	</div>
 	<div class="panel-body">
 
@@ -117,9 +125,16 @@
 			</div>
 
 			<div class="form-group">
+				<%= f.label :phone, "Téléphone :", class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :phone, class: "form-control", :placeholder => "Téléphone" %>
+				</div>
+			</div>
+
+			<div class="form-group">
 				<%= f.label :account_type, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.select(:account_type, User::Account_type_alias.reverse, class: "form-control") %>
+					<%= f.select(:account_type, User::Account_type_select.reverse, class: "form-control") %>
 				</div>
 			</div>
 
@@ -136,6 +151,8 @@
 					<%= f.password_field :password_confirmation, class: "form-control", :placeholder => "Confirmation" %>
 				</div>
 			</div>
+
+			<%= hidden_field(:user, :created_by) %>
 
 			<hr class="panel-wide" />
 			<br />

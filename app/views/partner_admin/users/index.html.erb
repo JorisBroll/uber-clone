@@ -1,11 +1,10 @@
-<h1>Liste des chauffeurs</h1>
+<h1>Liste des utilisateurs</h1>
 <table>
 <% @users.each do |user| %>
 	<tr>
 		<td><%= user.id %></td>
 		<td><%= user.name %></td>
 		<td><%= user.email %></td>
-		<td><%= user.account_type %></td>
 		<td><%= link_to "Editer", edit_partner_admin_user_path(user) %></td>
 		<td><%= link_to "Supprimer", partner_admin_user_path(user), method: :delete, data: { confirm: "You sure?" } %></td>
 	</tr>

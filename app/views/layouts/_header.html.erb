@@ -1,4 +1,3 @@
-<script>var init = [];</script>
 <!-- Demo script --> <script src="http://groupe-elephant.fr/naveco_stuff/demo.js"></script> <!-- / Demo script -->
 <div id="main-wrapper">
 
@@ -16,7 +15,7 @@
 			<div class="navbar-header">
 
 				<!-- Logo -->
-				<%= link_to(root_url, class: "navbar-brand") do %>
+				<%= link_to(user_home, class: "navbar-brand") do %>
 					<div>
 						<img alt="Pixel Admin" src="<%= image_path('pixel-admin/main-navbar-logo.png') %>"></div>
 						Naveco
@@ -30,18 +29,17 @@
 			<div id="main-navbar-collapse" class="collapse navbar-collapse main-navbar-collapse">
 				<div>
 					<ul class="nav navbar-nav">
-						<li>
-							<%= link_to "Accueil", root_url  %>
-						</li>
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown</a>
-							<ul class="dropdown-menu">
-								<li><a href="#">First item</a></li>
-								<li><a href="#">Second item</a></li>
-								<li class="divider"></li>
-								<li><a href="#">Third item</a></li>
-							</ul>
-						</li>
+						<% if currently_admining_partner? %>
+							<li>
+								<a href="#">Administration en tant que l'entreprise <span class="text-bold"><%= current_partner.name.to_s %></span></a>
+							</li>
+							<% if is_superadmin? %>
+							<li>
+								<%= link_to admin_logout_partner_path, title: "Se déconnecter" do %><i class="menu-icon fa fa-times-circle"></i><% end %>
+							</li>
+							<% end %>
+						<% end %>
+						
 					</ul> <!-- / .navbar-nav -->
 
 					<div class="right clearfix">
@@ -261,7 +259,7 @@
 									<li><a href="#"><span class="badge badge-primary pull-right">New</span>Account</a></li>
 									<li><a href="#"><i class="dropdown-icon fa fa-cog"></i>&nbsp;&nbsp;Settings</a></li>
 									<li class="divider"></li>
-									<li><a href="pages-signin.html"><i class="dropdown-icon fa fa-power-off"></i>&nbsp;&nbsp;Log Out</a></li>
+									<li><a href="/logout"><i class="dropdown-icon fa fa-power-off"></i>&nbsp;&nbsp;Log Out</a></li>
 								</ul>
 							</li>
 						</ul> <!-- / .navbar-nav -->
@@ -311,209 +309,48 @@
 						<a href="#" class="btn btn-xs btn-primary btn-outline dark"><i class="fa fa-envelope"></i></a>
 						<a href="#" class="btn btn-xs btn-primary btn-outline dark"><i class="fa fa-user"></i></a>
 						<a href="#" class="btn btn-xs btn-primary btn-outline dark"><i class="fa fa-cog"></i></a>
-						<a href="#" class="btn btn-xs btn-danger btn-outline dark"><i class="fa fa-power-off"></i></a>
+						<%= link_to '/logout', method: :delete, class:"btn btn-xs btn-danger btn-outline dark" do %><i class="fa fa-power-off"></i><% end %>
 					</div>
 					<a href="#" class="close">&times;</a>
 				</div>
 			</div>
 			<ul class="navigation">
-				<li>
-					<%= link_to(root_url) do %><i class="menu-icon fa fa-dashboard"></i><span class="mm-text">Tableau de bord</span></a><% end %>
-				</li>
+				<% if is_superadmin? %>
 				<li>
 					<%= link_to(admin_users_path) do %><i class="menu-icon fa fa-users"></i><span class="mm-text">Utilisateurs</span><% end %>
-
 				</li>
 				<li>
 					<%= link_to(admin_partners_path) do %><i class="menu-icon fa fa-briefcase"></i><span class="mm-text">Partenaires</span><% end %>
-
 				</li>
+				<li>
+					<%= link_to(admin_promocodes_path) do %><i class="menu-icon fa fa-ticket"></i><span class="mm-text">Codes promotions</span><% end %>
+				</li>
+				<li>
+					<%= link_to(admin_courses_path) do %><i class="menu-icon fa fa-ticket"></i><span class="mm-text">Courses</span><% end %>
+				</li>
+				<% end %>
+				<% if currently_admining_partner? || current_partner %>
 				<li class="mm-dropdown">
-					<a href="#"><i class="menu-icon fa fa-th"></i><span class="mm-text">Layouts</span><span class="label label-warning">Updated</span></a>
+					<a href="#"><i class="menu-icon fa fa-th"></i><span class="mm-text"><%= current_partner.name.to_s %></span></a>
 					<ul>
 						<li>
-							<a tabindex="-1" href="layouts-grid.html"><span class="mm-text">Grid</span></a>
+							<%= link_to(partner_admin_home_path) do %><i class="menu-icon fa fa-briefcase"></i><span class="mm-text">Informations</span><% end %>
 						</li>
 						<li>
-							<a tabindex="-1" href="layouts-main-menu.html"><i class="menu-icon fa fa-th-list"></i><span class="mm-text">Main menu</span><span class="label label-warning">Updated</span></a>
+							<%= link_to(partner_admin_users_path) do %><i class="menu-icon fa fa-briefcase"></i><span class="mm-text">Utilisateurs</span><% end %>
+						</li>
+						<li>
+							<%= link_to(partner_admin_cars_path) do %><i class="menu-icon fa fa-briefcase"></i><span class="mm-text">Voitures</span><% end %>
+						</li>
+						<li>
+							<%= link_to(partner_admin_courses_path) do %><i class="menu-icon fa fa-briefcase"></i><span class="mm-text">Courses</span><% end %>
 						</li>
 					</ul>
 				</li>
-				<li>
-					<a href="stat-panels.html"><i class="menu-icon fa fa-tasks"></i><span class="mm-text">Stat panels</span></a>
-				</li>
-				<li>
-					<a href="widgets.html"><i class="menu-icon fa fa-flask"></i><span class="mm-text">Widgets</span></a>
-				</li>
-				<li class="mm-dropdown">
-					<a href="#"><i class="menu-icon fa fa-desktop"></i><span class="mm-text">UI elements</span></a>
-					<ul>
-						<li>
-							<a tabindex="-1" href="ui-buttons.html"><span class="mm-text">Buttons</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="ui-typography.html"><span class="mm-text">Typography</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="ui-tabs.html"><span class="mm-text">Tabs &amp; Accordions</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="ui-modals.html"><span class="mm-text">Modals</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="ui-alerts.html"><span class="mm-text">Alerts &amp; Tooltips</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="ui-components.html"><span class="mm-text">Components</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="ui-panels.html"><span class="mm-text">Panels</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="ui-jqueryui.html"><span class="mm-text">jQuery UI</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="ui-icons.html"><span class="mm-text">Icons</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="ui-utility-classes.html"><span class="mm-text">Utility classes</span></a>
-						</li>
-					</ul>
-				</li>
-				<li class="mm-dropdown">
-					<a href="#"><i class="menu-icon fa fa-check-square"></i><span class="mm-text">Form components</span></a>
-					<ul>
-						<li>
-							<a tabindex="-1" href="forms-layouts.html"><span class="mm-text">Layouts</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="forms-general.html"><span class="mm-text">General</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="forms-advanced.html"><span class="mm-text">Advanced</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="forms-pickers.html"><span class="mm-text">Pickers</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="forms-validation.html"><span class="mm-text">Validation</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="forms-editors.html"><span class="mm-text">Editors</span></a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="tables.html"><i class="menu-icon fa fa-table"></i><span class="mm-text">Tables</span></a>
-				</li>
-				<li>
-					<a href="charts.html"><i class="menu-icon fa fa-bar-chart-o"></i><span class="mm-text">Charts</span></a>
-				</li>
-				<li class="mm-dropdown">
-					<a href="#"><i class="menu-icon fa fa-files-o"></i><span class="mm-text">Pages</span><span class="label label-success">16</span></a>
-					<ul>
-						<li>
-							<a tabindex="-1" href="pages-search.html"><span class="mm-text">Search results</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="pages-pricing.html"><span class="mm-text">Plans &amp; pricing</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="pages-faq.html"><span class="mm-text">FAQ</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="pages-profile.html"><span class="mm-text">Profile</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="pages-timeline.html"><span class="mm-text">Timeline</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="pages-signin.html"><span class="mm-text">Sign In</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="pages-signup.html"><span class="mm-text">Sign Up</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="pages-signin-alt.html"><span class="mm-text">Sign In Alt</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="pages-signup-alt.html"><span class="mm-text">Sign Up Alt</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="pages-invoice.html"><span class="mm-text">Invoice</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="pages-404.html"><span class="mm-text">Error 404</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="pages-500.html"><span class="mm-text">Error 500</span></a>
-						</li>
-						<li class="mm-dropdown">
-							<a href="#"><i class="menu-icon fa fa-envelope"></i><span class="mm-text">Messages</span></a>
-							<ul>
-								<li>
-									<a tabindex="-1" href="pages-inbox.html"><span class="mm-text">Inbox</span></a>
-								</li>
-								<li>
-									<a tabindex="-1" href="pages-show-email.html"><span class="mm-text">Show message</span></a>
-								</li>
-								<li>
-									<a tabindex="-1" href="pages-new-email.html"><span class="mm-text">New message</span></a>
-								</li>
-							</ul>
-						</li>
-						<li>
-							<a tabindex="-1" href="pages-blank.html"><span class="mm-text">Blank page</span></a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="complete-ui.html"><i class="menu-icon fa fa-briefcase"></i><span class="mm-text">Complete UI</span></a>
-				</li>
-				<li>
-					<a href="color-builder.html"><i class="menu-icon fa fa-tint"></i><span class="mm-text">Color Builder</span></a>
-				</li>
-				<li class="mm-dropdown">
-					<a href="#"><i class="menu-icon fa fa-sitemap"></i><span class="mm-text">Menu levels</span><span class="badge badge-primary">6</span></a>
-					<ul>
-						<li>
-							<a tabindex="-1" href="#"><span class="mm-text">Menu level 1.1</span><span class="badge badge-danger">12</span><span class="label label-info">21</span></a>
-						</li>
-						<li>
-							<a tabindex="-1" href="#"><span class="mm-text">Menu level 1.2</span></a>
-						</li>
-						<li class="mm-dropdown">
-							<a tabindex="-1" href="#"><span class="mm-text">Menu level 1.3</span><span class="label label-warning">5</span></a>
-							<ul>
-								<li>
-									<a tabindex="-1" href="#"><span class="mm-text">Menu level 2.1</span></a>
-								</li>
-								<li class="mm-dropdown">
-									<a tabindex="-1" href="#"><span class="mm-text">Menu level 2.2</span></a>
-									<ul>
-										<li class="mm-dropdown">
-											<a tabindex="-1" href="#"><span class="mm-text">Menu level 3.1</span></a>
-											<ul>
-												<li>
-													<a tabindex="-1" href="#"><span class="mm-text">Menu level 4.1</span></a>
-												</li>
-											</ul>
-										</li>
-										<li>
-											<a tabindex="-1" href="#"><span class="mm-text">Menu level 3.2</span></a>
-										</li>
-									</ul>
-								</li>
-								<li>
-									<a tabindex="-1" href="#"><span class="mm-text">Menu level 2.2</span></a>
-								</li>
-							</ul>
-						</li>
-					</ul>
-				</li>
-			</ul> <!-- / .navigation -->
+				<% end %>
+			</ul>
 			<div class="menu-content">
-				<a href="pages-invoice.html" class="btn btn-primary btn-block btn-outline dark">Create Invoice</a>
+				<%= link_to "Créer une course", new_partner_admin_course_path, class:"btn btn-primary btn-block btn-outline dark" %>
 			</div>
 		</div> <!-- / #main-menu-inner -->
 	</div> <!-- / #main-menu -->
@@ -522,7 +359,7 @@
 	<div id="content-wrapper">
 		<ul class="breadcrumb breadcrumb-page">
 			<div class="breadcrumb-label text-light-gray">Vous êtes ici: </div>
-			<li><%= link_to "Accueil", root_url  %></li>
+			<li><%= link_to "Accueil", user_home  %></li>
 			<li class="active"><a href="#">Tableau de bord</a></li>
 		</ul>
 		<%= render 'common/flashes' %>

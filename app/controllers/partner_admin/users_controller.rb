@@ -2,24 +2,22 @@ class PartnerAdmin::UsersController < ApplicationController
   	before_action :admins_only
 
 	def index
-		@users = current_user.partner.users
+		@users = current_partner.users || current_user.partner.users
 	end
 	def show
-		@user = User.find(params[:id])
+		@user = get_correct_user
 	end
 	def new
-		set_partner
-		@user = @partner.users.build
+		@user = current_partner.users.build
 	end
 	def create
-		set_partner
-		@user = @partner.users.build(user_params)
+		@user = current_partner.users.build(user_params)
 		
 		if @user.save
-			flash[:success] = "L'utilisateur "+@user.name+" a été crée."
+			flash[:success] = "Le chauffeur "+@user.name+" a été crée."
 			redirect_to partner_admin_users_path
 	    else
-	    	flash[:error] = "La création de l'utilisateur a échouée."
+	    	flash[:error] = "La création de le chauffeur a échouée."
 			render 'new'
 	    end
 	end
@@ -27,32 +25,34 @@ class PartnerAdmin::UsersController < ApplicationController
 		@user = User.find(params[:id])
 	end
 	def update
-		@user = User.find(params[:id])
+		@user = get_correct_user
 		if @user.update_attributes(user_params)
-			flash[:success] = "L'utilisateur "+@user.name+" a été modifié avec succès."
-			redirect_to partner_users_path
+			flash[:success] = "Le chauffeur "+@user.name+" a été modifié avec succès."
+			redirect_to partner_admin_users_path
 		else
 			render 'edit'
 		end
 	end
 	def destroy
-	    User.find(params[:id]).destroy
+		@user = get_correct_user
+	    @user.destroy
 	    flash[:success] = "Utilisateur supprimé."
-	    redirect_to users_url
+	    redirect_to partner_admin_users_path
 	end
 
 		private
 
 		    def user_params
-		    	params.require(:user).permit(:name, :email, :account_type, :password, :password_confirmation)
+		    	params.require(:user).permit(:name, :email, :phone, :account_type, :password, :password_confirmation, :created_by)
 		    end
 
-		    def set_partner
-		    	@partner = current_user.partner
-		    end
-
-		    def correct_user # Make a user unable to edit anyone but himself
-				@user = User.find(params[:id])
-				redirect_to(root_url) unless current_user?(@user)
+		    def get_correct_user # Make sure we don't get an outside user
+				if !current_partner.users.find_by(id: params[:id]).nil?
+					return user = current_partner.users.find(params[:id])
+				else
+					flash[:error] = "Aucun utilisateur trouvé."
+					redirect_to partner_admin_users_path
+				end
 	        end
+
 end

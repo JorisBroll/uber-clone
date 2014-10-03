@@ -1,15 +1,38 @@
 <h1>Liste des entreprises partenaires</h1>
-<table>
+
+<script>
+	init.push(function () {
+		$('#jq-datatables-example').dataTable();
+		$('#jq-datatables-example_wrapper .table-caption').text('Liste des utilisateurs');
+		$('#jq-datatables-example_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
+	});
+</script>
+
+<div class="table-primary">
+	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="jq-datatables-example">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Nom</th>
+				<th>Email</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
 <% @partners.each do |partner| %>
 	<tr>
 		<td><%= partner.id %></td>
 		<td><%= partner.name %></td>
 		<td><%= partner.email %></td>
-		<td><%= link_to "Voir", admin_partner_path(partner) %></td>
-		<td><%= link_to "Editer", edit_admin_partner_path(partner) %></td>
-		<td><%= link_to "Supprimer", admin_partner_path(partner), method: :delete, data: { confirm: "You sure?" } %></td>
+		<td style="text-align:center; font-size:16px;"><%= link_to admin_partner_path(partner), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_partner_path(partner), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_partner_path(partner), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 	</tr>
 <% end %>
-</table>
-<%= link_to "Retour à l'accueil", root_url %>
-<%= link_to "Ajouter une entreprise partenaire", new_admin_partner_path %>
+		</tbody>
+	</table>
+</div>
+
+<%= link_to(new_admin_partner_path) do %>
+	<button class="btn btn-flat btn-labeled btn-primary">
+	    <span class="btn-label icon fa fa-briefcase"></span>Ajouter un partenaire
+	</button>
+<% end %>

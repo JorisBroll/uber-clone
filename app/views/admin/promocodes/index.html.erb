@@ -1,0 +1,51 @@
+<h1>Codes promo</h1>
+
+<script>
+	init.push(function () {
+		$('#jq-datatables-example').dataTable();
+		$('#jq-datatables-example_wrapper .table-caption').text('Liste des utilisateurs');
+		$('#jq-datatables-example_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
+	});
+</script>
+
+<div class="table-primary">
+	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="jq-datatables-example">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Nom</th>
+				<th>Type de réduction (% / fixe)</th>
+				<th>Réduction</th>
+				<th>Type de durée (jours / utilisations)</th>
+				<th>Durée</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+		<% @promocodes.each do |promocode| %>
+			<tr>
+				<td><%= promocode.id %></td>
+				<td><%= promocode.name %></td>
+				<td><%= Promocode::Effect_type_alias[promocode.effect_type] %></td>
+				<td><%= promocode.effect_type_value %></td>
+				<td><%= Promocode::Effect_length_alias[promocode.effect_length] %></td>
+				<td><%= promocode.effect_length_value %></td>
+				<td style="text-align:center; font-size:16px;"><%= link_to admin_promocode_path(promocode), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_promocode_path(promocode), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_promocode_path(promocode), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
+			</tr>
+		<% end %>
+		</tbody>
+	</table>
+</div>
+
+<%= link_to(new_admin_promocode_path) do %>
+
+<button class="btn btn-flat btn-labeled btn-primary">
+
+    <span class="btn-label icon fa fa-ticket"></span>
+
+    Ajouter un code promo
+
+</button>
+
+<% end %>
+

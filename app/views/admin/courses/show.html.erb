@@ -1,0 +1,13 @@
+<h1>Page pour voir une seule course et ses détails</h1>
+
+<%= @course.id %>
+<%= @course.from %>
+<%= @course.to %>
+<%# hash = JSON.parse @course.stops %>
+Arrêts : 
+<% @course.stops.each do |o| %>
+<%= o %>
+<% end %>
+
+
+<td><%= link_to "Retour aux courses", admin_courses_path %></td>

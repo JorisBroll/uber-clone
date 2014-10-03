@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140924143212) do
+ActiveRecord::Schema.define(version: 20141002153725) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,25 @@ ActiveRecord::Schema.define(version: 20140924143212) do
     t.integer  "partner_id"
     t.integer  "slots"
     t.integer  "car_type",   default: 0
+    t.integer  "user_id"
+  end
+
+  create_table "courses", force: true do |t|
+    t.string   "from"
+    t.string   "to"
+    t.integer  "user_id"
+    t.integer  "partner_id"
+    t.integer  "car_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "nb_people"
+    t.integer  "status",            default: 0
+    t.float    "computed_distance"
+    t.float    "computed_price"
+    t.json     "stops"
+    t.integer  "created_by"
+    t.date     "date_when"
+    t.time     "time_when"
   end
 
   create_table "partners", force: true do |t|
@@ -31,12 +50,19 @@ ActiveRecord::Schema.define(version: 20140924143212) do
     t.datetime "updated_at"
     t.string   "email"
     t.text     "note"
+    t.string   "company_code"
+    t.string   "phone"
   end
 
-  create_table "sub_companies", force: true do |t|
+  create_table "promocodes", force: true do |t|
     t.string   "name"
+    t.integer  "effect_type"
+    t.integer  "effect_length"
+    t.integer  "effect_length_value"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "effect_type_value"
+    t.string   "code"
   end
 
   create_table "users", force: true do |t|
@@ -48,6 +74,9 @@ ActiveRecord::Schema.define(version: 20140924143212) do
     t.integer  "account_type",    default: 0
     t.integer  "created_by"
     t.integer  "partner_id"
+    t.string   "position"
+    t.integer  "company_id"
+    t.string   "phone"
   end
 
 end

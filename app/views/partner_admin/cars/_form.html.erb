@@ -1,0 +1,16 @@
+<%= form_for [:partner_admin, @car] do |f| %>
+    
+	<%= render 'common/error_messages', object: f.object %>
+
+	<%= f.label :name %>
+	<%= f.text_field :name, :placeholder => "Nom" %>
+
+	<%= f.label :car_type %>
+	<%= f.select(:car_type, Car::Car_type_alias.reverse) %>
+
+	<%= f.label :slots %>
+	<%= f.text_field :slots %>
+
+	<%= f.submit action, class: "btn btn-large btn-primary" %>
+
+<% end %>

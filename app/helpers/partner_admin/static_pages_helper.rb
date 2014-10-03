@@ -1,0 +1,2 @@
+module PartnerAdmin::StaticPagesHelper
+end

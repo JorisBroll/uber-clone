@@ -1,0 +1,14 @@
+<h1>Liste des voitures de l'entreprise</h1>
+<table>
+<% @cars.each do |car| %>
+	<tr>
+		<td><%= car.id %></td>
+		<td><%= car.name %></td>
+		<td><%= link_to "Voir", partner_admin_car_path(car) %></td>
+		<td><%= link_to "Editer", edit_partner_admin_car_path(car) %></td>
+		<td><%= link_to "Supprimer", partner_admin_car_path(car), method: :delete, data: { confirm: "You sure?" } %></td>
+	</tr>
+<% end %>
+</table>
+<%= link_to "Retour à l'accueil", partner_admin_home_path %>
+<%= link_to "Ajouter une voiture", new_partner_admin_car_path %>

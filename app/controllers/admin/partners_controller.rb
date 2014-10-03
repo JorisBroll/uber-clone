@@ -1,11 +1,14 @@
 class Admin::PartnersController < ApplicationController
-	before_action :superadmins_only
+	before_action :admins_only, :only => [:edit, :update]
+	before_action :superadmins_only, :except => [:edit, :update]
 
 	def index
 		@partners = Partner.all
 	end
 	def show
 		@partner = Partner.find(params[:id])
+		admin_this_partner @partner
+		redirect_to partner_admin_home_path
 	end
 	def new
 		@partner = Partner.new
@@ -27,7 +30,11 @@ class Admin::PartnersController < ApplicationController
 		@partner = Partner.find(params[:id])
 		if @partner.update_attributes(partner_params)
 			flash[:success] = "L'entreprise "+@partner.name+" a été modifiée avec succès."
-			redirect_to admin_partner_path(@partner)
+			if is_partneradmin?
+				redirect_to partner_admin_home_path
+			else
+				redirect_to admin_partners_path
+			end
 		else
 			render 'edit'
 		end
@@ -41,7 +48,7 @@ class Admin::PartnersController < ApplicationController
 		private
 
 		    def partner_params
-		    	params.require(:partner).permit(:name, :email, :note)
+		    	params.require(:partner).permit(:name, :email, :phone, :note)
 		    end
 
 end

@@ -1,0 +1,15 @@
+<h1>Liste des courses de l'entreprise</h1>
+<table>
+<% @courses.each do |course| %>
+	<tr>
+		<td><%= course.id %></td>
+		<td><%= course.from %></td>
+		<td><%= course.to %></td>
+		<td><%= link_to "Voir", partner_admin_course_path(course) %></td>
+		<td><%= link_to "Editer", edit_partner_admin_course_path(course) %></td>
+		<td><%= link_to "Supprimer", partner_admin_course_path(course), method: :delete, data: { confirm: "You sure?" } %></td>
+	</tr>
+<% end %>
+</table>
+<%= link_to "Retour à l'accueil", partner_admin_home_path %>
+<%= link_to "Ajouter une voiture", new_partner_admin_course_path %>

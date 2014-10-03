@@ -3,24 +3,27 @@ class SessionsController < ApplicationController
 		user = User.find_by(email: params[:session][:email].downcase)
   		
   		if user && user.authenticate(params[:session][:password])
-			sign_in user
-			if is_superadmin?
-				redirect_to(root_url)
-			elsif is_partneradmin?
-				if user.partner.nil?
-					flash[:error] = "Ce compte chauffeur n'est associé à aucune entreprise partenaire. Veuillez contacter Naveco pour résoudre le problème."
-					redirect_to '/login'
-				else
-					redirect_to partner_admin_path(user.partner)
-				end
+			case sign_in user
+			when true
+				redirect_to user_home
+			when 'x1'
+				flash[:error] = "Votre authentification a échouée. Vous n'avez peut-être pas les privilèges nécessaires."
+				redirect_to '/login'
+			when 'x2'
+				flash[:error] = "Ce compte chauffeur n'est associé à aucune entreprise partenaire. Veuillez contacter Naveco pour résoudre le problème."
+				redirect_to '/login'
 			else
-				sign_out
-				flash[:error] = "Vous n'avez pas les privilèges nécessaires"
+				flash[:error] = "Votre authentification a échouée."
 				redirect_to '/login'
 			end
 		else
-			flash[:error] = "Votre authentification a échouée."
+			flash[:error] = "Votre authentification a échouée : aucun compte trouvé."
 			redirect_to '/login'
 		end
+	end
+
+	def destroy
+		sign_out
+		redirect_to '/login'
 	end
 end

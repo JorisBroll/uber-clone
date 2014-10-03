@@ -6,23 +6,15 @@ class ApplicationController < ActionController::Base
   include SessionsHelper
 
   layout 'login', only: [:login]
+
   def login
-
-  end
-
-  def logout
-    sign_out
-    redirect_to '/login'
-  end
-
-  def home
-  	if !signed_in?
-  		redirect_to '/login'
-  	end
-    @users = User.all
+    if signed_in?
+      redirect_to user_home
+    end
   end
 
     private
+
       def set_locale
         I18n.locale = :fr
       end

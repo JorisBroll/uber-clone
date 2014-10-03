@@ -1,0 +1,55 @@
+<script>
+init.push(function () {
+
+	$('.date').datepicker();
+});
+
+</script>
+<%= form_for [:admin, @course] do |f| %>
+    
+	<%= render 'common/error_messages', object: f.object %>
+
+	<%= f.label :from %>
+	<%= f.text_field :from, :placeholder => "Adresse de départ" %>
+
+	<%= f.label :to %>
+	<%= f.text_field :to, :placeholder => "Adresse d'arrivée" %>
+
+	<%= f.label :date_when %>
+	<%= f.text_field :date_when, class: "form-control date" %>
+
+	<%= f.label :time_when %>
+	<%= f.text_field :time_when, class: "form-control time" %>
+
+	<%= f.label :stops %>
+
+	<% if !@course.stops.nil? %>
+		<% @course.stops.each do |o| %>
+			<div class="stop-container">
+				<input id="course_stops" type="text" value="<%= o %>" name="course[stops][]"><span class="close-btn"><i class="fa fa-close"></i></span>
+			</div>
+		<% end %>
+	<% else %>
+		<div class="stop-container">
+			<input id="course_stops" type="text" value="" name="course[stops][]"><span class="close-btn"><i class="fa fa-close"></i></span>
+		</div>
+	<% end %>
+
+	<div id="add-stops">Ajouter un arrêt</div>
+
+	<%= f.label :user_id %>
+	<%= f.select(:user_id, users_for_select, :prompt => 'Choisir') %>
+
+	<%= f.label :partner_id %>
+	<%= f.select(:partner_id, partners_for_select, :prompt => 'Choisir') %>
+
+	<div class="form-group">
+		<%= f.label :status, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.select(:status, Course::Status_select, class: "form-control") %>
+		</div>
+	</div>
+
+	<%= f.submit action, class: "btn btn-large btn-primary" %>
+
+<% end %>

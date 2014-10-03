@@ -1,0 +1,16 @@
+<%= form_for [:partner_admin, @course] do |f| %>
+    
+	<%= render 'common/error_messages', object: f.object %>
+
+	<%= f.label :from %>
+	<%= f.text_field :from, :placeholder => "Adresse de départ" %>
+
+	<%= f.label :to %>
+	<%= f.text_field :to, :placeholder => "Adresse d'arrivée" %>
+
+	<%= f.label :when %>
+	<%= f.text_field :when %>
+
+	<%= f.submit action, class: "btn btn-large btn-primary" %>
+
+<% end %>

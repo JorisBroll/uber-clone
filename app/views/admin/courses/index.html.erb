@@ -1,0 +1,47 @@
+<h1>Courses à venir</h1>
+<table>
+<% @courses.where("status = ?", Course.statuses[:inactive]).order(:date_when, :time_when).each do |course| %>
+	<tr>
+		<td><%= course.id %></td>
+		<td><%= course.from %></td>
+		<td><%= course.to %></td>
+		<td>Le <%= course.date_when.strftime("%d/%m/%Y") unless course.date_when.nil? %> à <%= course.time_when.strftime("%Hh%M")  unless course.time_when.nil? %></td>
+		<td><%= link_to "Voir", admin_course_path(course) %></td>
+		<td><%= link_to "Editer", edit_admin_course_path(course) %></td>
+		<td><%= link_to "Supprimer", admin_course_path(course), method: :delete, data: { confirm: "You sure?" } %></td>
+	</tr>
+<% end %>
+</table>
+
+<h1>Courses terminées</h1>
+<table>
+<% @courses.where("status = ?", Course.statuses[:done]).order(:date_when, :time_when).each do |course| %>
+	<tr>
+		<td><%= course.id %></td>
+		<td><%= course.from %></td>
+		<td><%= course.to %></td>
+		<td>Le <%= course.date_when.strftime("%d/%m/%Y") unless course.date_when.nil? %> à <%= course.time_when.strftime("%Hh%M")  unless course.time_when.nil? %></td>
+		<td><%= link_to "Voir", admin_course_path(course) %></td>
+		<td><%= link_to "Editer", edit_admin_course_path(course) %></td>
+		<td><%= link_to "Supprimer", admin_course_path(course), method: :delete, data: { confirm: "You sure?" } %></td>
+	</tr>
+<% end %>
+</table>
+
+<h1>Courses annulées</h1>
+<table>
+<% @courses.where("status = ?", Course.statuses[:canceled]).order(:date_when, :time_when).each do |course| %>
+	<tr>
+		<td><%= course.id %></td>
+		<td><%= course.from %></td>
+		<td><%= course.to %></td>
+		<td>Le <%= course.date_when.strftime("%d/%m/%Y") unless course.date_when.nil? %> à <%= course.time_when.strftime("%Hh%M")  unless course.time_when.nil? %></td>
+		<td><%= link_to "Voir", admin_course_path(course) %></td>
+		<td><%= link_to "Editer", edit_admin_course_path(course) %></td>
+		<td><%= link_to "Supprimer", admin_course_path(course), method: :delete, data: { confirm: "You sure?" } %></td>
+	</tr>
+<% end %>
+</table>
+
+<%= link_to "Retour à l'accueil", admin_home_path %>
+<%= link_to "Ajouter une course", new_admin_course_path %>

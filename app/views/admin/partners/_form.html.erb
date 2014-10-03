@@ -1,13 +1,97 @@
-<%= form_for [:admin, @partner] do |f| %>
-	<%= render 'common/error_messages', object: f.object %>
-	<%= f.label :name %>
-	<%= f.text_field :name, :placeholder => "Nom" %>
+<!-- Javascript -->
+<script>
+	init.push(function () {
+		$('#jq-validation-select2').select2({ allowClear: true, placeholder: 'Select a country...' }).change(function(){
+			$(this).valid();
+		});
+		$('#jq-validation-select2-multi').select2({ placeholder: 'Select gear...' }).change(function(){
+			$(this).valid();
+		});
 
-	<%= f.label :email, "Email :" %>
-	<%= f.text_field :email, :placeholder => "Email" %>
+		// Setup validation
+		$("#new_partner").validate({
+			ignore: '.ignore, .select2-input',
+			focusInvalid: false,
+			rules: {
+				'partner[email]': {
+				  required: true,
+				  email: true
+				},
+				'user[password]': {
+					required: true,
+					minlength: 6,
+					maxlength: 20
+				},
+				'user[password_confirmation]': {
+					required: true,
+					minlength: 6,
+					equalTo: "#user_password"
+				}
+			},
+			messages: {
+				'jq-validation-policy': 'You must check it!'
+			}
+		});
+	});
 
-	<%= f.label :note, "Ajouter une note :" %>
-	<%= f.text_area :note, :placeholder => "Note" %>
+init.push(function () {
+	// Single select
+	$("#promocode_effect_type,#promocode_effect_length").select2({
+		allowClear: true,
+		placeholder: "Select a State"
+	});
+});
 
-	<%= f.submit action, class: "btn btn-large btn-primary" %>
-<% end %>
+</script>
+<!-- / Javascript -->
+
+<div class="panel">
+	<div class="panel-heading">
+		<span class="panel-title">Ajouter un nouveau partenaire</span>
+	</div>
+	<div class="panel-body">
+
+		<%= form_for [:admin, @partner] do |f| %>		
+			<%= render 'common/error_messages', object: f.object %>
+
+			<div class="form-group">
+				<%= f.label :name, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :name, class: "form-control", :placeholder => "Nom" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :email, "Email :", class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :email, class: "form-control", :placeholder => "Email" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :phone, "Téléphone :", class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :phone, class: "form-control", :placeholder => "Téléphone" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :note, "Ajouter une note :", class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_area :note, class: "form-control", :placeholder => "Note" %>
+				</div>
+			</div>
+
+			<hr class="panel-wide" />
+			<br />
+
+			<div class="form-group">
+				<div class="col-sm-9">
+					<%= f.submit action, class: "btn btn-large btn-primary btn-flat" %>
+				</div>
+			</div>
+
+		<% end %>
+
+	</div>
+</div>	
