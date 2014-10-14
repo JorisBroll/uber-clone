@@ -116,130 +116,8 @@
 									<a href="#" class="notifications-link">MORE NOTIFICATIONS</a>
 								</div> <!-- / .dropdown-menu -->
 							</li>
-							<li class="nav-icon-btn nav-icon-btn-success dropdown">
-								<a href="#messages" class="dropdown-toggle" data-toggle="dropdown">
-									<span class="label">10</span>
-									<i class="nav-icon fa fa-envelope"></i>
-									<span class="small-screen-text">Income messages</span>
-								</a>
 
-								<!-- MESSAGES -->
-								
-								<!-- Javascript -->
-								<script>
-									init.push(function () {
-										$('#main-navbar-messages').slimScroll({ height: 250 });
-									});
-								</script>
-								<!-- / Javascript -->
-
-								<div class="dropdown-menu widget-messages-alt no-padding" style="width: 300px;">
-									<div class="messages-list" id="main-navbar-messages">
-
-										<div class="message">
-											<img src="assets/demo/avatars/2.jpg" alt="" class="message-avatar">
-											<a href="#" class="message-subject">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</a>
-											<div class="message-description">
-												from <a href="#">Robert Jang</a>
-												&nbsp;&nbsp;·&nbsp;&nbsp;
-												2h ago
-											</div>
-										</div> <!-- / .message -->
-
-										<div class="message">
-											<img src="assets/demo/avatars/3.jpg" alt="" class="message-avatar">
-											<a href="#" class="message-subject">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</a>
-											<div class="message-description">
-												from <a href="#">Michelle Bortz</a>
-												&nbsp;&nbsp;·&nbsp;&nbsp;
-												2h ago
-											</div>
-										</div> <!-- / .message -->
-
-										<div class="message">
-											<img src="assets/demo/avatars/4.jpg" alt="" class="message-avatar">
-											<a href="#" class="message-subject">Lorem ipsum dolor sit amet.</a>
-											<div class="message-description">
-												from <a href="#">Timothy Owens</a>
-												&nbsp;&nbsp;·&nbsp;&nbsp;
-												2h ago
-											</div>
-										</div> <!-- / .message -->
-
-										<div class="message">
-											<img src="assets/demo/avatars/5.jpg" alt="" class="message-avatar">
-											<a href="#" class="message-subject">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</a>
-											<div class="message-description">
-												from <a href="#">Denise Steiner</a>
-												&nbsp;&nbsp;·&nbsp;&nbsp;
-												2h ago
-											</div>
-										</div> <!-- / .message -->
-
-										<div class="message">
-											<img src="assets/demo/avatars/2.jpg" alt="" class="message-avatar">
-											<a href="#" class="message-subject">Lorem ipsum dolor sit amet.</a>
-											<div class="message-description">
-												from <a href="#">Robert Jang</a>
-												&nbsp;&nbsp;·&nbsp;&nbsp;
-												2h ago
-											</div>
-										</div> <!-- / .message -->
-
-										<div class="message">
-											<img src="assets/demo/avatars/2.jpg" alt="" class="message-avatar">
-											<a href="#" class="message-subject">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</a>
-											<div class="message-description">
-												from <a href="#">Robert Jang</a>
-												&nbsp;&nbsp;·&nbsp;&nbsp;
-												2h ago
-											</div>
-										</div> <!-- / .message -->
-
-										<div class="message">
-											<img src="assets/demo/avatars/3.jpg" alt="" class="message-avatar">
-											<a href="#" class="message-subject">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</a>
-											<div class="message-description">
-												from <a href="#">Michelle Bortz</a>
-												&nbsp;&nbsp;·&nbsp;&nbsp;
-												2h ago
-											</div>
-										</div> <!-- / .message -->
-
-										<div class="message">
-											<img src="assets/demo/avatars/4.jpg" alt="" class="message-avatar">
-											<a href="#" class="message-subject">Lorem ipsum dolor sit amet.</a>
-											<div class="message-description">
-												from <a href="#">Timothy Owens</a>
-												&nbsp;&nbsp;·&nbsp;&nbsp;
-												2h ago
-											</div>
-										</div> <!-- / .message -->
-
-										<div class="message">
-											<img src="assets/demo/avatars/5.jpg" alt="" class="message-avatar">
-											<a href="#" class="message-subject">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</a>
-											<div class="message-description">
-												from <a href="#">Denise Steiner</a>
-												&nbsp;&nbsp;·&nbsp;&nbsp;
-												2h ago
-											</div>
-										</div> <!-- / .message -->
-
-										<div class="message">
-											<img src="assets/demo/avatars/2.jpg" alt="" class="message-avatar">
-											<a href="#" class="message-subject">Lorem ipsum dolor sit amet.</a>
-											<div class="message-description">
-												from <a href="#">Robert Jang</a>
-												&nbsp;&nbsp;·&nbsp;&nbsp;
-												2h ago
-											</div>
-										</div> <!-- / .message -->
-
-									</div> <!-- / .messages-list -->
-									<a href="#" class="messages-link">MORE MESSAGES</a>
-								</div> <!-- / .dropdown-menu -->
-							</li>
+							
 <!-- /3. $END_NAVBAR_ICON_BUTTONS -->
 
 							<li>
@@ -257,7 +135,7 @@
 								<ul class="dropdown-menu">
 									<li><a href="#"><span class="label label-warning pull-right">New</span>Profile</a></li>
 									<li><a href="#"><span class="badge badge-primary pull-right">New</span>Account</a></li>
-									<li><a href="#"><i class="dropdown-icon fa fa-cog"></i>&nbsp;&nbsp;Settings</a></li>
+									<li><a href="<%= admin_config_path %>"><i class="dropdown-icon fa fa-cog"></i>&nbsp;&nbsp;Settings</a></li>
 									<li class="divider"></li>
 									<li><a href="/logout"><i class="dropdown-icon fa fa-power-off"></i>&nbsp;&nbsp;Log Out</a></li>
 								</ul>
@@ -308,7 +186,7 @@
 					<div class="btn-group">
 						<a href="#" class="btn btn-xs btn-primary btn-outline dark"><i class="fa fa-envelope"></i></a>
 						<a href="#" class="btn btn-xs btn-primary btn-outline dark"><i class="fa fa-user"></i></a>
-						<a href="#" class="btn btn-xs btn-primary btn-outline dark"><i class="fa fa-cog"></i></a>
+						<a href="<%= admin_config_path %>" class="btn btn-xs btn-primary btn-outline dark"><i class="fa fa-cog"></i></a>
 						<%= link_to '/logout', method: :delete, class:"btn btn-xs btn-danger btn-outline dark" do %><i class="fa fa-power-off"></i><% end %>
 					</div>
 					<a href="#" class="close">&times;</a>
@@ -326,7 +204,10 @@
 					<%= link_to(admin_promocodes_path) do %><i class="menu-icon fa fa-ticket"></i><span class="mm-text">Codes promotions</span><% end %>
 				</li>
 				<li>
-					<%= link_to(admin_courses_path) do %><i class="menu-icon fa fa-ticket"></i><span class="mm-text">Courses</span><% end %>
+					<%= link_to(admin_courses_path) do %><i class="menu-icon fa fa-flag-checkered"></i><span class="mm-text">Courses</span><% end %>
+				</li>
+				<li>
+					<%= link_to(admin_map_path) do %><i class="menu-icon fa fa-map-marker"></i><span class="mm-text">Carte des taxis</span><% end %>
 				</li>
 				<% end %>
 				<% if currently_admining_partner? || current_partner %>
@@ -334,23 +215,28 @@
 					<a href="#"><i class="menu-icon fa fa-th"></i><span class="mm-text"><%= current_partner.name.to_s %></span></a>
 					<ul>
 						<li>
-							<%= link_to(partner_admin_home_path) do %><i class="menu-icon fa fa-briefcase"></i><span class="mm-text">Informations</span><% end %>
+							<%= link_to(partner_admin_home_path) do %><i class="menu-icon fa fa-info-circle"></i><span class="mm-text">Informations</span><% end %>
 						</li>
 						<li>
-							<%= link_to(partner_admin_users_path) do %><i class="menu-icon fa fa-briefcase"></i><span class="mm-text">Utilisateurs</span><% end %>
+							<%= link_to(partner_admin_users_path) do %><i class="menu-icon fa fa-users"></i><span class="mm-text">Utilisateurs</span><% end %>
 						</li>
 						<li>
-							<%= link_to(partner_admin_cars_path) do %><i class="menu-icon fa fa-briefcase"></i><span class="mm-text">Voitures</span><% end %>
+							<%= link_to(partner_admin_cars_path) do %><i class="menu-icon fa fa-taxi"></i><span class="mm-text">Voitures</span><% end %>
 						</li>
 						<li>
-							<%= link_to(partner_admin_courses_path) do %><i class="menu-icon fa fa-briefcase"></i><span class="mm-text">Courses</span><% end %>
+							<%= link_to(partner_admin_courses_path) do %><i class="menu-icon fa fa-flag-checkered"></i><span class="mm-text">Courses</span><% end %>
 						</li>
 					</ul>
 				</li>
 				<% end %>
 			</ul>
 			<div class="menu-content">
+			<% if currently_admining_partner? || current_partner %>
 				<%= link_to "Créer une course", new_partner_admin_course_path, class:"btn btn-primary btn-block btn-outline dark" %>
+			<% end %>			
+			<% if is_superadmin? %>
+				<%= link_to "Créer une course", new_admin_course_path, class:"btn btn-primary btn-block btn-outline dark" %>
+			<% end %>
 			</div>
 		</div> <!-- / #main-menu-inner -->
 	</div> <!-- / #main-menu -->

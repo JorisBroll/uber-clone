@@ -1,5 +1,5 @@
 class Admin::CoursesController < ApplicationController
-	before_action :superadmins_only
+	before_action :admins_only
 
 	def index
 		@courses = Course.all
@@ -40,7 +40,7 @@ class Admin::CoursesController < ApplicationController
 
 		    def course_params
 		    	params['course']['stops'] = params['course']['stops'].to_json
-		    	params.require(:course).permit(:from, :to, :date_when, :time_when, :stops, :user_id, :partner_id, :status)
+		    	params.require(:course).permit(:from, :to, :date_when, :time_when, :computed_distance, :computed_duration, :computed_price, :stops, :nb_people, :user_id, :partner_id, :status)
 		    end
 
 end

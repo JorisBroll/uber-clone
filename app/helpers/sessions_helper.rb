@@ -67,6 +67,9 @@ module SessionsHelper
 
   # Admins or partneradmins
   def is_superadmin?
+    current_user.account_type == 'superadmin'
+  end
+  def is_admin?
     current_user.account_type == 'admin'
   end
   def is_partneradmin?
@@ -74,14 +77,21 @@ module SessionsHelper
   end
 
   def superadmins_only
-    if current_user.account_type != 'admin'
-      flash[:error] = "Vous devez être admin pour consulter cette page."
+    if current_user.account_type != 'superadmin'
+      flash[:error] = "Vous devez être gérant pour consulter cette page."
       redirect_to(root_url)
     end
   end
 
   def admins_only
-      if current_user.account_type != 'partneradmin' && current_user.account_type != 'admin'
+    if current_user.account_type != 'admin' && current_user.account_type != 'superadmin'
+      flash[:error] = "Vous devez être admin pour consulter cette page."
+      redirect_to(root_url)
+    end
+  end
+
+  def partneradmins_only
+      if current_user.account_type != 'partneradmin' && current_user.account_type != 'admin' && current_user.account_type != 'superadmin'
         flash[:error] = "Vous devez être partenaire pour consulter cette page."
         redirect_to(root_url)
       end

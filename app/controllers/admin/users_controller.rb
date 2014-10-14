@@ -1,8 +1,11 @@
 class Admin::UsersController < ApplicationController
-  	before_action :superadmins_only
+  	before_action :admins_only
 
 	def index
-		@users = User.all
+		@clients = User.where("account_type = ?", User.account_types[:client])
+		@drivers = User.where("account_type = ?", User.account_types[:driver])
+		@partneradmins = User.where("account_type = ?", User.account_types[:partneradmin])
+		@admins = User.where("account_type in (?)", [ User.account_types[:superadmin], User.account_types[:admin] ])
 	end
 	def show
 		#current_partner
@@ -34,8 +37,12 @@ class Admin::UsersController < ApplicationController
 		end
 	end
 	def destroy
-	    User.find(params[:id]).destroy
-	    flash[:success] = "Utilisateur supprimé."
+		if ['1', '2'].include? params[:id]
+			flash[:notice] = "Utilisateur protégé. Il ne peut être supprimé."
+		else
+		    #User.find(params[:id]).destroy
+		    flash[:success] = "Utilisateur supprimé."
+		end
 	    redirect_to admin_users_path
 	end
 

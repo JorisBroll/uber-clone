@@ -1,5 +1,5 @@
 class PartnerAdmin::CoursesController < ApplicationController
-	before_action :admins_only
+	before_action :partneradmins_only
 
 	def index
 		@courses = current_partner.courses.all

@@ -1,55 +1,168 @@
 <script>
-init.push(function () {
+	init.push(function () {
+		$("#partner_phone").mask("99.99.99.99.99");
+		$("#partner_company_code").mask("999 999 999 99999");
+		$('#jq-validation-select2').select2({ allowClear: true, placeholder: 'Select a country...' }).change(function(){
+			$(this).valid();
+		});
+		$('#jq-validation-select2-multi').select2({ placeholder: 'Select gear...' }).change(function(){
+			$(this).valid();
+		});
 
-	$('.date').datepicker();
-});
+		// Setup validation
+		$("#edit_partner_1").validate({
+			ignore: '.ignore, .select2-input',
+			focusInvalid: false,
+			rules: {
+				'partner[email]': {
+				  required: true,
+				  email: true
+				},
+				'user[password]': {
+					required: true,
+					minlength: 6,
+					maxlength: 20
+				},
+				'user[password_confirmation]': {
+					required: true,
+					minlength: 6,
+					equalTo: "#user_password"
+				},
+				'partner[phone]': {
+					required: true,
+					phone_format: true
+				}
+			},
+			messages: {
+				'jq-validation-policy': 'You must check it!'
+			}
+		});
+
+		$("#promocode_effect_type,#promocode_effect_length").select2({
+			allowClear: true,
+			placeholder: "Select a State"
+		});
+
+	});
 
 </script>
-<%= form_for [:admin, @course] do |f| %>
-    
-	<%= render 'common/error_messages', object: f.object %>
+<!-- / Javascript -->
 
-	<%= f.label :from %>
-	<%= f.text_field :from, :placeholder => "Adresse de départ" %>
-
-	<%= f.label :to %>
-	<%= f.text_field :to, :placeholder => "Adresse d'arrivée" %>
-
-	<%= f.label :date_when %>
-	<%= f.text_field :date_when, class: "form-control date" %>
-
-	<%= f.label :time_when %>
-	<%= f.text_field :time_when, class: "form-control time" %>
-
-	<%= f.label :stops %>
-
-	<% if !@course.stops.nil? %>
-		<% @course.stops.each do |o| %>
-			<div class="stop-container">
-				<input id="course_stops" type="text" value="<%= o %>" name="course[stops][]"><span class="close-btn"><i class="fa fa-close"></i></span>
-			</div>
-		<% end %>
-	<% else %>
-		<div class="stop-container">
-			<input id="course_stops" type="text" value="" name="course[stops][]"><span class="close-btn"><i class="fa fa-close"></i></span>
-		</div>
-	<% end %>
-
-	<div id="add-stops">Ajouter un arrêt</div>
-
-	<%= f.label :user_id %>
-	<%= f.select(:user_id, users_for_select, :prompt => 'Choisir') %>
-
-	<%= f.label :partner_id %>
-	<%= f.select(:partner_id, partners_for_select, :prompt => 'Choisir') %>
-
-	<div class="form-group">
-		<%= f.label :status, class: "col-sm-3 control-label" %>
-		<div class="col-sm-9">
-			<%= f.select(:status, Course::Status_select, class: "form-control") %>
-		</div>
+<div class="panel">
+	<div class="panel-heading">
+		<span class="panel-title">Course</span>
 	</div>
+	<div class="panel-body">
 
-	<%= f.submit action, class: "btn btn-large btn-primary" %>
+		<%= form_for [:admin, @course] do |f| %>
+		    
+			<%= render 'common/error_messages', object: f.object %>
 
-<% end %>
+			<div class="form-group">
+				<%= f.label :from, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :from, :placeholder => "Adresse de départ" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :to, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :to, :placeholder => "Adresse d'arrivée" %>
+				</div>
+			</div>
+
+			<a id="calculer" href="#">Calculer le prix</a>
+
+			<div id="map-canvas" style="width:300px; height:300px"></div>
+
+			<div class="form-group">
+				<%= f.label :computed_distance, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :computed_distance, class: "form-control",:readonly => true %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :computed_duration, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :computed_duration, class: "form-control", :readonly => true %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :computed_price, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :computed_price, class: "form-control", :readonly => true %>
+				</div>
+			</div>
+
+			<div id="google-compute-status"></div>
+
+			<div class="form-group">
+				<%= f.label :date_when, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :date_when, class: "form-control date" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :time_when, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :time_when, class: "form-control time" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :stops, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<% if !@course.stops.nil? %>
+						<% @course.stops.each do |o| %>
+							<div class="stop-container">
+								<input id="course_stops" type="text" value="<%= o %>" name="course[stops][]"><span class="close-btn"><i class="fa fa-close"></i></span>
+							</div>
+						<% end %>
+						<% else %>
+							<div class="stop-container">
+								<input id="course_stops" type="text" value="" name="course[stops][]"><span class="close-btn"><i class="fa fa-close"></i></span>
+							</div>
+					<% end %>
+				</div>
+			</div>
+
+			<div id="add-stops">Ajouter un arrêt</div>
+
+			<div class="form-group">
+				<%= f.label :nb_people, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :nb_people, class: "form-control" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :user_id, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:user_id, users_for_select, :prompt => 'Choisir') %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :partner_id, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:partner_id, partners_for_select, :prompt => 'Choisir') %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :status, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:status, Course::Status_select, class: "form-control") %>
+				</div>
+			</div>
+
+			<%= f.submit action, class: "btn btn-large btn-primary" %>
+
+		<% end %>
+
+	</div>
+</div>	

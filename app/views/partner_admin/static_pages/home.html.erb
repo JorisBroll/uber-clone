@@ -15,10 +15,11 @@
 				</div>
 			</div> <!-- / .panel-heading -->
 			<div class="list-group">
-				<div class="list-group-item"><i class="fa fa-barcode list-group-icon"></i>Siret <span class="text-default text-sm"><%= @partner.company_code %></span></div>
+				<div class="list-group-item"><i class="fa fa-phone list-group-icon"></i>Téléphone <span class="text-default text-sm" style="float:right;"><%= @partner.phone %></span></div>
+				<div class="list-group-item"><i class="fa fa-barcode list-group-icon"></i>Siret <span class="text-default text-sm" style="float:right;"><%= @partner.company_code %></span></div>
 				<div class="list-group-item"><i class="fa fa-taxi list-group-icon"></i>Voitures<span class="badge badge-info"><%= @partner.cars.count %></span></div>
 				<div class="list-group-item"><i class="fa fa-flag-checkered list-group-icon"></i>Courses<span class="badge badge-success"><%= @partner.courses.count %></span></div>
-				<div class="list-group-item"><i class="fa fa-pencil-square-o list-group-icon"></i>Note <span class="text-default text-sm"><%= @partner.note %></span></div>
+				<div class="list-group-item"><i class="fa fa-pencil-square-o list-group-icon"></i>Note <span class="text-default text-sm" style="float:right;"><%= @partner.note %></span></div>
 				<%= link_to edit_admin_partner_path(@partner), class: "list-group-item" do %><button class="btn btn-labeled btn-block">Editer les infos</button><% end %>
 			</div>
 					
@@ -147,13 +148,10 @@
 			<div class="panel-body">
 				<% if @courses.each do |course| %>
 					<div class="ticket">
-						<span class="label label-success ticket-label">Terminée <%= course.status %></span>
-						<span class="label label-info ticket-label">En cours</span>
-						<span class="label label-danger ticket-label">Annulée</span>
-						<span class="label ticket-label">À venir</span>
+						<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
 						<%= link_to partner_admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
 						<span class="ticket-info">
-							Démarrée par <a href="#" title="">Nom chauffeur <%= course.user.name unless course.user.nil? %></a> le <%= getDateTime(course) %>
+							Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
 						</span><br />
 						<%= link_to edit_partner_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
 						<%= link_to partner_admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>

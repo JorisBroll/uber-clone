@@ -1,6 +1,6 @@
 class Admin::PartnersController < ApplicationController
-	before_action :admins_only, :only => [:edit, :update]
-	before_action :superadmins_only, :except => [:edit, :update]
+	before_action :partneradmins_only, :only => [:edit, :update]
+	before_action :admins_only, :except => [:edit, :update]
 
 	def index
 		@partners = Partner.all
@@ -48,7 +48,7 @@ class Admin::PartnersController < ApplicationController
 		private
 
 		    def partner_params
-		    	params.require(:partner).permit(:name, :email, :phone, :note)
+		    	params.require(:partner).permit(:name, :email, :phone, :company_code, :note)
 		    end
 
 end

@@ -1,14 +1,42 @@
 <h1>Liste des voitures de l'entreprise</h1>
-<table>
-<% @cars.each do |car| %>
-	<tr>
-		<td><%= car.id %></td>
-		<td><%= car.name %></td>
-		<td><%= link_to "Voir", partner_admin_car_path(car) %></td>
-		<td><%= link_to "Editer", edit_partner_admin_car_path(car) %></td>
-		<td><%= link_to "Supprimer", partner_admin_car_path(car), method: :delete, data: { confirm: "You sure?" } %></td>
-	</tr>
+
+<script>
+	init.push(function () {
+		$('#jq-datatables').dataTable();
+		$('#jq-datatables_wrapper .table-caption').text('Liste des utilisateurs');
+		$('#jq-datatables_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
+	});
+</script>
+
+<div class="table-primary">
+	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="jq-datatables">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Nom</th>
+				<th>Places</th>
+				<th>Type de véhicule</th>
+				<th>Propriétaire</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% @cars.each do |car| %>
+				<tr>
+					<td><%= car.id %></td>
+					<td><%= car.name %></td>
+					<td><%= car.slots %></td>
+					<td><%= car.car_type %></td>
+					<td><%= car.partner.name %> | <%= car.user.name unless car.user.nil? %></td>
+					<td style="font-size:16px;"><%= link_to partner_admin_car_path(car), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_car_path(car), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_car_path(car), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
+				</tr>
+			<% end %>
+		</tbody>
+	</table>
+</div>
+
+<%= link_to(new_partner_admin_car_path) do %>
+	<button class="btn btn-flat btn-labeled btn-primary">
+	    <span class="btn-label icon fa fa-taxi"></span>Ajouter une voiture
+	</button>
 <% end %>
-</table>
-<%= link_to "Retour à l'accueil", partner_admin_home_path %>
-<%= link_to "Ajouter une voiture", new_partner_admin_car_path %>

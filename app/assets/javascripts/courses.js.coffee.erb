@@ -1,0 +1,251 @@
+# Classes
+class window.GmapManager
+	
+	@init: (customOptions) ->
+		# Set defaults options
+		@defaultOptions =
+			mapOptions:
+				styles: [{"featureType":"landscape","stylers":[{"saturation":-100},{"lightness":60}]},{"featureType":"road.local","stylers":[{"saturation":-100},{"lightness":40},{"visibility":"on"}]},{"featureType":"transit","stylers":[{"saturation":-100},{"visibility":"simplified"}]},{"featureType":"administrative.province","stylers":[{"visibility":"off"}]},{"featureType":"water","stylers":[{"visibility":"on"},{"lightness":30}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#ef8c25"},{"lightness":40}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"visibility":"off"}]},{"featureType":"poi.park","elementType":"geometry.fill","stylers":[{"color":"#b6c54c"},{"lightness":40},{"saturation":-40}]},{}];
+				center: new google.maps.LatLng(45.764128, 4.835262)
+				zoom: 12
+			rendererOptions: 
+				map: 'map-canvas'
+
+		@options = $.extend(true, {}, @defaultOptions, customOptions);
+
+		@directionsDisplays = []
+		@directionsService = new google.maps.DirectionsService();
+
+		@drawMap()
+
+	@drawMap: () ->
+		@map = new google.maps.Map(document.getElementById(@options.rendererOptions.map), @options.mapOptions)
+
+		@options.rendererOptions.map = @map
+
+	@makeRequest: (from, to) ->
+		return request =
+			origin: from
+			destination: to
+			travelMode: google.maps.TravelMode.DRIVING
+
+
+	@printComputeResult: (computeResult) ->
+		console.log(computeResult)
+		if(computeResult.status == 'OK')
+			$('#google-compute-status').hide()
+			$('#course_computed_distance').val(computeResult.distance.text)
+			$('#course_computed_duration').val(computeResult.duration.text)
+			$('#course_computed_price').val(computeResult.totalPrice+' €')
+		else
+			$('#google-compute-status').html(computeResult.errorMessage)
+			$('#google-compute-status').show()
+			$('#course_computed_distance').val('#Erreur#')
+			$('#course_computed_duration').val('#Erreur#')
+			$('#course_computed_price').val('#Erreur#')
+
+	@distanceCheck: (route) ->
+		if route.distance.value > 50000
+			return result = 
+				status: 'KO'
+				errorMessage: "Trajet trop long, une notification sera envoyée à Naveco pour traiter votre demande lorsque vous validerez la course."
+		else
+			if route.distance.value > 10000
+				timePrice = 0.3
+				kmPrice = 1.5
+			else
+				timePrice = 0.3
+				kmPrice = 2.5
+
+			return result = 
+				status: 'OK'
+				duration: route.duration
+				distance: route.distance
+				timePrice: timePrice
+				kmPrice: kmPrice
+				totalPrice: Math.round((timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000))*10)/10
+
+
+	@computeCourse: (list, customOptions) ->
+		defaultOptions =
+			distanceCap: false
+			add: false
+			index: 0
+
+		options = $.extend(true, {}, defaultOptions, customOptions);
+		
+
+		for directionDisplay in @directionsDisplays
+			directionDisplay.setDirections({routes: []});
+
+		#console.log list
+
+		for course, i in list
+			request = @makeRequest(course.start, course.end)
+			((i) =>
+				@directionsService.route(request, (response, status) =>
+					#console.log(response);
+					if status == google.maps.DirectionsStatus.OK
+						route = response.routes[0].legs[0]
+						route.status = 'OK'
+						
+						@directionsDisplays[i] = new google.maps.DirectionsRenderer(@options.rendererOptions)
+						@directionsDisplays[i].setDirections(response);
+							
+						#console.log @directionsDisplays
+
+						if !options.distanceCap
+							@printComputeResult(route)
+						else
+							distanceCheckResult = @distanceCheck(route)
+							@printComputeResult(distanceCheckResult, distanceCheckResult.status)
+					else
+						@printComputeResult({
+							status: 'KO'
+							errorMessage: "Erreur : trajet impossible à générer, les adresses n'ont peut-être pas pû être interpretées"
+						})
+				);	
+			)(i)
+
+	@printMarker: (options, icon) ->
+		markerOptions =
+			map: @map
+			icon: @options.iconsOptions[icon]
+			position: new google.maps.LatLng(options[0], options[1])
+
+		marker = new google.maps.Marker(markerOptions);
+		
+
+$(".courses.edit, .courses.new").ready ->
+
+	# Init 
+	stopContainer = $(".stop-container:first").clone()
+	stop = stopContainer.find('input')
+	stop.val('').attr('value', '')
+
+	init.push ->
+		datepickerOptions =
+			daysOfWeekDisabled: "6"
+			todayHighlight: true
+
+		timepickerOptions =
+			minuteStep: 5
+			showMeridian: false
+
+		$('.date').datepicker datepickerOptions
+		$('.time').timepicker timepickerOptions
+
+
+	options =
+		rendererOptions :
+			polylineOptions: {strokeColor:'#01b3aa'}
+
+	$(window).on 'gmap-loaded', ->
+		window.GmapManager.init(options)
+
+	# Events
+	$("body").on "click", "#add-stops", ->
+		stopContainer_tmp = stopContainer.clone()
+		$('label[for="course_stops"]').after(stopContainer_tmp)
+
+	$("body").on "click", ".stop-container .close-btn", ->
+		$(this).closest(".stop-container").remove()
+
+	$("body").on "click", "#calculer", ->
+		GmapManager.computeCourse(
+			[{start: $('#course_from').val(), end: $('#course_to').val()}], 
+			{distanceCap: true}
+		)
+
+
+$(".static_pages.map").ready ->
+	class pointsManager
+		@infosbulles = []
+		@get_workingDrivers: () ->
+			$.ajax({
+	            url: '/ajax/get_pos',
+	            type: "GET",
+	            dataType: "json",
+	            data: {
+	            	type:'LastConnecWorkers',
+	            	id_user: 4
+	            }
+	        }).done((response) =>
+	        	@printCars(response);
+	        );
+		
+		@get_currentCourses: (customOptions) ->
+			defaultOptions =
+				partner_id: 'current'
+				status: 2 # In progress
+
+			options = $.extend(true, {}, defaultOptions, customOptions);
+
+			$.ajax(
+	            url: '/ajax/get_courses',
+	            type: "GET",
+	            dataType: "json",
+	            data:
+	            	partner_id: options.partner_id
+	            	status: options.status
+	        ).done((response) =>
+	        	@printCourses(response);
+	        );
+		
+		@printCars: (list) ->
+			for infosbulle in @infosbulles
+				infosbulle.close();
+			
+			for element in list
+				position = eval(element.position);
+
+				#options = {
+				#    map: map,
+				#    position: new google.maps.LatLng(47.6342564, 6.8537913),
+				#};
+				#infowindow = new google.maps.InfoWindow(options);
+
+				window.GmapManager.printMarker(element, 'car')
+
+			#@infosbulles.push infowindow;
+		
+		@printCourses: (list) ->
+			console.log list
+			startEndsList = []
+
+			for course, i in list
+				startEndsList[i] = 
+					start: course.from;
+					end: course.to;
+			
+			GmapManager.computeCourse(startEndsList, {add: true, index: i})
+
+
+	$(window).on 'gmap-loaded', ->
+		options =
+			rendererOptions :
+				polylineOptions: {strokeColor:'#01b3aa', strokeOpacity: 0.6}
+				markerOptions:
+					icon:
+						url: '<%= image_path("map-marker.png") %>'
+						size: new google.maps.Size(30, 25)
+						origin: new google.maps.Point(0,0)
+						anchor: new google.maps.Point(9, 25)
+			iconsOptions :
+				car:
+					url: '<%= image_path("map-car.png") %>'
+					size: new google.maps.Size(26, 22)
+					origin: new google.maps.Point(0,0)
+					anchor: new google.maps.Point(13, 11)
+
+					
+		window.GmapManager.init(options)
+
+		pointsManager.get_workingDrivers()
+		pointsManager.get_currentCourses()
+
+	$('#partner-select, #status-select').on 'change', ->
+		pointsManager.get_currentCourses(
+			partner_id: $('#partner-select').val()
+			status: $('#status-select').val()
+		);

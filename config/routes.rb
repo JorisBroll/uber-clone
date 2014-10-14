@@ -5,6 +5,8 @@ Rails.application.routes.draw do
   namespace :admin do
     get '/home', to: 'static_pages#home'
     get '/logout_partner', to: 'static_pages#logout_partner'
+    get '/map', to: 'static_pages#map'
+    get '/config', to: 'static_pages#config'
     resources :users
     resources :partners
     resources :promocodes
@@ -23,5 +25,8 @@ Rails.application.routes.draw do
   
   match '/login', to: 'application#login', via: 'get'
   match '/logout', to: 'sessions#destroy', via: 'delete'
+
+  match '/ajax/get_pos', to: 'ajax_functions#get_pos', via: 'get'
+  match '/ajax/get_courses', to: 'ajax_functions#get_courses', via: 'get'
 
 end

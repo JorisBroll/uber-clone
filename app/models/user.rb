@@ -8,9 +8,10 @@ class User < ActiveRecord::Base
 
 	before_save { self.email = email.downcase }
 
-	enum account_type: [ :admin, :partneradmin, :driver, :client ]
-	Account_type_select = [ ['Administrateur', :admin], ["Administrateur d'entreprise", :partneradmin], ['Conducteur', :driver], ['Client', :client] ]
-	Account_type_select_noadmin = [ ["Administrateur d'entreprise", :partneradmin], ['Conducteur', :driver], ['Client', :client] ]
+	enum account_type: [:superadmin, :admin, :partneradmin, :driver, :client ]
+	Account_type_select = [ ["Client", :client], ["Conducteur", :driver], ["Administrateur d'entreprise", :partneradmin], ["Administrateur", :admin], ["Gérant", :superadmin] ]
+	Account_type_alias = {'superadmin' => "Gérant", 'admin' => "Administrateur", 'partneradmin' => "Administrateur d'entreprise", 'driver' => "Conducteur", 'client' => "Client"}
+	Account_type_select_noadmin = [ ['Client', :client], ['Conducteur', :driver], ["Administrateur d'entreprise", :partneradmin] ]
 	
 	validates :name, presence: true, length: { maximum: 50 }
 	VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i

@@ -1,5 +1,5 @@
 class PartnerAdmin::UsersController < ApplicationController
-  	before_action :admins_only
+  	before_action :partneradmins_only
 
 	def index
 		@users = current_partner.users || current_user.partner.users

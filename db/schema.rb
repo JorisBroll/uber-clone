@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141002153725) do
+ActiveRecord::Schema.define(version: 20141007152830) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 20141002153725) do
     t.integer  "slots"
     t.integer  "car_type",   default: 0
     t.integer  "user_id"
+    t.string   "photo"
   end
 
   create_table "courses", force: true do |t|
@@ -42,6 +43,7 @@ ActiveRecord::Schema.define(version: 20141002153725) do
     t.integer  "created_by"
     t.date     "date_when"
     t.time     "time_when"
+    t.string   "computed_duration"
   end
 
   create_table "partners", force: true do |t|
@@ -52,6 +54,7 @@ ActiveRecord::Schema.define(version: 20141002153725) do
     t.text     "note"
     t.string   "company_code"
     t.string   "phone"
+    t.string   "logo"
   end
 
   create_table "promocodes", force: true do |t|
@@ -74,9 +77,11 @@ ActiveRecord::Schema.define(version: 20141002153725) do
     t.integer  "account_type",    default: 0
     t.integer  "created_by"
     t.integer  "partner_id"
-    t.string   "position"
     t.integer  "company_id"
     t.string   "phone"
+    t.decimal  "pos_lat"
+    t.decimal  "pos_lon"
+    t.string   "photo"
   end
 
 end

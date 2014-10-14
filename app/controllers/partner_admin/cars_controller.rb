@@ -1,5 +1,5 @@
 class PartnerAdmin::CarsController < ApplicationController
-	before_action :admins_only
+	before_action :partneradmins_only
 
   	def index
   		@cars = current_partner.cars

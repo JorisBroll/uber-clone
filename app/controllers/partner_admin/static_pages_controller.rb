@@ -1,5 +1,5 @@
 class PartnerAdmin::StaticPagesController < ApplicationController
-	before_action :admins_only
+	before_action :partneradmins_only
 	
 	def home
 		@partner = current_partner

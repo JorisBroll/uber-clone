@@ -1,5 +1,5 @@
 class Admin::PromocodesController < ApplicationController
-	before_action :superadmins_only
+	before_action :admins_only
 
 	def index
 		@promocodes = Promocode.all

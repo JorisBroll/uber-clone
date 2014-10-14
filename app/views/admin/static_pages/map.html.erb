@@ -1,0 +1,21 @@
+<h1>Carte des chauffeurs</h1>
+<style>
+#map-canvas {
+    height: 800px;
+    margin: 0px;
+    padding: 0px;
+    font-family:Roboto;
+}
+</style>
+
+<select id="partner-select">
+	<% @partners.each do |partner| %>
+		<option value="<%= partner.id %>"><%= partner.name %></option>
+	<% end %>
+</select>
+<select id="status-select">
+	<% Course.statuses.each do |status| %>
+		<option value="<%= status[1] %>"><%= Course::Status_alias[status[0]] %></option>
+	<% end %>
+</select>
+<div id="map-canvas"></div>
