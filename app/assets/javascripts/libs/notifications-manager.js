@@ -22,6 +22,7 @@
 		constructor: notificationsManager,
 
 		init: function() {
+			alert('notifmanager loading')
 			var _this = this;
 			this.eventsListeners();
 			this.print('counter');
