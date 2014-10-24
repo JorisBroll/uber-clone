@@ -1,14 +1,6 @@
 <!-- Javascript -->
 <script>
 	init.push(function () {
-		$("#jq-validation-phone").mask("(999) 999-9999");
-		$('#jq-validation-select2').select2({ allowClear: true, placeholder: 'Select a country...' }).change(function(){
-			$(this).valid();
-		});
-		$('#jq-validation-select2-multi').select2({ placeholder: 'Select gear...' }).change(function(){
-			$(this).valid();
-		});
-
 		// Add phone validator
 		$.validator.addMethod(
 			"phone_format",
@@ -38,66 +30,15 @@
 					minlength: 6,
 					equalTo: "#user_password"
 				},
-				'jq-validation-required': {
-					required: true
-				},
-				'jq-validation-url': {
-					required: true,
-					url: true
-				},
-				'jq-validation-phone': {
-					required: true,
-					phone_format: true
-				},
-				'jq-validation-select': {
-					required: true
-				},
-				'jq-validation-multiselect': {
-					required: true,
-					minlength: 2
-				},
-				'jq-validation-select2': {
-					required: true
-				},
-				'jq-validation-select2-multi': {
-					required: true,
-					minlength: 2
-				},
-				'jq-validation-text': {
-					required: true
-				},
-				'jq-validation-simple-error': {
-					required: true
-				},
-				'jq-validation-dark-error': {
-					required: true
-				},
-				'jq-validation-radios': {
-					required: true
-				},
-				'jq-validation-checkbox1': {
-					require_from_group: [1, 'input[name="jq-validation-checkbox1"], input[name="jq-validation-checkbox2"]']
-				},
-				'jq-validation-checkbox2': {
-					require_from_group: [1, 'input[name="jq-validation-checkbox1"], input[name="jq-validation-checkbox2"]']
-				},
-				'jq-validation-policy': {
-					required: true
-				}
-			},
-			messages: {
-				'jq-validation-policy': 'You must check it!'
 			}
+		});
+		
+		$("#user_account_type, #user_partner_id").select2({
+			allowClear: true,
+			placeholder: "Sélectionner..."
 		});
 	});
 
-init.push(function () {
-	// Single select
-	$("#user_account_type").select2({
-		allowClear: true,
-		placeholder: "Select a State"
-	});
-});
 </script>
 <!-- / Javascript -->
 
@@ -118,6 +59,13 @@ init.push(function () {
 			</div>
 
 			<div class="form-group">
+				<%= f.label :last_name, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :last_name, class: "form-control", :placeholder => "Nom" %>
+				</div>
+			</div>
+
+			<div class="form-group">
 				<%= f.label :email, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :email, class: "form-control", :placeholder => "Email" %>
@@ -134,7 +82,7 @@ init.push(function () {
 			<div class="form-group">
 				<%= f.label :account_type, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.select(:account_type, User::Account_type_select, class: "form-control") %>
+					<%= f.select(:account_type, User::Account_type_select, class: "form-control select") %>
 				</div>
 			</div>
 
@@ -149,6 +97,13 @@ init.push(function () {
 				<%= f.label :password_confirmation, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.password_field :password_confirmation, class: "form-control", :placeholder => "Confirmation" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :partner_id, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:partner_id, partners_for_select('Aucune'), class: "form-control select") %>
 				</div>
 			</div>
 

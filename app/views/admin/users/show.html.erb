@@ -1,6 +1,6 @@
 <h1>Page pour voir un seul utilisateur et ses détails</h1>
 
-Crée par : <%= @user.created_by.name %>
+Crée par : <%= @user.inspect %>
 
 <p><%= link_to "Editer", edit_admin_user_path(@user) %></p>
 <p><%= link_to "Revenir aux utilisateurs", admin_users_path %></p>

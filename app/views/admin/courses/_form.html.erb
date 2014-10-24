@@ -38,11 +38,10 @@
 			}
 		});
 
-		$("#promocode_effect_type,#promocode_effect_length").select2({
+		$("#course_user_id, #course_partner_id, #course_company_id, #course_status, #course_payment_when").select2({
 			allowClear: true,
-			placeholder: "Select a State"
+			placeholder: "Sélectionner..."
 		});
-
 	});
 
 </script>
@@ -61,20 +60,27 @@
 			<div class="form-group">
 				<%= f.label :from, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.text_field :from, :placeholder => "Adresse de départ" %>
+					<%= f.text_field :from, class: "form-control", :placeholder => "(Ville), (Numéro de rue) (Nom de rue)" %>
 				</div>
 			</div>
 
 			<div class="form-group">
 				<%= f.label :to, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.text_field :to, :placeholder => "Adresse d'arrivée" %>
+					<%= f.text_field :to, class: "form-control", :placeholder => "(Ville), (Numéro de rue) (Nom de rue)" %>
 				</div>
 			</div>
 
-			<a id="calculer" href="#">Calculer le prix</a>
-
-			<div id="map-canvas" style="width:300px; height:300px"></div>
+			
+			<div class="form-group">
+				<div class="col-sm-3">
+					<button id="calculer" class="btn btn-flat btn-lg" type="button">Calculer le prix</button>
+					<div id="gcompute-error-display" class="alert alert-danger" style="display:none"></div>
+				</div>
+				<div class="col-sm-9">
+					<div id="map-canvas" style="height:360px"></div>
+				</div>
+			</div>
 
 			<div class="form-group">
 				<%= f.label :computed_distance, class: "col-sm-3 control-label" %>
@@ -97,7 +103,12 @@
 				</div>
 			</div>
 
-			<div id="google-compute-status"></div>
+			<div class="form-group">
+				<%= f.label :nb_people, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :nb_people, class: "form-control" %>
+				</div>
+			</div>
 
 			<div class="form-group">
 				<%= f.label :date_when, class: "col-sm-3 control-label" %>
@@ -113,31 +124,33 @@
 				</div>
 			</div>
 
-			<div class="form-group">
-				<%= f.label :stops, class: "col-sm-3 control-label" %>
+			<hr class="panel-wide">
+
+			<div id="stops-group" class="form-group">
+				<div class="col-sm-3">
+					<p><%= f.label :stops, class: "control-label" %></p>
+					<p><button id="add-stops" class="btn btn-flat btn-lg" type="button">Ajouter un arrêt</button></p>
+				</div>
 				<div class="col-sm-9">
+					<div id="stops-list">
 					<% if !@course.stops.nil? %>
 						<% @course.stops.each do |o| %>
-							<div class="stop-container">
-								<input id="course_stops" type="text" value="<%= o %>" name="course[stops][]"><span class="close-btn"><i class="fa fa-close"></i></span>
+							<div class="stop-container input-group">
+								<input type="text" class="form-control course_stops" value="<%= o %>" name="course[stops][]">
+								<span class="input-group-addon no-border close-btn bg-danger"><i class="fa fa-close"></i></span>
 							</div>
 						<% end %>
 						<% else %>
-							<div class="stop-container">
-								<input id="course_stops" type="text" value="" name="course[stops][]"><span class="close-btn"><i class="fa fa-close"></i></span>
+							<div class="stop-container input-group">
+								<input type="text" class="form-control course_stops" value="" name="course[stops][]">
+								<span class="input-group-addon no-border close-btn bg-danger"><i class="fa fa-close"></i></span>
 							</div>
 					<% end %>
+					</div>
 				</div>
 			</div>
 
-			<div id="add-stops">Ajouter un arrêt</div>
-
-			<div class="form-group">
-				<%= f.label :nb_people, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :nb_people, class: "form-control" %>
-				</div>
-			</div>
+			<hr class="panel-wide">
 
 			<div class="form-group">
 				<%= f.label :user_id, class: "col-sm-3 control-label" %>
@@ -160,9 +173,26 @@
 				</div>
 			</div>
 
-			<%= f.submit action, class: "btn btn-large btn-primary" %>
+			<div class="form-group">
+				<%= f.label "facturer à", class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:company_id, companies_for_select("Pas d'entreprise"), class: "form-control") %>
+				</div>
+			</div>
 
+			<div class="form-group">
+				<%= f.label :payment_when, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:payment_when, payment_when_for_select, class: "form-control") %>
+				</div>
+			</div>
+
+			<%= hidden_field(:user, :created_by) %>
+
+	</div>
+	<div class="panel-footer text-right">
+	<a class="btn btn-flat btn-danger" href="<%= admin_courses_path %>">Annuler</a>
+		<%= f.submit action, class: "btn btn-primary btn-flat" %>
 		<% end %>
-
 	</div>
 </div>	

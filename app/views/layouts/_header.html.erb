@@ -59,8 +59,8 @@
 -->
 							<li class="nav-icon-btn nav-icon-btn-danger dropdown">
 								<a href="#notifications" class="dropdown-toggle" data-toggle="dropdown">
-									<span class="label">5</span>
-									<i class="nav-icon fa fa-bullhorn"></i>
+									<span class="label">0</span>
+									<i class="nav-icon fa fa-bell"></i>
 									<span class="small-screen-text">Notifications</span>
 								</a>
 
@@ -69,7 +69,7 @@
 								<!-- Javascript -->
 								<script>
 									init.push(function () {
-										$('#main-navbar-notifications').slimScroll({ height: 250 });
+										$('#main-navbar-notifications').slimScroll({ height: 550 });
 									});
 								</script>
 								<!-- / Javascript -->
@@ -77,43 +77,51 @@
 								<div class="dropdown-menu widget-notifications no-padding" style="width: 300px">
 									<div class="notifications-list" id="main-navbar-notifications">
 
-										<div class="notification">
-											<div class="notification-title text-danger">SYSTEM</div>
-											<div class="notification-description"><strong>Error 500</strong>: Syntax error in index.php at line <strong>461</strong>.</div>
-											<div class="notification-ago">12h ago</div>
-											<div class="notification-icon fa fa-hdd-o bg-danger"></div>
-										</div> <!-- / .notification -->
-
-										<div class="notification">
-											<div class="notification-title text-info">STORE</div>
-											<div class="notification-description">You have <strong>9</strong> new orders.</div>
-											<div class="notification-ago">12h ago</div>
-											<div class="notification-icon fa fa-truck bg-info"></div>
-										</div> <!-- / .notification -->
-
-										<div class="notification">
-											<div class="notification-title text-default">CRON DAEMON</div>
-											<div class="notification-description">Job <strong>"Clean DB"</strong> has been completed.</div>
-											<div class="notification-ago">12h ago</div>
-											<div class="notification-icon fa fa-clock-o bg-default"></div>
-										</div> <!-- / .notification -->
-
-										<div class="notification">
-											<div class="notification-title text-success">SYSTEM</div>
-											<div class="notification-description">Server <strong>up</strong>.</div>
-											<div class="notification-ago">12h ago</div>
-											<div class="notification-icon fa fa-hdd-o bg-success"></div>
-										</div> <!-- / .notification -->
-
-										<div class="notification">
-											<div class="notification-title text-warning">SYSTEM</div>
-											<div class="notification-description"><strong>Warning</strong>: Processor load <strong>92%</strong>.</div>
-											<div class="notification-ago">12h ago</div>
-											<div class="notification-icon fa fa-hdd-o bg-warning"></div>
-										</div> <!-- / .notification -->
-
+										<% @notifications = get_user_notifs %>
+										<% @notifications.each do |n| %>
+										<div class="notification" data-id="<%= n.id %>">
+											<div class="notification-title"><%= n.title %></div>
+											<div class="notification-description"><%= n.content %></div>
+											<div class="notification-ago"><%= n.created_at.to_s %></div>
+											<div class="notification-icon fa fa-<%= Notification::Notif_types[n.notif_type]['icon'] %> bg-<%= Notification::Notif_types[n.notif_type]['background'] %>"></div>
+										</div>
+										<% end %>
 									</div> <!-- / .notifications-list -->
-									<a href="#" class="notifications-link">MORE NOTIFICATIONS</a>
+								</div> <!-- / .dropdown-menu -->
+							</li>
+
+							<li class="nav-icon-btn nav-icon-btn-success dropdown">
+								<!-- <a href="#messages" class="dropdown-toggle" data-toggle="dropdown">
+									<span class="label">10</span>
+									<i class="nav-icon fa fa-envelope"></i>
+									<span class="small-screen-text">Income messages</span>
+								</a>-->
+
+								<!-- MESSAGES -->
+								
+								<!-- Javascript -->
+								<script>
+									/*init.push(function () {
+										$('#main-navbar-messages').slimScroll({ height: 250 });
+									});*/
+								</script>
+								<!-- / Javascript -->
+
+								<div class="dropdown-menu widget-messages-alt no-padding" style="width: 300px;">
+									<div class="messages-list" id="main-navbar-messages">
+
+										<div class="message">
+											<img src="assets/demo/avatars/2.jpg" alt="" class="message-avatar">
+											<a href="#" class="message-subject">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</a>
+											<div class="message-description">
+												from <a href="#">Robert Jang</a>
+												&nbsp;&nbsp;·&nbsp;&nbsp;
+												2h ago
+											</div>
+										</div> <!-- / .message -->
+
+									</div> <!-- / .messages-list -->
+									<a href="#" class="messages-link">MORE MESSAGES</a>
 								</div> <!-- / .dropdown-menu -->
 							</li>
 
@@ -129,7 +137,7 @@
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle user-menu" data-toggle="dropdown">
 									<img src="<%= image_path('pixel-admin/avatar.png') %>" alt="">
-									<span><%= current_user.name %> - </span>
+									<span><%= current_user.name %> <%= current_user.last_name %> - </span>
 									<spa class="text-info"><%= current_user.account_type %></span>
 								</a>
 								<ul class="dropdown-menu">
@@ -198,6 +206,9 @@
 					<%= link_to(admin_users_path) do %><i class="menu-icon fa fa-users"></i><span class="mm-text">Utilisateurs</span><% end %>
 				</li>
 				<li>
+					<%= link_to(admin_companies_path) do %><i class="menu-icon fa fa-university"></i><span class="mm-text">Entreprises clientes</span><% end %>
+				</li>
+				<li>
 					<%= link_to(admin_partners_path) do %><i class="menu-icon fa fa-briefcase"></i><span class="mm-text">Partenaires</span><% end %>
 				</li>
 				<li>
@@ -216,6 +227,9 @@
 					<ul>
 						<li>
 							<%= link_to(partner_admin_home_path) do %><i class="menu-icon fa fa-info-circle"></i><span class="mm-text">Informations</span><% end %>
+						</li>
+						<li>
+							<%= link_to(partner_admin_companies_path) do %><i class="menu-icon fa fa-info-circle"></i><span class="mm-text">Entreprises clientes</span><% end %>
 						</li>
 						<li>
 							<%= link_to(partner_admin_users_path) do %><i class="menu-icon fa fa-users"></i><span class="mm-text">Utilisateurs</span><% end %>

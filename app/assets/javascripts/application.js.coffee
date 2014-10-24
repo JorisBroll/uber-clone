@@ -163,12 +163,15 @@
 //= require .//libs/respond.min
 //= require .//libs/excanvas
 
-//= require bootstrap-sprockets
+# require bootstrap-sprockets
 //= require readyselector
 //= require_self
 # require turbolinks
 
+# Legacy scripts
 //= require ./courses
+//= require .//libs/notifications-manager
+//= require .//libs/custom-tools
 
 # Google MAPS Asynchrone
 script = document.createElement 'script'
@@ -179,3 +182,6 @@ document.head.appendChild(script)
 
 window.gmapLoaded = ->
     $(window).trigger('gmap-loaded')
+
+jQuery ->
+    $('.notifications-list').notificationsManager();

@@ -1,5 +1,6 @@
 # Classes
 class window.GmapManager
+
 	
 	@init: (customOptions) ->
 		# Set defaults options
@@ -11,17 +12,47 @@ class window.GmapManager
 			rendererOptions: 
 				map: 'map-canvas'
 
+		# Merge options objects to override defaults ones with passed ones
 		@options = $.extend(true, {}, @defaultOptions, customOptions);
 
 		@directionsDisplays = []
 		@directionsService = new google.maps.DirectionsService();
 
-		@drawMap()
-
-	@drawMap: () ->
+		# Draw Map
 		@map = new google.maps.Map(document.getElementById(@options.rendererOptions.map), @options.mapOptions)
-
 		@options.rendererOptions.map = @map
+
+	@computeCourse: (list, customOptions, callback_print) ->
+		defaultOptions =
+			distanceCap: false
+			index: 0
+
+		@options.computeOptions = $.extend(true, {}, defaultOptions, customOptions);
+
+		if callback_print
+			@callback_print = callback_print
+		
+
+		for directionDisplay in @directionsDisplays
+			directionDisplay.setDirections({routes: []});
+
+		if list.length
+			@totalRequests = list.length
+			for course, i in list
+				request = @makeRequest(course.start, course.end)
+				((i) =>
+					@directionsService.route(request, (response, status) =>
+						@printRoutes(response, status, i)
+					)
+				)(i)
+			
+		else
+			@totalRequests = 1
+			request = @makeRequest(list.start, list.end)
+			@directionsService.route(request, (response, status) =>
+				@printRoutes(response, status, 0)
+			)
+			
 
 	@makeRequest: (from, to) ->
 		return request =
@@ -30,25 +61,36 @@ class window.GmapManager
 			travelMode: google.maps.TravelMode.DRIVING
 
 
-	@printComputeResult: (computeResult) ->
-		console.log(computeResult)
-		if(computeResult.status == 'OK')
-			$('#google-compute-status').hide()
-			$('#course_computed_distance').val(computeResult.distance.text)
-			$('#course_computed_duration').val(computeResult.duration.text)
-			$('#course_computed_price').val(computeResult.totalPrice+' €')
+	@printRoutes: (response, status, i) =>
+		console.log response
+
+		if status == google.maps.DirectionsStatus.OK
+			route = response.routes[0].legs[0]
+			
+			@directionsDisplays[i] = new google.maps.DirectionsRenderer(@options.rendererOptions)
+			@directionsDisplays[i].setDirections(response);
+				
+			#console.log @directionsDisplays
+
+			if !@options.computeOptions.distanceCap
+				@callback_print(
+					status: 'OK'
+					route: route
+				)
+			else
+				distanceCheckResult = @distanceCheck(route)
+				@callback_print(@distanceCheck(route))
 		else
-			$('#google-compute-status').html(computeResult.errorMessage)
-			$('#google-compute-status').show()
-			$('#course_computed_distance').val('#Erreur#')
-			$('#course_computed_duration').val('#Erreur#')
-			$('#course_computed_price').val('#Erreur#')
+			@callback_print(
+				status: 'KO'
+				message: "Erreur : trajet impossible à générer, une ou les adresses n'ont pas pû être interpretées."
+			)
 
 	@distanceCheck: (route) ->
 		if route.distance.value > 50000
 			return result = 
 				status: 'KO'
-				errorMessage: "Trajet trop long, une notification sera envoyée à Naveco pour traiter votre demande lorsque vous validerez la course."
+				message: "Trajet trop long, une notification sera envoyée à Naveco pour traiter votre demande lorsque vous validerez la course."
 		else
 			if route.distance.value > 10000
 				timePrice = 0.3
@@ -59,53 +101,15 @@ class window.GmapManager
 
 			return result = 
 				status: 'OK'
-				duration: route.duration
-				distance: route.distance
-				timePrice: timePrice
-				kmPrice: kmPrice
-				totalPrice: Math.round((timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000))*10)/10
+				route:
+					duration: route.duration
+					distance: route.distance
+					timePrice: timePrice
+					kmPrice: kmPrice
+					totalPrice: Math.round((timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000))*10)/10
 
 
-	@computeCourse: (list, customOptions) ->
-		defaultOptions =
-			distanceCap: false
-			add: false
-			index: 0
-
-		options = $.extend(true, {}, defaultOptions, customOptions);
-		
-
-		for directionDisplay in @directionsDisplays
-			directionDisplay.setDirections({routes: []});
-
-		#console.log list
-
-		for course, i in list
-			request = @makeRequest(course.start, course.end)
-			((i) =>
-				@directionsService.route(request, (response, status) =>
-					#console.log(response);
-					if status == google.maps.DirectionsStatus.OK
-						route = response.routes[0].legs[0]
-						route.status = 'OK'
-						
-						@directionsDisplays[i] = new google.maps.DirectionsRenderer(@options.rendererOptions)
-						@directionsDisplays[i].setDirections(response);
-							
-						#console.log @directionsDisplays
-
-						if !options.distanceCap
-							@printComputeResult(route)
-						else
-							distanceCheckResult = @distanceCheck(route)
-							@printComputeResult(distanceCheckResult, distanceCheckResult.status)
-					else
-						@printComputeResult({
-							status: 'KO'
-							errorMessage: "Erreur : trajet impossible à générer, les adresses n'ont peut-être pas pû être interpretées"
-						})
-				);	
-			)(i)
+	
 
 	@printMarker: (options, icon) ->
 		markerOptions =
@@ -146,21 +150,63 @@ $(".courses.edit, .courses.new").ready ->
 	# Events
 	$("body").on "click", "#add-stops", ->
 		stopContainer_tmp = stopContainer.clone()
-		$('label[for="course_stops"]').after(stopContainer_tmp)
+		$('#stops-list').append(stopContainer_tmp)
 
 	$("body").on "click", ".stop-container .close-btn", ->
 		$(this).closest(".stop-container").remove()
 
 	$("body").on "click", "#calculer", ->
 		GmapManager.computeCourse(
-			[{start: $('#course_from').val(), end: $('#course_to').val()}], 
-			{distanceCap: true}
+			{start: $('#course_from').val(), end: $('#course_to').val()}, 
+			{distanceCap: true},
+			(results)->
+				console.log results
+				if(results.status == 'OK')
+					$('#gcompute-error-display').hide()
+					$('#course_computed_distance').val(results.route.distance.text)
+					$('#course_computed_duration').val(results.route.duration.text)
+					$('#course_computed_price').val(results.route.totalPrice+' €')
+				else
+					$('#gcompute-error-display').html(results.message).show();
+					$('#course_computed_distance').val('#Erreur#')
+					$('#course_computed_duration').val('#Erreur#')
+					$('#course_computed_price').val('#Erreur#')
 		)
 
 
 $(".static_pages.map").ready ->
+	class getterStatus
+		@div = $('#select-status-display')
+		@status_counter =
+			ok: 0
+			ko:0
+			total:0
+		@listLength = 0
+
+		@print: (results) ->
+			if results == "NOT_FOUND"
+				$('#status-notfound').text('Aucune course trouvée').show();
+				$('#status-ok-counter').hide();
+				$('#status-ko-counter').hide();
+			else
+				getterStatus.status_counter.total++
+
+				switch results.status
+					when "OK" then getterStatus.status_counter.ok++
+					when "KO" then getterStatus.status_counter.ko++
+				
+				# If loop complete
+				if getterStatus.status_counter.total == getterStatus.listLength
+					$('#status-notfound').hide();
+					$('#status-ok-counter').text(getterStatus.status_counter.ok).show();
+					if(getterStatus.status_counter.ko > 0)
+						$('#status-ko-counter').text(getterStatus.status_counter.ko).show();
+					else
+						$('#status-ko-counter').hide();
+
 	class pointsManager
 		@infosbulles = []
+
 		@get_workingDrivers: () ->
 			$.ajax({
 	            url: '/ajax/get_pos',
@@ -210,15 +256,25 @@ $(".static_pages.map").ready ->
 			#@infosbulles.push infowindow;
 		
 		@printCourses: (list) ->
-			console.log list
-			startEndsList = []
+			if list.length > 0
+				# console.log list
+				startEndsList = []
 
-			for course, i in list
-				startEndsList[i] = 
-					start: course.from;
-					end: course.to;
-			
-			GmapManager.computeCourse(startEndsList, {add: true, index: i})
+				for course, i in list
+					startEndsList[i] = 
+						start: course.from;
+						end: course.to;
+
+				getterStatus.listLength = list.length
+
+				getterStatus.status_counter.ok = 0
+				getterStatus.status_counter.ko = 0
+				getterStatus.status_counter.total = 0
+
+				GmapManager.computeCourse(startEndsList, {}, getterStatus.print)
+
+			else getterStatus.print("NOT_FOUND")
+
 
 
 	$(window).on 'gmap-loaded', ->

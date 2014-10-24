@@ -4,7 +4,8 @@ class User < ActiveRecord::Base
 	has_many :courses, inverse_of: :users
 	has_many :person, :foreign_key => "created_by"
 	has_many :cars, inverse_of: :users
-	#has_many :has_created, class_name: 'User', foreign_key: "created_by"   
+	has_many :notifications, inverse_of: :user
+	has_and_belongs_to_many :company
 
 	before_save { self.email = email.downcase }
 

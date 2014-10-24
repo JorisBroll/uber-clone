@@ -4,4 +4,8 @@ module CoursesHelper
 			'Le '+course.date_when.strftime("%d/%m/%Y")+' à '+course.time_when.strftime("%Hh%M")
 		end
 	end
+
+	def payment_when_for_select(add_blank = false)
+		@table = Course::Payment_whens.collect { |i, o| [o['name'], i] }
+	end
 end

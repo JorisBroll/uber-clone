@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     resources :partners
     resources :promocodes
     resources :courses
+    resources :companies
   end
 
   namespace :partner_admin do
@@ -19,6 +20,7 @@ Rails.application.routes.draw do
     resources :users
     resources :cars
     resources :courses
+    resources :companies
   end
 
   resources :sessions, only: [:new, :create, :destroy]
@@ -28,5 +30,6 @@ Rails.application.routes.draw do
 
   match '/ajax/get_pos', to: 'ajax_functions#get_pos', via: 'get'
   match '/ajax/get_courses', to: 'ajax_functions#get_courses', via: 'get'
+  match '/ajax/notifications', to: 'ajax_functions#notifications', via: 'get'
 
 end

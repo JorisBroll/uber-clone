@@ -53,7 +53,7 @@
 					<% @clients.each do |user| %>
 						<tr>
 							<td><%= user.id %></td>
-							<td><%= user.name %></td>
+							<td><%= build_name(user) %></td>
 							<td><%= user.email %></td>
 							<td><%= user.partner.name unless user.partner.nil? %></td>
 							<td><%= user.created_by_user.name unless user.created_by.nil? %></td>
@@ -81,7 +81,7 @@
 					<% @drivers.each do |user| %>
 						<tr>
 							<td><%= user.id %></td>
-							<td><%= user.name %></td>
+							<td><%= build_name(user) %></td>
 							<td><%= user.email %></td>
 							<td><%= user.partner.name unless user.partner.nil? %></td>
 							<td><%= user.created_by_user.name unless user.created_by.nil? %></td>
@@ -109,7 +109,7 @@
 					<% @partneradmins.each do |user| %>
 						<tr>
 							<td><%= user.id %></td>
-							<td><%= user.name %></td>
+							<td><%= build_name(user) %></td>
 							<td><%= user.email %></td>
 							<td><%= user.partner.name unless user.partner.nil? %></td>
 							<td><%= user.created_by_user.name unless user.created_by.nil? %></td>
@@ -137,7 +137,7 @@
 						<tr>
 							<td><%= user.id %></td>
 							<td><%= User::Account_type_alias[user.account_type] %></td>
-							<td><%= user.name %></td>
+							<td><%= build_name(user) %></td>
 							<td><%= user.email %></td>
 							<td style="text-align:center; font-size:16px;"><%= link_to admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 						</tr>

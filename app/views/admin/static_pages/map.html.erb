@@ -7,15 +7,45 @@
     font-family:Roboto;
 }
 </style>
+<script>
+	init.push(function () {
+		$("#partner-select, #status-select").select2({
+			allowClear: true,
+			placeholder: "Sélectionner..."
+		});
+		$('.popsover').popover();
+	});
 
-<select id="partner-select">
-	<% @partners.each do |partner| %>
-		<option value="<%= partner.id %>"><%= partner.name %></option>
-	<% end %>
-</select>
-<select id="status-select">
-	<% Course.statuses.each do |status| %>
-		<option value="<%= status[1] %>"><%= Course::Status_alias[status[0]] %></option>
-	<% end %>
-</select>
+</script>
+<div id="map-filters" class="panel panel-info">
+	<div class="panel-heading">
+		<span class="panel-title">Filtres</span>
+		<div class="panel-heading-controls">
+			<span id="status-ok-counter" class="label label-success popsover" data-content="Courses affichées" data-placement="top" data-toggle="popover">0</span>
+			<span id="status-ko-counter" class="label label-danger popsover" data-content="Courses invalides" data-placement="top" data-toggle="popover">0</span>
+			<span id="status-notfound" class="label label-danger">0</span>
+		</div>
+	</div>
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-sm-6">
+				<label for="partner-select">Course appartenant à :</label>
+				<select id="partner-select">
+					<% @partners.each do |partner| %>
+						<option value="<%= partner.id %>"><%= partner.name %></option>
+					<% end %>
+				</select>
+			</div>
+			<div class="col-sm-6">
+				<label for="status-select">Status de la course :</label>
+				<select id="status-select">
+					<% Course.statuses.each do |status| %>
+						<option value="<%= status[1] %>"><%= Course::Status_alias[status[0]] %></option>
+					<% end %>
+				</select>
+			</div>
+		</div>
+		<p id="select-status-display"></p>
+	</div>
+</div>
 <div id="map-canvas"></div>

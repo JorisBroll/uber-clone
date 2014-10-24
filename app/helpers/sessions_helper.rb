@@ -114,6 +114,8 @@ module SessionsHelper
   def user_home
     if is_superadmin?
       return admin_home_path
+    elsif is_admin?
+      return admin_home_path
     elsif is_partneradmin?
       return partner_admin_home_path
     end

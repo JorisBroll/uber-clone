@@ -1,0 +1,69 @@
+<script>
+	init.push(function () {
+		$("#partner_phone").mask("99.99.99.99.99");
+
+		// Setup validation
+		$("#edit_partner_1").validate({
+			ignore: '.ignore, .select2-input',
+			focusInvalid: false,
+			rules: {
+				'partner[email]': {
+				  required: true,
+				  email: true
+				},
+				'user[password]': {
+					required: true,
+					minlength: 6,
+					maxlength: 20
+				},
+				'user[password_confirmation]': {
+					required: true,
+					minlength: 6,
+					equalTo: "#user_password"
+				},
+				'partner[phone]': {
+					required: true,
+					phone_format: true
+				}
+			},
+		});
+
+		$("#course_user_id, #course_partner_id, #course_status").select2({
+			allowClear: true,
+			placeholder: "Sélectionner..."
+		});
+	});
+
+</script>
+<!-- / Javascript -->
+
+<div class="panel">
+	<div class="panel-heading">
+		<span class="panel-title">Course</span>
+	</div>
+	<div class="panel-body">
+
+		<%= form_for [:admin, @company] do |f| %>
+		    
+			<%= render 'common/error_messages', object: f.object %>
+
+			<div class="form-group">
+				<%= f.label :name, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :name, :placeholder => "Nom de l'entreprise" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :notes, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_area :notes, :placeholder => "Renseignements divers" %>
+				</div>
+			</div>
+
+			<%= f.submit action, class: "btn btn-large btn-primary" %>
+
+		<% end %>
+
+	</div>
+</div>	

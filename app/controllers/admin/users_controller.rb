@@ -26,6 +26,7 @@ class Admin::UsersController < ApplicationController
 	end
 	def edit
 		@user = User.find(params[:id])
+		@partners = Partner.all
 	end
 	def update
 		@user = User.find(params[:id])
@@ -37,7 +38,7 @@ class Admin::UsersController < ApplicationController
 		end
 	end
 	def destroy
-		if ['1', '2'].include? params[:id]
+		if ['1', '2', '3'].include? params[:id]
 			flash[:notice] = "Utilisateur protégé. Il ne peut être supprimé."
 		else
 		    #User.find(params[:id]).destroy
@@ -49,7 +50,7 @@ class Admin::UsersController < ApplicationController
 		private
 
 		    def user_params
-		    	params.require(:user).permit(:name, :email, :phone, :account_type, :password, :password_confirmation)
+		    	params.require(:user).permit(:name, :last_name, :email, :phone, :account_type, :password, :password_confirmation, :partner_id)
 		    end
 
 		    def set_partner
