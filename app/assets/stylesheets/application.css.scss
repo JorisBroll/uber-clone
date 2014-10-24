@@ -1,7 +1,8 @@
-/*
- *= require_self
- *= require_tree .	
-*/
-
 @import "bootstrap-sprockets";
+
 @import "bootstrap";
+
+@import "pixel-admin";
+
+// Used controller SCSSes
+@import "courses";
