@@ -38,12 +38,12 @@ class Admin::CompaniesController < ApplicationController
 			@company.update({ 'users' => @company.users.push(@user) }) unless already_in
 			redirect_to admin_company_path(@company)
 		end
-		#if @company.update_attributes(company_params)
-		#	flash[:success] = "L'entreprise "+@company.name+" a été modifiée avec succès."
-		#	redirect_to admin_companies_path
-		#else
-		#	render 'edit'
-		#end
+		if @company.update_attributes(company_params)
+			flash[:success] = "L'entreprise "+@company.name+" a été modifiée avec succès."
+			redirect_to admin_companies_path
+		else
+			render 'edit'
+		end
 	end
 	def destroy
 		if params[:user_id]
