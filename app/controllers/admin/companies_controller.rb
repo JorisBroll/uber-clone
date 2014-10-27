@@ -14,9 +14,11 @@ class Admin::CompaniesController < ApplicationController
 		@company = Company.new(company_params)
 		if @company.save
 			flash[:success] = "L'entreprise "+@company.name+" a été crée."
+			AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'partner', 'id' => @company.id.to_s} })
 			redirect_to admin_companies_path
 		else
 			flash[:error] = "L'entreprise n'a pas pu être crée."
+			AppLogger.log ({'user_id' => @current_user, 'action' => 'fail_created', 'target_object' => {'type' => 'partner'} })
 			render 'new'
 	    end
 	end
@@ -36,13 +38,17 @@ class Admin::CompaniesController < ApplicationController
 				end
 			end
 			@company.update({ 'users' => @company.users.push(@user) }) unless already_in
+			flash[:success] = "L'utilisateur a été ajouté avec succès."
+			AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'partner', 'id' => @company.id.to_s} })
 			redirect_to admin_company_path(@company)
-		end
-		if @company.update_attributes(company_params)
-			flash[:success] = "L'entreprise "+@company.name+" a été modifiée avec succès."
-			redirect_to admin_companies_path
 		else
-			render 'edit'
+			if @company.update_attributes(company_params)
+				flash[:success] = "L'entreprise "+@company.name+" a été modifiée avec succès."
+				AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'partner', 'id' => @company.id.to_s} })
+				redirect_to admin_companies_path
+			else
+				render 'edit'
+			end
 		end
 	end
 	def destroy
@@ -58,12 +64,14 @@ class Admin::CompaniesController < ApplicationController
 			end
 
 			@company.update({'users' => @keep })
+			flash[:success] = "Utilisateur détaché"
+			AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'partner', 'id' => @company.id.to_s} })
 			redirect_to admin_company_path(@company)
 		else
-			@company = Company.find_by(id: params[:id])
-		    #Company.find(params[:id]).destroy
-		    #flash[:success] = "Entreprise supprimée."
-		    #redirect_to admin_companies_path
+			@company = Company.find_by(id: params[:id]).destroy
+		    flash[:success] = "Entreprise supprimée."
+		    AppLogger.log ({'user_id' => @current_user, 'action' => 'deleted', 'target_object' => {'type' => 'partner', 'id' => params[:id]} })
+		    redirect_to admin_companies_path
 		end
 	end
 

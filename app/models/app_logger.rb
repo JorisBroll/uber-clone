@@ -38,6 +38,14 @@ class AppLogger
 					string += "la notification"
 				when 'course'
 					string += "la course"
+				when 'user'
+					string += "l'utilisateur"
+				when 'promocode'
+					string += "le code promotion"
+				when 'company'
+					string += "l'entreprise cliente"
+				when 'partner'
+					string += "l'entreprise partenaire"
 				else
 					string += "l'objet"
 				end

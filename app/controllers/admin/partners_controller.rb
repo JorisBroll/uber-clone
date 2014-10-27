@@ -42,7 +42,7 @@ class Admin::PartnersController < ApplicationController
 	def destroy
 	    Partner.find(params[:id]).destroy
 	    flash[:success] = "Entreprise partenaire supprimée."
-	    redirect_to partners_url
+	    redirect_to admin_partners_path
 	end
 
 		private

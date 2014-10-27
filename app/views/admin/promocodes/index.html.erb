@@ -1,9 +1,7 @@
-<h1>Codes promo</h1>
-
 <script>
 	init.push(function () {
 		$('#jq-datatables-example').dataTable();
-		$('#jq-datatables-example_wrapper .table-caption').text('Liste des utilisateurs');
+		$('#jq-datatables-example_wrapper .table-caption').text('Liste des codes promotion');
 		$('#jq-datatables-example_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
 	});
 </script>
@@ -14,6 +12,7 @@
 			<tr>
 				<th>#</th>
 				<th>Nom</th>
+				<th>Code</th>
 				<th>Type de réduction (% / fixe)</th>
 				<th>Réduction</th>
 				<th>Type de durée (jours / utilisations)</th>
@@ -26,6 +25,7 @@
 			<tr>
 				<td><%= promocode.id %></td>
 				<td><%= promocode.name %></td>
+				<td><%= promocode.code %></td>
 				<td><%= Promocode::Effect_type_alias[promocode.effect_type] %></td>
 				<td><%= promocode.effect_type_value %></td>
 				<td><%= Promocode::Effect_length_alias[promocode.effect_length] %></td>

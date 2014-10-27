@@ -11,9 +11,10 @@ module UsersHelper
 	  User.where("account_type = ?", User.account_types[:driver]).collect { |o| [o.name, o.id] }
 	end
 
-	def build_name(user)
+	def build_name(user, with_id = false)
 		@name = user.name
 		@name += ' '+user.last_name unless user.last_name.nil?
+		@name = user.id.to_s+'/'+@name unless !with_id
 		return @name
 	end
 end

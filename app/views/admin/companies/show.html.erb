@@ -1,43 +1,70 @@
-<h1>Entreprise numéro <%= @company.id %> : <%= @company.name %></h1>
-
-<div>
-	<h2>Utilisateurs de cette entreprise</h2>
-	<table>
-		<% @users = Company.find_by(id: 1).users %>
-		<% @users.each do |user| %>
-		<tr>
-			<td><%= user.id %></td>
-			<td><%= user.name %></td>
-			<td><%= user.email %></td>
-			<td><%= user.partner.name unless user.partner.nil? %></td>
-			<td><%= user.created_by_user.name unless user.created_by.nil? %></td>
-			<td style="text-align:center; font-size:16px;"><%= link_to admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_company_path(company_id: @company, user_id: user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Détacher" do %><i class="menu-icon fa fa-times"></i><% end %></td>
-		</tr>
-		<% end %>
-	</table>
-</div>
-<div>
-	<h2>Ajouter un utilisateur à cette entreprise</h2>
-	<p>
-		<% @company = Company.find_by(id: 1) %>
-		<%= form_for [:admin, @company], url: admin_company_path(@company) do |f| %>
-		    
-			<%= render 'common/error_messages', object: f.object %>
-
-			<%= f.fields_for :users do |user| %>
-		      <div class="form-group">
-				<%= user.label "Utilisateur:", class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= user.select(:id, users_for_select, class: "form-control") %>
+<script>
+	init.push(function () {
+		$("#company_users_id").select2({
+			allowClear: true,
+			placeholder: "Sélectionner..."
+		});
+	});
+</script>
+<h2>Entreprise numéro <%= @company.id %> : <%= @company.name %></h2>
+<div class="row">
+	<div class="col-md-7">
+		<div class="panel panel-dark panel-light-green">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Utilisateurs de cette entreprise</span>
+			</div>
+			<div class="panel-body">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Nom</th>
+							<th>E-mail</th>
+							<th>Type de compte</th>
+							<th>Détacher</th>
+						</tr>
+					</thead>
+					<tbody class="valign-middle">
+						<% @users = Company.find_by(id: 1).users %>
+						<% @users.each do |user| %>
+						<tr>
+							<td><%= user.id %></td>
+							<td><%= link_to admin_user_path(user), { :title => "Voir" } do %><%= build_name(user) %><% end %></td>
+							<td><%= user.email %></td>
+							<td><%= User::Account_type_alias[user.account_type] %></td>
+							<td><%= link_to admin_company_path(company_id: @company, user_id: user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Détacher" do %><i class="menu-icon fa fa-times"></i><% end %></td>
+						</tr>
+						<% end %>
+					</tbody>
+				</table>
+			</div>
+			<div class="panel-footer">
+				<p>Ajouter un utilisateur à cette entreprise</p>
+				<div class="row">
+					<div class="col-sm-6">
+						<% @company = Company.find_by(id: 1) %>
+						<%= form_for [:admin, @company], url: admin_company_path(@company), :html => {:class => 'form-inline'} do |f| %>
+							<%= f.fields_for :users do |user| %>
+								<%= user.select(:id, users_for_select, class: "form-control") %>
+						<% end %>
+					</div>
+					<div class="col-sm-6">
+						<%= f.submit "Ajouter", class: "btn btn-flat btn-primary" %>
+						<% end %>
+					</div>
 				</div>
 			</div>
-		  <% end %>
-
-			
-
-			<%= f.submit "Ajouter", class: "btn btn-large btn-primary" %>
-
-		<% end %>
-	</p>
+		</div>
+	</div>
 </div>
-<p><%= link_to "Retour aux entreprises", admin_companies_path %></p>
+
+<div class="row">
+	<div class="col-sm-12">
+		<a href="<%= admin_companies_path %>">
+			<button class="btn btn-flat btn-labeled btn-warning">
+			    <span class="btn-label icon fa fa-reply"></span>
+				Retour aux entreprises
+			</button>
+		</a>
+	</div>
+</div>

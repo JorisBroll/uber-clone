@@ -1,110 +1,16 @@
 <!-- Javascript -->
 <script>
 	init.push(function () {
-		$("#jq-validation-phone").mask("(999) 999-9999");
-		$('#jq-validation-select2').select2({ allowClear: true, placeholder: 'Select a country...' }).change(function(){
-			$(this).valid();
-		});
-		$('#jq-validation-select2-multi').select2({ placeholder: 'Select gear...' }).change(function(){
-			$(this).valid();
-		});
-
-		// Add phone validator
-		$.validator.addMethod(
-			"phone_format",
-			function(value, element) {
-				var check = false;
-				return this.optional(element) || /^\(\d{3}\)[ ]\d{3}\-\d{4}$/.test(value);
-			},
-			"Invalid phone number."
-		);
-
-		// Setup validation
-		$("#new_user").validate({
-			ignore: '.ignore, .select2-input',
-			focusInvalid: false,
-			rules: {
-				'user[email]': {
-				  required: true,
-				  email: true
-				},
-				'user[password]': {
-					required: true,
-					minlength: 6,
-					maxlength: 20
-				},
-				'user[password_confirmation]': {
-					required: true,
-					minlength: 6,
-					equalTo: "#user_password"
-				},
-				'jq-validation-required': {
-					required: true
-				},
-				'jq-validation-url': {
-					required: true,
-					url: true
-				},
-				'jq-validation-phone': {
-					required: true,
-					phone_format: true
-				},
-				'jq-validation-select': {
-					required: true
-				},
-				'jq-validation-multiselect': {
-					required: true,
-					minlength: 2
-				},
-				'jq-validation-select2': {
-					required: true
-				},
-				'jq-validation-select2-multi': {
-					required: true,
-					minlength: 2
-				},
-				'jq-validation-text': {
-					required: true
-				},
-				'jq-validation-simple-error': {
-					required: true
-				},
-				'jq-validation-dark-error': {
-					required: true
-				},
-				'jq-validation-radios': {
-					required: true
-				},
-				'jq-validation-checkbox1': {
-					require_from_group: [1, 'input[name="jq-validation-checkbox1"], input[name="jq-validation-checkbox2"]']
-				},
-				'jq-validation-checkbox2': {
-					require_from_group: [1, 'input[name="jq-validation-checkbox1"], input[name="jq-validation-checkbox2"]']
-				},
-				'jq-validation-policy': {
-					required: true
-				}
-			},
-			messages: {
-				'jq-validation-policy': 'You must check it!'
-			}
+		$("#promocode_effect_type, #promocode_effect_length").select2({
+			allowClear: true,
+			placeholder: "Select a State"
 		});
 	});
-
-init.push(function () {
-	// Single select
-	$("#promocode_effect_type,#promocode_effect_length").select2({
-		allowClear: true,
-		placeholder: "Select a State"
-	});
-});
-
 </script>
-<!-- / Javascript -->
 
 <div class="panel">
 	<div class="panel-heading">
-		<span class="panel-title">Ajouter un nouveau code promotion</span>
+		<span class="panel-title">Code promotion</span>
 	</div>
 	<div class="panel-body">
 
@@ -115,6 +21,13 @@ init.push(function () {
 				<%= f.label :name, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :name, class: "form-control", :placeholder => "Nom" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :code, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :code, class: "form-control", :placeholder => "Code" %>
 				</div>
 			</div>
 
@@ -145,15 +58,10 @@ init.push(function () {
 					<%= f.text_field :effect_length_value, class: "form-control", :placeholder => "Valeur" %>
 				</div>
 			</div>
-
-			<hr class="panel-wide" />
-			<br />
-
-			<div class="form-group">
-				<div class="col-sm-9">
-					<%= f.submit action, class: "btn btn-large btn-primary btn-flat" %>
-				</div>
-			</div>
+	</div>
+	<div class="panel-footer text-right">
+		<a class="btn btn-flat btn-danger" href="<%= admin_promocodes_path %>">Annuler</a>
+		<%= f.submit action, class: "btn btn-primary btn-flat" %>
 		<% end %>
 	</div>
 </div>

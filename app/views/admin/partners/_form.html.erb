@@ -53,7 +53,7 @@ init.push(function () {
 
 <div class="panel">
 	<div class="panel-heading">
-		<span class="panel-title">Ajouter un nouveau partenaire</span>
+		<span class="panel-title">Entreprise partenaire</span>
 	</div>
 	<div class="panel-body">
 
@@ -95,16 +95,16 @@ init.push(function () {
 				</div>
 			</div>
 
-			<hr class="panel-wide" />
-			<br />
-
 			<div class="form-group">
 				<div class="col-sm-9">
 					<%= f.submit action, class: "btn btn-large btn-primary btn-flat" %>
 				</div>
 			</div>
 
-		<% end %>
-
+	</div>
+	<div class="panel-footer text-right">
+		<a class="btn btn-flat btn-danger" href="<%= admin_partners_path %>">Annuler</a>
+		<%= f.submit action, class: "btn btn-primary btn-flat" %>
+			<% end %>
 	</div>
 </div>	

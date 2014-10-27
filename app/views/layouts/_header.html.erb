@@ -136,16 +136,15 @@
 
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle user-menu" data-toggle="dropdown">
-									<img src="<%= image_path('pixel-admin/avatar.png') %>" alt="">
+									<img src="<%= image_path('pixel-admin/derp.png') %>">
 									<span><%= current_user.name %> <%= current_user.last_name %> - </span>
 									<spa class="text-info"><%= current_user.account_type %></span>
 								</a>
 								<ul class="dropdown-menu">
-									<li><a href="#"><span class="label label-warning pull-right">New</span>Profile</a></li>
-									<li><a href="#"><span class="badge badge-primary pull-right">New</span>Account</a></li>
+									<li><a href="#">Profil</a></li>
 									<li><a href="<%= admin_config_path %>"><i class="dropdown-icon fa fa-cog"></i>&nbsp;&nbsp;Settings</a></li>
 									<li class="divider"></li>
-									<li><a href="/logout"><i class="dropdown-icon fa fa-power-off"></i>&nbsp;&nbsp;Log Out</a></li>
+									<li><%= link_to '/logout', method: :delete do %><i class="dropdown-icon fa fa-power-off"></i>&nbsp;&nbsp;Se déconnecter<% end %></li>
 								</ul>
 							</li>
 						</ul> <!-- / .navbar-nav -->
@@ -183,21 +182,10 @@
 	<div id="main-menu" role="navigation">
 		<div id="main-menu-inner">
 			<div class="menu-content top" id="menu-content-demo">
-				<!-- Menu custom content demo
-					 CSS:        styles/pixel-admin-less/demo.less or styles/pixel-admin-scss/_demo.scss
-					 Javascript: html/assets/demo/demo.js
-				 -->
 				<div>
 					<div class="text-bg"><span class="text-slim">Bienvenue,</span><br /><span class="text-semibold"><%= current_user.name %></span></div>
 
-					<img src="<%= image_path('pixel-admin/derp.png') %>" alt="" class="">
-					<div class="btn-group">
-						<a href="#" class="btn btn-xs btn-primary btn-outline dark"><i class="fa fa-envelope"></i></a>
-						<a href="#" class="btn btn-xs btn-primary btn-outline dark"><i class="fa fa-user"></i></a>
-						<a href="<%= admin_config_path %>" class="btn btn-xs btn-primary btn-outline dark"><i class="fa fa-cog"></i></a>
-						<%= link_to '/logout', method: :delete, class:"btn btn-xs btn-danger btn-outline dark" do %><i class="fa fa-power-off"></i><% end %>
-					</div>
-					<a href="#" class="close">&times;</a>
+					<img src="<%= image_path('pixel-admin/derp.png') %>">
 				</div>
 			</div>
 			<ul class="navigation">
