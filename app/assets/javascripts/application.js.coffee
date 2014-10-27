@@ -153,8 +153,8 @@
 
         # Traductions FR
 
-#//= require .//libs/jquery-ui-1.10.4/jquery.ui.datepicker-fr
-#//= require .//libs/bootstrap-datepicker-1.3.0/bootstrap-datepicker.fr
+//= require .//libs/jquery-ui-1.10.4/jquery.ui.datepicker-fr
+#// require .//libs/bootstrap-datepicker-1.3.0/bootstrap-datepicker.fr
 //= require .//libs/select2-3.4.5/select2_locale_fr
 //= require .//libs/summernote-0.5.1/summernote-fr-FR
 
