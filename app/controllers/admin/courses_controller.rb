@@ -11,7 +11,7 @@ class Admin::CoursesController < ApplicationController
 		@course = Course.new
 	end
 	def create
-		@course = Course.new(course_params)
+		#@course = Course.new(course_params)
 		#if @course.save
 		#	flash[:success] = "La course n°"+@course.id.to_s+" a été créée."
 			#AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'course', 'id' => @course.id.to_s} })
