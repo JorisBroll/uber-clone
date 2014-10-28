@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141028140532) do
+ActiveRecord::Schema.define(version: 20141028151828) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -64,6 +64,10 @@ ActiveRecord::Schema.define(version: 20141028140532) do
     t.integer  "payment_when",      default: 0
     t.integer  "company_id",        default: 0
     t.string   "flight_number"
+    t.boolean  "paid",              default: false
+    t.datetime "paid_when"
+    t.string   "paid_by__type"
+    t.integer  "paid_by__id"
   end
 
   create_table "notifications", force: true do |t|
