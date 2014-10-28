@@ -14,7 +14,7 @@ class Admin::CoursesController < ApplicationController
 		@course = Course.new(course_params)
 		if @course.save
 			flash[:success] = "La course n°"+@course.id.to_s+" a été créée."
-			AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'course', 'id' => @course.id.to_s} })
+			#AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'course', 'id' => @course.id.to_s} })
 			redirect_to admin_courses_path
 	    else
 	    	flash[:error] = "La course n'a pas pu être créée, veuillez réessayer :"
@@ -40,14 +40,19 @@ class Admin::CoursesController < ApplicationController
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'fail_updated', 'target_object' => {'type' => 'course', 'id' => @course.id.to_s} })
 			render 'edit'
 		end
-
+	end
+	def destroy
+		@course = Course.find(params[:id]).destroy
+	    flash[:success] = "Course supprimée."
+	    AppLogger.log ({'user_id' => @current_user, 'action' => 'deleted', 'target_object' => {'type' => 'course', 'id' => params[:id].to_s} })
+	    redirect_to admin_courses_path
 	end
 
 		private
 
 		    def course_params
 		    	params['course']['stops'] = params['course']['stops'].to_json
-		    	params.require(:course).permit(:from, :to, :date_when, :time_when, :computed_distance, :computed_duration, :computed_price, :stops, :nb_people, :user_id, :partner_id, :status, :notes, :payment_when)
+		    	params.require(:course).permit(:from, :to, :date_when, :time_when, :computed_distance, :computed_duration, :computed_price, :stops, :nb_people, :user_id, :partner_id, :status, :notes, :payment_when, :company_id, :flight_number)
 		    end
 
 		    def make_notif(type, title, content)

@@ -25,7 +25,6 @@
 						</tr>
 					</thead>
 					<tbody class="valign-middle">
-						<% @users = Company.find_by(id: 1).users %>
 						<% @users.each do |user| %>
 						<tr>
 							<td><%= user.id %></td>
@@ -42,8 +41,7 @@
 				<p>Ajouter un utilisateur à cette entreprise</p>
 				<div class="row">
 					<div class="col-sm-6">
-						<% @company = Company.find_by(id: 1) %>
-						<%= form_for [:admin, @company], url: admin_company_path(@company), :html => {:class => 'form-inline'} do |f| %>
+						<%= form_for [:admin, @company], url: admin_company_path(@company) do |f| %>
 							<%= f.fields_for :users do |user| %>
 								<%= user.select(:id, users_for_select, class: "form-control") %>
 						<% end %>

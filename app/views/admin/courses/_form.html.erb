@@ -1,43 +1,5 @@
 <script>
-	init.push(function () {
-		$("#partner_phone").mask("99.99.99.99.99");
-		$("#partner_company_code").mask("999 999 999 99999");
-		$('#jq-validation-select2').select2({ allowClear: true, placeholder: 'Select a country...' }).change(function(){
-			$(this).valid();
-		});
-		$('#jq-validation-select2-multi').select2({ placeholder: 'Select gear...' }).change(function(){
-			$(this).valid();
-		});
-
-		// Setup validation
-		$("#edit_partner_1").validate({
-			ignore: '.ignore, .select2-input',
-			focusInvalid: false,
-			rules: {
-				'partner[email]': {
-				  required: true,
-				  email: true
-				},
-				'user[password]': {
-					required: true,
-					minlength: 6,
-					maxlength: 20
-				},
-				'user[password_confirmation]': {
-					required: true,
-					minlength: 6,
-					equalTo: "#user_password"
-				},
-				'partner[phone]': {
-					required: true,
-					phone_format: true
-				}
-			},
-			messages: {
-				'jq-validation-policy': 'You must check it!'
-			}
-		});
-
+	init.push(function () {		
 		$("#course_user_id, #course_partner_id, #course_company_id, #course_status, #course_payment_when").select2({
 			allowClear: true,
 			placeholder: "Sélectionner..."
@@ -121,6 +83,20 @@
 				<%= f.label :time_when, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :time_when, class: "form-control time" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :flight_number, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :flight_number, class: "form-control" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :notes, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_area :notes, class: "form-control" %>
 				</div>
 			</div>
 

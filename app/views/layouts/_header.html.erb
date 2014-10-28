@@ -125,9 +125,6 @@
 								</div> <!-- / .dropdown-menu -->
 							</li>
 
-							
-<!-- /3. $END_NAVBAR_ICON_BUTTONS -->
-
 							<li>
 								<form class="navbar-form pull-left">
 									<input type="text" class="form-control" placeholder="Search">
@@ -141,44 +138,18 @@
 									<spa class="text-info"><%= current_user.account_type %></span>
 								</a>
 								<ul class="dropdown-menu">
-									<li><a href="#">Profil</a></li>
-									<li><a href="<%= admin_config_path %>"><i class="dropdown-icon fa fa-cog"></i>&nbsp;&nbsp;Settings</a></li>
+									<li><a href="#"><i class="dropdown-icon fa fa-user"></i>&nbsp;&nbsp;Profil</a></li>
 									<li class="divider"></li>
 									<li><%= link_to '/logout', method: :delete do %><i class="dropdown-icon fa fa-power-off"></i>&nbsp;&nbsp;Se déconnecter<% end %></li>
 								</ul>
 							</li>
-						</ul> <!-- / .navbar-nav -->
-					</div> <!-- / .right -->
+						</ul>
+					</div>
 				</div>
-			</div> <!-- / #main-navbar-collapse -->
-		</div> <!-- / .navbar-inner -->
-	</div> <!-- / #main-navbar -->
-<!-- /2. $END_MAIN_NAVIGATION -->
+			</div>
+		</div>
+	</div>
 
-
-<!-- 4. $MAIN_MENU =================================================================================
-
-		Main menu
-		
-		Notes:
-		* to make the menu item active, add a class 'active' to the <li>
-		  example: <li class="active">...</li>
-		* multilevel submenu example:
-			<li class="mm-dropdown">
-			  <a href="#"><span class="mm-text">Submenu item text 1</span></a>
-			  <ul>
-				<li>...</li>
-				<li class="mm-dropdown">
-				  <a href="#"><span class="mm-text">Submenu item text 2</span></a>
-				  <ul>
-					<li>...</li>
-					...
-				  </ul>
-				</li>
-				...
-			  </ul>
-			</li>
--->
 	<div id="main-menu" role="navigation">
 		<div id="main-menu-inner">
 			<div class="menu-content top" id="menu-content-demo">

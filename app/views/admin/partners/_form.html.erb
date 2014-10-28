@@ -3,39 +3,23 @@
 	init.push(function () {
 		$("#partner_phone").mask("99.99.99.99.99");
 		$("#partner_company_code").mask("999 999 999 99999");
-		$('#jq-validation-select2').select2({ allowClear: true, placeholder: 'Select a country...' }).change(function(){
-			$(this).valid();
-		});
-		$('#jq-validation-select2-multi').select2({ placeholder: 'Select gear...' }).change(function(){
-			$(this).valid();
-		});
 
 		// Setup validation
 		$("#edit_partner_1").validate({
 			ignore: '.ignore, .select2-input',
 			focusInvalid: false,
 			rules: {
+				'partner[name]': {
+				  required: true
+				},
 				'partner[email]': {
 				  required: true,
 				  email: true
-				},
-				'user[password]': {
-					required: true,
-					minlength: 6,
-					maxlength: 20
-				},
-				'user[password_confirmation]': {
-					required: true,
-					minlength: 6,
-					equalTo: "#user_password"
 				},
 				'partner[phone]': {
 					required: true,
 					phone_format: true
 				}
-			},
-			messages: {
-				'jq-validation-policy': 'You must check it!'
 			}
 		});
 	});
@@ -68,28 +52,42 @@ init.push(function () {
 			</div>
 
 			<div class="form-group">
-				<%= f.label :email, "Email :", class: "col-sm-3 control-label" %>
+				<%= f.label :email, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :email, class: "form-control", :placeholder => "Email" %>
 				</div>
 			</div>
 
 			<div class="form-group">
-				<%= f.label :phone, "Téléphone :", class: "col-sm-3 control-label" %>
+				<%= f.label :phone, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :phone, class: "form-control", :placeholder => "Téléphone" %>
 				</div>
 			</div>
 
 			<div class="form-group">
-				<%= f.label :company_code, "Siret :", class: "col-sm-3 control-label" %>
+				<%= f.label :address, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :address, class: "form-control", :placeholder => "Adresse" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :postcode, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :postcode, class: "form-control", :placeholder => "Code postal" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :company_code, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :company_code, class: "form-control", :placeholder => "Siret" %>
 				</div>
 			</div>
 
 			<div class="form-group">
-				<%= f.label :note, "Ajouter une note :", class: "col-sm-3 control-label" %>
+				<%= f.label :note, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_area :note, class: "form-control", :placeholder => "Note" %>
 				</div>

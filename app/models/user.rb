@@ -1,10 +1,11 @@
 class User < ActiveRecord::Base
 	belongs_to :partner, inverse_of: :users                          
   	belongs_to :created_by_user, class_name: 'User', foreign_key: "created_by"
-	has_many :courses, inverse_of: :users
+	has_many :courses, inverse_of: :user
 	has_many :person, :foreign_key => "created_by"
-	has_many :cars, inverse_of: :users
+	has_many :cars, inverse_of: :user
 	has_many :notifications, inverse_of: :user
+	has_one :promocode, inverse_of: :user
 	has_and_belongs_to_many :company
 
 	before_save { self.email = email.downcase }

@@ -1,10 +1,7 @@
 <h2>Informations de l'entreprise</h2>
 
-
 <div class="row">
-
 	<div class="col-md-6">
-
 		<div class="panel panel-info panel-dark widget-profile">
 			<div class="panel-heading">
 				<div class="widget-profile-bg-icon"><i class="fa fa-gears"></i></div>
@@ -20,11 +17,9 @@
 				<div class="list-group-item"><i class="fa fa-taxi list-group-icon"></i>Voitures<span class="badge badge-info"><%= @partner.cars.count %></span></div>
 				<div class="list-group-item"><i class="fa fa-flag-checkered list-group-icon"></i>Courses<span class="badge badge-success"><%= @partner.courses.count %></span></div>
 				<div class="list-group-item"><i class="fa fa-pencil-square-o list-group-icon"></i>Note <span class="text-default text-sm" style="float:right;"><%= @partner.note %></span></div>
-				<%= link_to edit_admin_partner_path(@partner), class: "list-group-item" do %><button class="btn btn-labeled btn-block">Editer les infos</button><% end %>
+				<%= link_to edit_admin_partner_path(@partner), class: "list-group-item" do %><button class="btn btn-labeled btn-block">Editer les informations</button><% end %>
 			</div>
-					
-		</div> <!-- / .panel -->
-
+		</div>
 		<div class="panel panel-dark-gray">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-star-o"></i>Liste des administrateurs de l'entreprise</span>
@@ -61,7 +56,6 @@
 					<% end %>
 				</div>
 		</div>
-
 		<div class="panel">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-smile-o"></i>Liste des chauffeurs de l'entreprise</span>
@@ -97,7 +91,7 @@
 					</button>
 				<% end %>
 			</div>
-		</div>	
+		</div>
 	</div>
 
 

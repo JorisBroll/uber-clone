@@ -5,7 +5,8 @@ class Admin::CompaniesController < ApplicationController
 		@companies = Company.all
 	end
 	def show
-		@company = Company.find(params[:id])
+		@company = Company.find_by(id: params[:id])
+		@users = @company.users
 	end
 	def new
 		@company = Company.new()
@@ -78,7 +79,7 @@ class Admin::CompaniesController < ApplicationController
 		private
 
 		    def company_params
-		    	params.require(:company).permit(:name, :notes, {:user_ids => []})
+		    	params.require(:company).permit(:name, :notes, :address, :postcode, {:user_ids => []})
 		    end
 
 		   

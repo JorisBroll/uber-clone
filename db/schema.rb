@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141024131143) do
+ActiveRecord::Schema.define(version: 20141028094116) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,7 +23,7 @@ ActiveRecord::Schema.define(version: 20141024131143) do
     t.integer  "partner_id"
     t.integer  "slots"
     t.integer  "car_type",   default: 0
-    t.integer  "user_id"
+    t.integer  "user_id",    default: 0
     t.string   "photo"
   end
 
@@ -32,6 +32,8 @@ ActiveRecord::Schema.define(version: 20141024131143) do
     t.text     "notes"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "address"
+    t.string   "postcode"
   end
 
   create_table "companies_users", id: false, force: true do |t|
@@ -44,30 +46,31 @@ ActiveRecord::Schema.define(version: 20141024131143) do
   create_table "courses", force: true do |t|
     t.string   "from"
     t.string   "to"
-    t.integer  "user_id"
-    t.integer  "partner_id"
-    t.integer  "car_id"
+    t.integer  "user_id",           default: 0
+    t.integer  "partner_id",        default: 0
+    t.integer  "car_id",            default: 0
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "nb_people"
+    t.integer  "nb_people",         default: 1
     t.integer  "status",            default: 0
     t.float    "computed_distance"
     t.float    "computed_price"
     t.json     "stops"
-    t.integer  "created_by"
+    t.integer  "created_by",        default: 0
     t.date     "date_when"
     t.time     "time_when"
     t.string   "computed_duration"
     t.text     "notes"
     t.integer  "payment_when",      default: 0
     t.integer  "company_id",        default: 0
+    t.string   "flight_number"
   end
 
   create_table "notifications", force: true do |t|
     t.string   "title"
     t.text     "content"
     t.boolean  "seen",       default: false
-    t.integer  "user_id"
+    t.integer  "user_id",    default: 0
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "notif_type", default: 0
@@ -82,12 +85,14 @@ ActiveRecord::Schema.define(version: 20141024131143) do
     t.string   "company_code"
     t.string   "phone"
     t.string   "logo"
+    t.string   "address"
+    t.string   "postcode"
   end
 
   create_table "promocodes", force: true do |t|
     t.string   "name"
-    t.integer  "effect_type"
-    t.integer  "effect_length"
+    t.integer  "effect_type",         default: 0
+    t.integer  "effect_length",       default: 0
     t.integer  "effect_length_value"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -102,15 +107,17 @@ ActiveRecord::Schema.define(version: 20141024131143) do
     t.datetime "updated_at"
     t.string   "password_digest"
     t.integer  "account_type",    default: 0
-    t.integer  "created_by"
-    t.integer  "partner_id"
-    t.integer  "company_id"
+    t.integer  "created_by",      default: 0
+    t.integer  "partner_id",      default: 0
+    t.integer  "company_id",      default: 0
     t.string   "phone"
     t.decimal  "pos_lat"
     t.decimal  "pos_lon"
     t.string   "photo"
     t.string   "last_name"
     t.string   "address"
+    t.string   "postcode"
+    t.integer  "promocode_id",    default: 0
   end
 
 end
