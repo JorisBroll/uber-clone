@@ -51,7 +51,7 @@ class Admin::CoursesController < ApplicationController
 		private
 
 		    def course_params
-		    	params['course']['stops'] = params['course']['stops'].to_json
+		    	#params['course']['stops'] = params['course']['stops'].to_json
 		    	params.require(:course).permit(:from, :to, :date_when, :time_when, :computed_distance, :computed_duration, :computed_price, :stops, :nb_people, :user_id, :partner_id, :status, :notes, :payment_when, :company_id, :flight_number)
 		    end
 
