@@ -79,7 +79,7 @@ class Admin::CompaniesController < ApplicationController
 		private
 
 		    def company_params
-		    	params.require(:company).permit(:name, :notes, :address, :postcode, {:user_ids => []})
+		    	params.require(:company).permit(:name, :notes, :address, :postcode)
 		    end
 
 		   
