@@ -20,7 +20,7 @@ class Admin::UsersController < ApplicationController
 		@user = User.new(user_params)
 		if @user.save
 			flash[:success] = "L'utilisateur "+build_name(@user, true)+" a été crée."
-			AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'user', 'id' => @user.id.to_s} })
+			#AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'user', 'id' => @user.id.to_s} })
 			redirect_to admin_users_path
 		else
 			flash[:error] = "L'utilisateur n'a pas pu être crée."

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141028094116) do
+ActiveRecord::Schema.define(version: 20141028140532) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,7 +23,7 @@ ActiveRecord::Schema.define(version: 20141028094116) do
     t.integer  "partner_id"
     t.integer  "slots"
     t.integer  "car_type",   default: 0
-    t.integer  "user_id",    default: 0
+    t.integer  "user_id"
     t.string   "photo"
   end
 
@@ -46,9 +46,9 @@ ActiveRecord::Schema.define(version: 20141028094116) do
   create_table "courses", force: true do |t|
     t.string   "from"
     t.string   "to"
-    t.integer  "user_id",           default: 0
-    t.integer  "partner_id",        default: 0
-    t.integer  "car_id",            default: 0
+    t.integer  "user_id",           default: 1
+    t.integer  "partner_id",        default: 1
+    t.integer  "car_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "nb_people",         default: 1
@@ -56,7 +56,7 @@ ActiveRecord::Schema.define(version: 20141028094116) do
     t.float    "computed_distance"
     t.float    "computed_price"
     t.json     "stops"
-    t.integer  "created_by",        default: 0
+    t.integer  "created_by"
     t.date     "date_when"
     t.time     "time_when"
     t.string   "computed_duration"
@@ -70,7 +70,7 @@ ActiveRecord::Schema.define(version: 20141028094116) do
     t.string   "title"
     t.text     "content"
     t.boolean  "seen",       default: false
-    t.integer  "user_id",    default: 0
+    t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "notif_type", default: 0
@@ -107,9 +107,9 @@ ActiveRecord::Schema.define(version: 20141028094116) do
     t.datetime "updated_at"
     t.string   "password_digest"
     t.integer  "account_type",    default: 0
-    t.integer  "created_by",      default: 0
-    t.integer  "partner_id",      default: 0
-    t.integer  "company_id",      default: 0
+    t.integer  "created_by"
+    t.integer  "partner_id"
+    t.integer  "company_id"
     t.string   "phone"
     t.decimal  "pos_lat"
     t.decimal  "pos_lon"
@@ -117,7 +117,7 @@ ActiveRecord::Schema.define(version: 20141028094116) do
     t.string   "last_name"
     t.string   "address"
     t.string   "postcode"
-    t.integer  "promocode_id",    default: 0
+    t.integer  "promocode_id"
   end
 
 end
