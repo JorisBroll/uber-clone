@@ -12,15 +12,15 @@ class Admin::CoursesController < ApplicationController
 	end
 	def create
 		@course = Course.new(course_params)
-		if @course.save
-			flash[:success] = "La course n°"+@course.id.to_s+" a été créée."
+		#if @course.save
+		#	flash[:success] = "La course n°"+@course.id.to_s+" a été créée."
 			#AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'course', 'id' => @course.id.to_s} })
 			redirect_to admin_courses_path
-	    else
-	    	flash[:error] = "La course n'a pas pu être créée, veuillez réessayer :"
-	    	AppLogger.log ({'user_id' => @current_user, 'action' => 'fail_created', 'target_object' => {'type' => 'course'} })
-	    	render 'new'
-	    end
+	    #else
+	    #	flash[:error] = "La course n'a pas pu être créée, veuillez réessayer :"
+	    #	AppLogger.log ({'user_id' => @current_user, 'action' => 'fail_created', 'target_object' => {'type' => 'course'} })
+	    #	render 'new'
+	    #end
 
 	end
 	def edit

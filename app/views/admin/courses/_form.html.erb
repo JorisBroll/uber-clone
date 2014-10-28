@@ -150,7 +150,7 @@
 			</div>
 
 			<div class="form-group">
-				<%= f.label "facturer à", class: "col-sm-3 control-label" %>
+				<%= f.label :company_id, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.select(:company_id, companies_for_select("Pas d'entreprise"), class: "form-control") %>
 				</div>
