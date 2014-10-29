@@ -1,0 +1,172 @@
+<script>
+	init.push(function () {
+		$("#user_phone").mask("99.99.99.99.99");
+		$("#user_cellphone").mask("99.99.99.99.99");
+
+		rules = {
+			'user[name]': {
+				required: true
+			},
+			'user[last_name]': {
+				required: true
+			},
+			'user[email]': {
+			  required: true,
+			  email: true
+			},
+			'user[address]': {
+				required: true
+			},
+			'user[postcode]': {
+				required: true
+			},
+			'user[city]': {
+				required: true
+			}
+		}
+
+		if($(".new_user").length > 0) {
+			rules['user[password]'] = {
+				required: true,
+				minlength: 6,
+				maxlength: 20
+			};
+			rules['user[password_confirmation]'] = {
+				required: true,
+				minlength: 6,
+				maxlength: 20,
+				equalTo: "#user_password"
+			}
+		}
+
+		$(".new_user, .edit_user").validate({
+			focusInvalid: false,
+			rules: rules
+		});
+				
+		$("#user_companies").attr('multiple', 'multiple').attr('name', $("#user_companies").attr('name')+'[]');
+		$("#user_companies option:selected").removeAttr("selected");
+		$("#user_account_type, #user_partner_id, #user_promocode_id, #user_companies").select2({
+			allowClear: true,
+			placeholder: "Sélectionner..."
+		});
+	});
+</script>
+
+<div class="panel">
+	<div class="panel-heading">
+		<span class="panel-title">Utilisateur</span>
+	</div>
+	<div class="panel-body">
+
+		<%= form_for [controller, @user] do |f| %>
+			<%= render 'common/error_messages', object: f.object %>
+
+			<div class="form-group">
+				<%= f.label :name, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :name, class: "form-control", :placeholder => "Nom" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :last_name, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :last_name, class: "form-control", :placeholder => "Prénom" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :email, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :email, class: "form-control", :placeholder => "Email" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :phone, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :phone, class: "form-control", :placeholder => "Téléphone" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :cellphone, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :cellphone, class: "form-control", :placeholder => "Téléphone portable" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :address, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :address, class: "form-control", :placeholder => "Adresse" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :postcode, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :postcode, class: "form-control", :placeholder => "Code postal" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :city, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :city, class: "form-control", :placeholder => "Ville" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :account_type, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:account_type, User::Account_type_select, class: "form-control select") %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :password, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.password_field :password, class: "form-control", :placeholder => "Mot de passe" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :password_confirmation, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.password_field :password_confirmation, class: "form-control", :placeholder => "Confirmation" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :partner_id, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:partner_id, partners_for_select('Aucune'), class: "form-control select") %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :promocode_id, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:promocode_id, promocodes_for_select('Aucun'), class: "form-control select") %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :companies, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:companies, companies_for_select) %>
+				</div>
+			</div>
+
+			<%#= hidden_field(:user, :created_by, :value => current_user.id.to_s) %>
+			<%#= hidden_field(:user, :created_for_partner, :value => current_partner.id.to_s) %>
+
+	</div>
+	<div class="panel-footer text-right">
+		<a class="btn btn-flat btn-danger" href="<%= send("#{controller}_users_path") %>">Annuler</a>
+		<%= f.submit action, class: "btn btn-primary btn-flat", 'data-autocomplete' => "lame sauce" %>
+		<% end %>
+	</div>
+</div>

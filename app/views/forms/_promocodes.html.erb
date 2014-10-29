@@ -1,9 +1,26 @@
-<!-- Javascript -->
 <script>
 	init.push(function () {
-		$("#promocode_effect_type, #promocode_effect_length").select2({
+		$(".select2").select2({
 			allowClear: true,
 			placeholder: "Select a State"
+		});
+
+		$(".new_promocode, .edit_promocode").validate({
+			focusInvalid: false,
+			rules: {
+				'promocode[name]': {
+				  required: true
+				},
+				'promocode[code]': {
+					required: true,
+				},
+				'promocode[effect_type_value]': {
+					required: true,
+				},
+				'promocode[effect_length_value]': {
+					required: true,
+				}
+			}
 		});
 	});
 </script>
@@ -14,7 +31,7 @@
 	</div>
 	<div class="panel-body">
 
-		<%= form_for [:admin, @promocode] do |f| %>
+		<%= form_for [controller, @promocode] do |f| %>
 			<%= render 'common/error_messages', object: f.object %>
 
 			<div class="form-group">
@@ -34,7 +51,7 @@
 			<div class="form-group">
 				<%= f.label :effect_type, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.select(:effect_type, Promocode::Effect_type_select, class: "form-control") %>
+					<%= f.select(:effect_type, Promocode::Effect_type_select, {}, { :class => 'select2' }) %>
 				</div>
 			</div>
 
@@ -48,7 +65,7 @@
 			<div class="form-group">
 				<%= f.label :effect_length, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.select(:effect_length, Promocode::Effect_length_select, class: "form-control") %>
+					<%= f.select(:effect_length, Promocode::Effect_length_select, {}, { :class => 'select2' }) %>
 				</div>
 			</div>
 
@@ -60,7 +77,7 @@
 			</div>
 	</div>
 	<div class="panel-footer text-right">
-		<a class="btn btn-flat btn-danger" href="<%= admin_promocodes_path %>">Annuler</a>
+		<a class="btn btn-flat btn-danger" href="<%= send("#{controller}_promocodes_path") %>">Annuler</a>
 		<%= f.submit action, class: "btn btn-primary btn-flat" %>
 		<% end %>
 	</div>

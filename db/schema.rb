@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141028151828) do
+ActiveRecord::Schema.define(version: 20141029160015) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,9 +22,13 @@ ActiveRecord::Schema.define(version: 20141028151828) do
     t.datetime "updated_at"
     t.integer  "partner_id"
     t.integer  "slots"
-    t.integer  "car_type",   default: 0
+    t.integer  "car_type",     default: 0
     t.integer  "user_id"
     t.string   "photo"
+    t.string   "brand"
+    t.string   "model"
+    t.string   "color"
+    t.string   "plate_number"
   end
 
   create_table "companies", force: true do |t|
@@ -34,6 +38,11 @@ ActiveRecord::Schema.define(version: 20141028151828) do
     t.datetime "updated_at"
     t.string   "address"
     t.string   "postcode"
+    t.string   "city"
+    t.string   "company_code"
+    t.string   "tva_number"
+    t.string   "bookmanager"
+    t.integer  "partner_id"
   end
 
   create_table "companies_users", id: false, force: true do |t|
@@ -68,6 +77,7 @@ ActiveRecord::Schema.define(version: 20141028151828) do
     t.datetime "paid_when"
     t.string   "paid_by__type"
     t.integer  "paid_by__id"
+    t.integer  "nb_luggage"
   end
 
   create_table "notifications", force: true do |t|
@@ -91,6 +101,9 @@ ActiveRecord::Schema.define(version: 20141028151828) do
     t.string   "logo"
     t.string   "address"
     t.string   "postcode"
+    t.string   "city"
+    t.string   "status"
+    t.string   "tva_number"
   end
 
   create_table "promocodes", force: true do |t|
@@ -122,6 +135,8 @@ ActiveRecord::Schema.define(version: 20141028151828) do
     t.string   "address"
     t.string   "postcode"
     t.integer  "promocode_id"
+    t.string   "city"
+    t.string   "cellphone"
   end
 
 end

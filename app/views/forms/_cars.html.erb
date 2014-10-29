@@ -1,0 +1,85 @@
+<script>
+	init.push(function () {
+		$(".new_car, .edit_car").validate({
+			focusInvalid: false,
+			rules: {
+				'car[name]': {
+				  required: true
+				},
+				'car[nb_slots]': {
+				  required: true
+				}
+			}
+		});
+
+		$(".select2").select2({
+			allowClear: true,
+			placeholder: "Choisir"
+		});
+	});
+</script>
+
+<div class="panel">
+	<div class="panel-heading">
+		<span class="panel-title">Ajouter une nouvelle voiture</span>
+	</div>
+	<div class="panel-body">
+		<%= form_for [controller, @car] do |f| %>
+		    
+			<%= render 'common/error_messages', object: f.object %>
+
+			<div class="form-group">
+				<%= f.label :name, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :name, class: "form-control", :placeholder => "Nom" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :brand, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :brand, class: "form-control", :placeholder => "Marque" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :model, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :model, class: "form-control", :placeholder => "Modèle" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :color, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :color, class: "form-control", :placeholder => "Couleur" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :car_type, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:car_type, Car::Car_type_alias.reverse, {}, { :class => 'select2' }) %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :slots, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :slots, class: "form-control", :placeholder => "Nombre de places" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :plate_number, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :plate_number, class: "form-control", :placeholder => "Numéro de plaque" %>
+				</div>
+			</div>
+	</div>
+	<div class="panel-footer text-right">
+		<a class="btn btn-flat btn-danger" href="<%= send("#{controller}_cars_path") %>">Annuler</a>
+		<%= f.submit action, class: "btn btn-primary btn-flat" %>
+		<% end %>
+	</div>
+</div>

@@ -43,7 +43,7 @@ class PartnerAdmin::CarsController < ApplicationController
 		private
 
 		    def car_params
-		    	params.require(:car).permit(:name, :note, :slots)
+		    	params.require(:car).permit(:name, :brand, :model, :color, :plate_number, :note, :slots)
 		    end
 
 		    def get_correct_car # Make sure we don't get an outside car

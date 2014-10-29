@@ -1,0 +1,68 @@
+<script>
+	init.push(function () {
+		$("#company_users_id").select2({
+			allowClear: true,
+			placeholder: "Sélectionner..."
+		});
+	});
+</script>
+<h2>Entreprise numéro <%= @company.id %> : <%= @company.name %></h2>
+<div class="row">
+	<div class="col-md-7">
+		<div class="panel panel-dark panel-light-green">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Utilisateurs de cette entreprise</span>
+			</div>
+			<div class="panel-body">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Nom</th>
+							<th>E-mail</th>
+							<th>Type de compte</th>
+							<th>Détacher</th>
+						</tr>
+					</thead>
+					<tbody class="valign-middle">
+						<% @users.each do |user| %>
+						<tr>
+							<td><%= user.id %></td>
+							<td><%= link_to admin_user_path(user), { :title => "Voir" } do %><%= build_name(user) %><% end %></td>
+							<td><%= user.email %></td>
+							<td><%= User::Account_type_alias[user.account_type] %></td>
+							<td><%= link_to admin_company_path(company_id: @company, user_id: user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Détacher" do %><i class="menu-icon fa fa-times"></i><% end %></td>
+						</tr>
+						<% end %>
+					</tbody>
+				</table>
+			</div>
+			<div class="panel-footer">
+				<p>Ajouter un utilisateur à cette entreprise</p>
+				<div class="row">
+					<div class="col-sm-6">
+						<%= form_for [:admin, @company], url: admin_company_path(@company) do |f| %>
+							<%= f.fields_for :users do |user| %>
+								<%= user.select(:id, users_for_select, class: "form-control") %>
+						<% end %>
+					</div>
+					<div class="col-sm-6">
+						<%= f.submit "Ajouter", class: "btn btn-flat btn-primary" %>
+						<% end %>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-sm-12">
+		<a href="<%= admin_companies_path %>">
+			<button class="btn btn-flat btn-labeled btn-warning">
+			    <span class="btn-label icon fa fa-reply"></span>
+				Retour aux entreprises
+			</button>
+		</a>
+	</div>
+</div>

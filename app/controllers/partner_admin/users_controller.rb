@@ -3,6 +3,8 @@ class PartnerAdmin::UsersController < ApplicationController
 
 	def index
 		@users = current_partner.users || current_user.partner.users
+		@clients = @users.where("account_type = ?", User.account_types[:client])
+		@drivers = @users.where("account_type in (?)", [ User.account_types[:driver], User.account_types[:partneradmin] ])
 	end
 	def show
 		@user = get_correct_user
@@ -43,7 +45,7 @@ class PartnerAdmin::UsersController < ApplicationController
 		private
 
 		    def user_params
-		    	params.require(:user).permit(:name, :email, :phone, :account_type, :password, :password_confirmation, :created_by)
+		    	params.require(:user).permit(:name, :last_name, :email, :phone, :cellphone, :photo, :account_type, :address, :postcode, :city, :password, :password_confirmation, :partner_id, :promocode_id, :created_by)
 		    end
 
 		    def get_correct_user # Make sure we don't get an outside user

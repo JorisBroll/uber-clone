@@ -1,17 +1,18 @@
 <script>
 	init.push(function () {
-		$('#jq-datatables-inactive').dataTable();
-		$('#jq-datatables-inactive_wrapper .table-caption').html('<i class="panel-title-icon fa fa-check"></i>Courses à venir');
-		$('#jq-datatables-inactive_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
+		$('#table-in-progress, #table-inactive, #table-canceled, #table-done').dataTable();
 
-		$('#jq-datatables-canceled').dataTable();
-		$('#jq-datatables-canceled_wrapper .table-caption').html('<i class="panel-title-icon fa fa-times"></i>Courses annulées');
-		$('#jq-datatables-canceled_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
+		$('#table-in-progress_wrapper .table-caption').html('<i class="panel-title-icon fa fa-spinner"></i>Courses en cours');
+		$('#table-in-progress_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
 
-		$('#jq-datatables-done').dataTable();
-		$('#jq-datatables-done_wrapper .table-caption').html('<i class="panel-title-icon fa fa-check"></i>Courses terminées');
-		$('#jq-datatables-done_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
+		$('#table-inactive_wrapper .table-caption').html('<i class="panel-title-icon fa fa-check"></i>Courses à venir');
+		$('#table-inactive_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
 
+		$('#table-canceled_wrapper .table-caption').html('<i class="panel-title-icon fa fa-times"></i>Courses annulées');
+		$('#table-canceled_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
+
+		$('#table-done_wrapper .table-caption').html('<i class="panel-title-icon fa fa-check"></i>Courses terminées');
+		$('#table-done_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
 
 		$('#courses-tabs a:first').tab('show');
 	});
@@ -34,45 +35,43 @@
 
 <div class="tab-content">
 	<div class="tab-pane fade" id="in-progress">
-		<div class="panel panel-info">
-			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-spinner"></i>Courses en cours</span>
-			</div> <!-- / .panel-heading -->
-			<div class="panel-body">
-				<table class="table">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Départ</th>
-							<th>Arrivée</th>
-							<th>Date</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<tbody class="valign-middle">
-						<% @courses.where("status = ?", Course.statuses[:in_progress]).order(:date_when, :time_when).each do |course| %>
-							<tr>
-								<td><%= course.id %></td>
-								<td><%= course.from %></td>
-								<td><%= course.to %></td>
-								<td>Le <%= course.date_when.strftime("%d/%m/%Y") unless course.date_when.nil? %> à <%= course.time_when.strftime("%Hh%M")  unless course.time_when.nil? %></td>
-								<td style="font-size:16px;"><%= link_to admin_course_path(course), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_course_path(course), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_course_path(course), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
-							</tr>
-						<% end %>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
-	<div class="tab-pane fade" id="inactive">
-		<div class="table-warning">
-			<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="jq-datatables-inactive">
+		<div class="table-info">
+			<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="table-in-progress">
 				<thead>
 					<tr>
 						<th>#</th>
 						<th>Départ</th>
 						<th>Arrivée</th>
 						<th>Date</th>
+						<th>Prix de la course</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody class="valign-middle">
+					<% @courses.where("status = ?", Course.statuses[:in_progress]).order(:date_when, :time_when).each do |course| %>
+						<tr>
+							<td><%= course.id %></td>
+							<td><%= course.from %></td>
+							<td><%= course.to %></td>
+							<td>Le <%= course.date_when.strftime("%d/%m/%Y") unless course.date_when.nil? %> à <%= course.time_when.strftime("%Hh%M")  unless course.time_when.nil? %></td>
+							<td><%= course.computed_price.to_s+' €' %></td>
+							<td style="font-size:16px;"><%= link_to admin_course_path(course), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_course_path(course), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_course_path(course), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
+						</tr>
+					<% end %>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="tab-pane fade" id="inactive">
+		<div class="table-warning">
+			<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="table-inactive">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Départ</th>
+						<th>Arrivée</th>
+						<th>Date</th>
+						<th>Prix de la course</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
@@ -83,6 +82,7 @@
 							<td><%= course.from %></td>
 							<td><%= course.to %></td>
 							<td>Le <%= course.date_when.strftime("%d/%m/%Y") unless course.date_when.nil? %> à <%= course.time_when.strftime("%Hh%M")  unless course.time_when.nil? %></td>
+							<td><%= course.computed_price.to_s+' €' %></td>
 							<td style="font-size:16px;"><%= link_to admin_course_path(course), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_course_path(course), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_course_path(course), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 						</tr>
 					<% end %>
@@ -92,13 +92,14 @@
 	</div>
 	<div class="tab-pane fade" id="canceled">
 		<div class="table-danger">
-			<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="jq-datatables-canceled">
+			<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="table-canceled">
 				<thead>
 					<tr>
 						<th>#</th>
 						<th>Départ</th>
 						<th>Arrivée</th>
 						<th>Date</th>
+						<th>Prix de la course</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
@@ -109,6 +110,7 @@
 							<td><%= course.from %></td>
 							<td><%= course.to %></td>
 							<td>Le <%= course.date_when.strftime("%d/%m/%Y") unless course.date_when.nil? %> à <%= course.time_when.strftime("%Hh%M")  unless course.time_when.nil? %></td>
+							<td><%= course.computed_price.to_s+' €' %></td>
 							<td style="font-size:16px;"><%= link_to admin_course_path(course), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_course_path(course), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_course_path(course), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 						</tr>
 					<% end %>
@@ -118,13 +120,14 @@
 	</div>
 	<div class="tab-pane fade" id="done">
 		<div class="table-success">
-			<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="jq-datatables-done">
+			<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="table-done">
 				<thead>
 					<tr>
 						<th>#</th>
 						<th>Départ</th>
 						<th>Arrivée</th>
 						<th>Date</th>
+						<th>Prix de la course</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
@@ -135,6 +138,7 @@
 							<td><%= course.from %></td>
 							<td><%= course.to %></td>
 							<td>Le <%= course.date_when.strftime("%d/%m/%Y") unless course.date_when.nil? %> à <%= course.time_when.strftime("%Hh%M")  unless course.time_when.nil? %></td>
+							<td><%= course.computed_price.to_s+' €' %></td>
 							<td style="font-size:16px;"><%= link_to admin_course_path(course), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_course_path(course), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_course_path(course), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 						</tr>
 					<% end %>

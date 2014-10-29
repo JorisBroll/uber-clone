@@ -1,63 +1,41 @@
-<!-- Javascript -->
 <script>
 	init.push(function () {
-		$("#user_phone").mask("99.99.99.99.99");
+		$("#partner_phone").mask("99.99.99.99.99");
+		$("#partner_company_code").mask("999 999 999 99999");
 
 		// Setup validation
-		$("#new_user").validate({
-			ignore: '.ignore, .select2-input',
+		$(".new_partner, .edit_partner").validate({
 			focusInvalid: false,
 			rules: {
-				'user[email]': {
+				'partner[name]': {
+				  required: true
+				},
+				'partner[email]': {
 				  required: true,
 				  email: true
 				},
-				'user[password]': {
-					required: true,
-					minlength: 6,
-					maxlength: 20
-				},
-				'user[password_confirmation]': {
-					required: true,
-					minlength: 6,
-					equalTo: "#user_password"
-				},
-				'user[phone]': {
+				'partner[phone]': {
 					required: true,
 					phone_format: true
 				}
 			}
 		});
-		
-		$("#user_account_type, #user_partner_id, #user_promocode_id").select2({
-			allowClear: true,
-			placeholder: "Sélectionner..."
-		});
 	});
-
 </script>
-<!-- / Javascript -->
 
 <div class="panel">
 	<div class="panel-heading">
-		<span class="panel-title">Utilisateur</span>
+		<span class="panel-title">Entreprise partenaire</span>
 	</div>
 	<div class="panel-body">
 
-		<%= form_for [:admin, @user] do |f| %>
+		<%= form_for [controller, @partner] do |f| %>		
 			<%= render 'common/error_messages', object: f.object %>
 
 			<div class="form-group">
 				<%= f.label :name, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :name, class: "form-control", :placeholder => "Nom" %>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<%= f.label :last_name, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :last_name, class: "form-control", :placeholder => "Prénom" %>
 				</div>
 			</div>
 
@@ -90,46 +68,43 @@
 			</div>
 
 			<div class="form-group">
-				<%= f.label :account_type, class: "col-sm-3 control-label" %>
+				<%= f.label :city, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.select(:account_type, User::Account_type_select, class: "form-control select") %>
+					<%= f.text_field :city, class: "form-control", :placeholder => "Ville" %>
 				</div>
 			</div>
 
 			<div class="form-group">
-				<%= f.label :password, class: "col-sm-3 control-label" %>
+				<%= f.label :company_code, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.password_field :password, class: "form-control", :placeholder => "Mot de passe" %>
+					<%= f.text_field :company_code, class: "form-control", :placeholder => "Siret" %>
 				</div>
 			</div>
 
 			<div class="form-group">
-				<%= f.label :password_confirmation, class: "col-sm-3 control-label" %>
+				<%= f.label :tva_number, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.password_field :password_confirmation, class: "form-control", :placeholder => "Confirmation" %>
+					<%= f.text_field :tva_number, class: "form-control", :placeholder => "Numéro TVA" %>
 				</div>
 			</div>
 
 			<div class="form-group">
-				<%= f.label :partner_id, class: "col-sm-3 control-label" %>
+				<%= f.label :status, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.select(:partner_id, partners_for_select('Aucune'), class: "form-control select") %>
+					<%= f.text_field :status, class: "form-control", :placeholder => "Status" %>
 				</div>
 			</div>
 
 			<div class="form-group">
-				<%= f.label :promocode_id, class: "col-sm-3 control-label" %>
+				<%= f.label :note, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.select(:promocode_id, promocodes_for_select('Aucun'), class: "form-control select") %>
+					<%= f.text_area :note, class: "form-control", :placeholder => "Note" %>
 				</div>
 			</div>
-
-			<%= hidden_field(:user, :created_by) %>
-
 	</div>
 	<div class="panel-footer text-right">
-		<a class="btn btn-flat btn-danger" href="<%= admin_users_path %>">Annuler</a>
+		<a class="btn btn-flat btn-danger" href="<%= send("#{controller}_partners_path") %>">Annuler</a>
 		<%= f.submit action, class: "btn btn-primary btn-flat" %>
-		<% end %>
+			<% end %>
 	</div>
-</div>
+</div>	

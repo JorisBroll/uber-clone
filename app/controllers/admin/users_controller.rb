@@ -5,8 +5,7 @@ class Admin::UsersController < ApplicationController
 
 	def index
 		@clients = User.where("account_type = ?", User.account_types[:client])
-		@drivers = User.where("account_type = ?", User.account_types[:driver])
-		@partneradmins = User.where("account_type = ?", User.account_types[:partneradmin])
+		@drivers = User.where("account_type in (?)", [ User.account_types[:driver], User.account_types[:partneradmin] ])
 		@admins = User.where("account_type in (?)", [ User.account_types[:superadmin], User.account_types[:admin] ])
 	end
 	def show
@@ -20,7 +19,8 @@ class Admin::UsersController < ApplicationController
 		@user = User.new(user_params)
 		if @user.save
 			flash[:success] = "L'utilisateur "+build_name(@user, true)+" a été crée."
-			#AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'user', 'id' => @user.id.to_s} })
+			update_user_companies
+			AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'user', 'id' => @user.id.to_s} })
 			redirect_to admin_users_path
 		else
 			flash[:error] = "L'utilisateur n'a pas pu être crée."
@@ -34,6 +34,8 @@ class Admin::UsersController < ApplicationController
 	end
 	def update
 		@user = User.find(params[:id])
+		
+		update_user_companies # If set
 		if @user.update_attributes(user_params)
 			flash[:success] = "L'utilisateur "+build_name(@user, true)+" a été modifié avec succès."
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'user', 'id' => @user.id.to_s} })
@@ -59,7 +61,7 @@ class Admin::UsersController < ApplicationController
 		private
 
 		    def user_params
-		    	params.require(:user).permit(:name, :last_name, :email, :phone, :photo, :account_type, :address, :postcode, :password, :password_confirmation, :partner_id, :promocode_id, :created_by)
+		    	params.require(:user).permit(:name, :last_name, :email, :phone, :cellphone, :photo, :account_type, :address, :postcode, :city, :password, :password_confirmation, :partner_id, :promocode_id, :created_by)
 		    end
 
 		    def set_partner
@@ -69,6 +71,16 @@ class Admin::UsersController < ApplicationController
 		    def correct_user # Make a user unable to edit anyone but himself
 				@user = User.find(params[:id])
 				redirect_to(root_url) unless current_user?(@user)
+	        end
+
+	        def update_user_companies
+	        	if !params[:user][:companies].nil? and params[:user][:companies].count > 0
+		        	a = []
+		    		params[:user][:companies].each do |company|
+		    			a.push(Company.find_by(id: company))
+		    		end
+					@user.update({'companies' => a})
+				end
 	        end
 
 end
