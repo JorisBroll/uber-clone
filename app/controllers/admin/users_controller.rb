@@ -5,12 +5,23 @@ class Admin::UsersController < ApplicationController
 
 	def index
 		@clients = User.where("account_type = ?", User.account_types[:client])
-		@drivers = User.where("account_type in (?)", [ User.account_types[:driver], User.account_types[:partneradmin] ])
+
+		@users_selfemployed_admins = []
+		@partners_selfemployed = Partner.where("status = ?", Partner.statuses[:self_employed]).each do |partner|
+			partner.users.where("account_type = ?", User.account_types[:partneradmin]).each do |user| @users_selfemployed_admins.push(user) end
+		end
+
+		@users_sarl_admins = []
+		@partners_selfemployed = Partner.where("status = ?", Partner.statuses[:company]).each do |partner|
+			partner.users.where("account_type = ?", User.account_types[:partneradmin]).each do |user| @users_sarl_admins.push(user) end
+		end
+
 		@admins = User.where("account_type in (?)", [ User.account_types[:superadmin], User.account_types[:admin] ])
 	end
 	def show
 		#current_partner
 		@user = User.find(params[:id])
+		@promocode = Promocode.find(2)
 	end
 	def new
 		@user = User.new()

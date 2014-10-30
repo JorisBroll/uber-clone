@@ -33,11 +33,18 @@ class PartnerAdmin::CoursesController < ApplicationController
 			render 'edit'
 		end
 	end
+	def destroy
+		@course = Course.find(params[:id]).destroy
+	    flash[:success] = "Course supprimée."
+	    AppLogger.log ({'user_id' => @current_user, 'action' => 'deleted', 'target_object' => {'type' => 'course', 'id' => params[:id].to_s} })
+	    redirect_to partner_admin_courses_path
+	end
 
 		private
 
 		    def course_params
-		    	params.require(:course).permit(:from, :to, :when)
+		    	params['course']['stops'] = params['course']['stops'].to_json
+		    	params.require(:course).permit(:from, :to, :date_when, :time_when, :computed_distance, :computed_duration, :computed_price, :stops, :nb_people, :nb_luggage, :user_id, :partner_id, :car_id, :company_id, :status, :notes, :payment_when, :created_by, :company_id, :payment_type, :flight_number)
 		    end
 
 		    def get_correct_course # Make sure we don't get an outside course

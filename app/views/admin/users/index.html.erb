@@ -1,12 +1,15 @@
 <script>
 	init.push(function () {
-		$('#table-clients, #table-drivers, #table-partneradmins, #table-admins').dataTable();
+		$('#table-clients, #table-self-employed, #table-sarl-admins, #table-partneradmins, #table-admins').dataTable();
 
 		$('#table-clients_wrapper .table-caption').text('Liste complète des clients');
 		$('#table-clients_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
 
-		$('#table-drivers_wrapper .table-caption').text('Liste complète des conducteurs');
-		$('#table-drivers_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
+		$('#table-self-employed_wrapper .table-caption').text('Liste complète des auto-entrepreneurs');
+		$('#table-self-employed_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
+
+		$('#table-sarl-admins_wrapper .table-caption').text('Liste complète des admins SARL');
+		$('#table-sarl-admins_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
 
 		$('#table-admins_wrapper .table-caption').text('Liste complète des administrateurs');
 		$('#table-admins_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
@@ -21,7 +24,10 @@
 			<a href="#clients" data-toggle="tab">Clients</a>
 		</li>
 		<li class="">
-			<a href="#drivers" data-toggle="tab">Conducteurs</a>
+			<a href="#self-employed" data-toggle="tab">Auto-entrepreneurs</a>
+		</li>
+		<li class="">
+			<a href="#sarl-admins" data-toggle="tab">Administrateurs de SARL</a>
 		</li>
 		<li class="">
 			<a href="#admins" data-toggle="tab">Administrateurs</a>
@@ -57,9 +63,9 @@
 				</table>
 			</div>
 		</div>
-		<div class="tab-pane fade" id="drivers">
+		<div class="tab-pane fade" id="self-employed">
 			<div class="table-primary">
-				<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="table-drivers">
+				<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="table-self-employed">
 					<thead>
 						<tr>
 							<th>#</th>
@@ -72,14 +78,44 @@
 						</tr>
 					</thead>
 					<tbody>
-					<% @drivers.each do |user| %>
+					<% @users_selfemployed_admins.each do |user| %>
 						<tr>
 							<td><%= user.id %></td>
 							<td><%= build_name(user) %></td>
 							<td><%= user.email %></td>
 							<td><%= user.partner.name unless user.partner.nil? %></td>
 							<td><%= user.created_by_user.name unless user.created_by.nil? %></td>
-							<td><%= User::Account_type_alias[user.account_type] %></td>
+							<td><%= User::Account_types[user.account_type.to_sym][:name] %></td>
+							<td style="text-align:center; font-size:16px;"><%= link_to admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
+						</tr>
+					<% end %>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="tab-pane fade" id="sarl-admins">
+			<div class="table-primary">
+				<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="table-sarl-admins">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Nom Prénom</th>
+							<th>Email</th>
+							<th>Entreprise</th>
+							<th>Crée par</th>
+							<th>Type</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+					<% @users_sarl_admins.each do |user| %>
+						<tr>
+							<td><%= user.id %></td>
+							<td><%= build_name(user) %></td>
+							<td><%= user.email %></td>
+							<td><%= user.partner.name unless user.partner.nil? %></td>
+							<td><%= user.created_by_user.name unless user.created_by.nil? %></td>
+							<td><%= User::Account_types[user.account_type.to_sym][:name] %></td>
 							<td style="text-align:center; font-size:16px;"><%= link_to admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 						</tr>
 					<% end %>
@@ -103,7 +139,7 @@
 					<% @admins.each do |user| %>
 						<tr>
 							<td><%= user.id %></td>
-							<td><%= User::Account_type_alias[user.account_type] %></td>
+							<td><%= User::Account_types[user.account_type.to_sym][:name] %></td>
 							<td><%= build_name(user) %></td>
 							<td><%= user.email %></td>
 							<td style="text-align:center; font-size:16px;"><%= link_to admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>

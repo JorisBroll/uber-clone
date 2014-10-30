@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141029160015) do
+ActiveRecord::Schema.define(version: 20141030104305) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,6 +43,8 @@ ActiveRecord::Schema.define(version: 20141029160015) do
     t.string   "tva_number"
     t.string   "bookmanager"
     t.integer  "partner_id"
+    t.string   "email"
+    t.string   "phone"
   end
 
   create_table "companies_users", id: false, force: true do |t|
@@ -102,7 +104,7 @@ ActiveRecord::Schema.define(version: 20141029160015) do
     t.string   "address"
     t.string   "postcode"
     t.string   "city"
-    t.string   "status"
+    t.integer  "status"
     t.string   "tva_number"
   end
 

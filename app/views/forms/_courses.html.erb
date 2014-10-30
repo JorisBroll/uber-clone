@@ -1,11 +1,11 @@
 <script>
-	init.push(function () {		
+	init.push(function () {
 		$(".select2").select2({
 			allowClear: true,
 			placeholder: "Sélectionner..."
 		});
 
-		$(".new_promocode, .edit_promocode").validate({
+		$(".new_course, .edit_course").validate({
 			focusInvalid: false,
 			rules: {
 				'course[from]': {
@@ -159,6 +159,13 @@
 			<hr class="panel-wide">
 
 			<div class="form-group">
+				<%= f.label :status, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:status, Course::Status_select, {}, { :class => 'select2' }) %>
+				</div>
+			</div>
+
+			<div class="form-group">
 				<%= f.label :user_id, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.select(:user_id, users_for_select('Personne (ajouter plus tard)'), {}, { :class => 'select2' }) %>
@@ -173,9 +180,9 @@
 			</div>
 
 			<div class="form-group">
-				<%= f.label :status, class: "col-sm-3 control-label" %>
+				<%= f.label :car_id, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.select(:status, Course::Status_select, {}, { :class => 'select2' }) %>
+					<%= f.select(:car_id, cars_for_select('Aucune'), {}, { :class => 'select2' }) %>
 				</div>
 			</div>
 

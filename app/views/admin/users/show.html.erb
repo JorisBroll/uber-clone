@@ -12,14 +12,14 @@
 				</div>
 			</div> <!-- / .panel-heading -->
 			<div class="list-group">
-				<div class="list-group-item"><i class="fa fa-phone list-group-icon"></i>Téléphone <span class="text-default text-sm" style="float:right;"><%= @user.phone %></span></div>
+				<div class="list-group-item"><i class="fa fa-phone list-group-icon"></i>Téléphone<span class="text-default text-sm" style="float:right;"><%= @user.phone %></span></div>
+				<div class="list-group-item"><i class="fa fa-phone list-group-icon"></i>Téléphone portable<span class="text-default text-sm" style="float:right;"><%= @user.cellphone %></span></div>
+				<div class="list-group-item"><i class="fa fa-phone list-group-icon"></i>Adresse<span class="text-default text-sm" style="float:right;"><%= build_address(@user) %></span></div>
+				<div class="list-group-item"><i class="fa fa-phone list-group-icon"></i>Type de compte<span class="text-default text-sm" style="float:right;"><%= User::Account_types[@user.account_type.to_sym][:name] %></span></div>
 				
 				<%= link_to edit_admin_user_path(@user), class: "list-group-item" do %><button class="btn btn-labeled btn-block">Editer les informations</button><% end %>
 			</div>
 		</div>
-	</div>
-
-	<div class="col-md-6">
 		<div class="panel widget-support-tickets panel-warning">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses de l'utilisateur</span>
@@ -40,12 +40,45 @@
 				<% end %>
 			</div>
 			<div class="panel-footer clearfix">
-				<%= link_to(new_partner_admin_course_path) do %>
+				<%= link_to(new_admin_course_path) do %>
 					<button class="btn btn-flat btn-labeled btn-warning btn-xs ">
 				    	<span class="btn-label icon fa fa-flag-checkered"></span>Nouvelle course
 					</button>
 				<% end %>
 			</div>
 		</div>
+	</div>
+
+	<div class="col-md-6">
+		<% if @user.partner %>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Partenaire rattaché</span>
+			</div>
+			<div class="panel-body">
+				<%= @user.partner.name %>
+			</div>
+		</div>
+		<% end %>
+		<% if @user.companies %>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Entreprise cliente rattachée</span>
+			</div>
+			<div class="panel-body">
+				<%= @user.companies.name %>
+			</div>
+		</div>
+		<% end %>
+		<% if @promocode %>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Codes promos rattachés</span>
+			</div>
+			<div class="panel-body">
+				<%= @promocode.name %>
+			</div>
+		</div>
+		<% end %>
 	</div>
 </div>

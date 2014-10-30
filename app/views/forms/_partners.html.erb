@@ -3,6 +3,11 @@
 		$("#partner_phone").mask("99.99.99.99.99");
 		$("#partner_company_code").mask("999 999 999 99999");
 
+		$(".select2").select2({
+			allowClear: true,
+			placeholder: "Sélectionner..."
+		});
+
 		// Setup validation
 		$(".new_partner, .edit_partner").validate({
 			focusInvalid: false,
@@ -91,7 +96,7 @@
 			<div class="form-group">
 				<%= f.label :status, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.text_field :status, class: "form-control", :placeholder => "Status" %>
+					<%= f.select(:status, Partner::Statuses_select, {}, { :class => 'select2' }) %>
 				</div>
 			</div>
 

@@ -1,5 +1,9 @@
 module CarsHelper
-	def cars_for_select(partner = false)
-	  Car.all.collect { |o| [o.name, o.id] }
+	def cars_for_select(add_blank = false)
+		@table = Car.all.collect { |o| [o.name, o.id] }
+		if add_blank
+			@table.unshift([add_blank, 0])
+		end
+		return @table
 	end
 end

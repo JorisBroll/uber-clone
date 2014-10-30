@@ -1,13 +1,146 @@
-<h1>Page pour voir une seule course et ses détails</h1>
+<h2>Page pour voir une seule course et ses détails</h2>
 
-<%= @course.id %>
-<%= @course.from %>
-<%= @course.to %>
-<%# hash = JSON.parse @course.stops %>
-Arrêts : 
-<% @course.stops.each do |o| %>
-<%= o %>
-<% end %>
-
-
-<td><%= link_to "Retour aux courses", admin_courses_path %></td>
+<div class="row">
+	<div class="col-md-6">
+		<div class="panel panel-info panel-dark widget-profile">
+			<div class="panel-heading">
+				<div class="widget-profile-bg-icon"><i class="fa fa-gears"></i></div>
+				<img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" class="widget-profile-avatar">
+				<div class="widget-profile-header">
+					<span><%= @course.from %> - <%= @course.to %> <em class="text-sm">[#<%= @course.id %>]</em></span><br/>
+					<span><%= getDateTime(@course) %></span>
+				</div>
+			</div>
+			<div class="list-group">
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Nombre de personnes<span class="text-default text-sm" style="float:right;"><%= @course.nb_people %></span></div>
+				<div class="list-group-item"><i class="fa fa-barcode list-group-icon"></i>Prix total<span class="text-default text-sm" style="float:right;"><%= @course.computed_price.to_s+' €' %></span></div>
+				<div class="list-group-item"><i class="fa fa-taxi list-group-icon"></i>Distance<span class="text-default text-sm" style="float:right;"><%= @course.computed_distance %></span></div>
+				<div class="list-group-item"><i class="fa fa-flag-checkered list-group-icon"></i>Durée<span class="text-default text-sm" style="float:right;"><%= @course.computed_duration %></span></div>
+				<div class="list-group-item"><i class="fa fa-pencil-square-o list-group-icon"></i>Nombre de bagages<span class="text-default text-sm" style="float:right;"><%= @course.nb_luggage %></span></div>
+				<div class="list-group-item"><i class="fa fa-pencil-square-o list-group-icon"></i>Numéro de vol<span class="text-default text-sm" style="float:right;"><%= @course.flight_number %></span></div>
+				<div class="list-group-item"><i class="fa fa-pencil-square-o list-group-icon"></i>Précisions<span class="text-default text-sm" style="float:right;"><%= @course.notes %></span></div>
+				<%= link_to edit_admin_course_path(@course), class: "list-group-item" do %><button class="btn btn-labeled btn-block">Editer les informations</button><% end %>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<% if @partner %>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-star-o"></i>Partenaire rattaché à cette course</span>
+			</div>
+			<div class="panel-body">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Nom</th>
+							<th>Email</th>
+							<th>Téléphone</th>
+							<th>Adresse</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><%= @partner.id %></td>
+							<td><img src="<%= image_path('pixel-admin/avatar.png') %>" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#"><%= link_to admin_partner_path(@partner) do @partner.name end %></a></td>
+							<td><a href="mailto:<%= @partner.email %>"><%= @partner.email %></a></td>
+							<td><%= @partner.phone %></td>
+							<td><%= @partner.address %> <%= @partner.postcode %> <%= @partner.city %></td>
+							<td><%= @partner.status %></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<% end %>
+		<% if @client %>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-user"></i>Client rattaché à cette course</span>
+			</div>
+			<div class="panel-body">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Nom</th>
+							<th>Email</th>
+							<th>Téléphone</th>
+						</tr>
+					</thead>
+					<tbody class="valign-middle">
+						<tr>
+							<td><%= @client.id %></td>
+								<td><img src="<%= image_path('pixel-admin/avatar.png') %>" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#"><%= link_to admin_user_path(@client) do @client.name end %></a></td>
+							<td><a href="mailto:<%= @client.email %>"><%= @client.email %></a></td>
+							<td><%= @client.phone %></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<% end %>
+		<% if @company %>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-user"></i>Entreprise cliente rattachée à cette course</span>
+			</div>
+			<div class="panel-body">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Nom</th>
+							<th>Email</th>
+							<th>Téléphone</th>
+						</tr>
+					</thead>
+					<tbody class="valign-middle">
+						<tr>
+							<td><%= @company.id %></td>
+								<td><img src="<%= image_path('pixel-admin/avatar.png') %>" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#"><%= link_to admin_user_path(@company) do @company.name end %></a></td>
+							<td><a href="mailto:<%= @company.email %>"><%= @company.email %></a></td>
+							<td><%= @company.phone %></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<% end %>
+		<% if @car %>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-car"></i>Voiture rattachée à cette course</span>
+			</div>
+			<div class="panel-body">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Nom</th>
+						</tr>
+					</thead>
+					<tbody class="valign-middle">
+						<tr>
+							<td><%= @car.id %></td>
+							<td><%= @car.name %></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<% end %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-12">
+		<%= link_to admin_courses_path do %>
+			<button class="btn btn-flat btn-labeled btn-warning">
+			    <span class="btn-label icon fa fa-reply"></span>
+				Retour à la liste des courses
+			</button>
+		<% end %>
+	</div>
+</div>

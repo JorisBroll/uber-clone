@@ -6,6 +6,10 @@ class Admin::CoursesController < ApplicationController
 	end
 	def show
 		@course = Course.find(params[:id])
+		@partner = @course.partner
+		@client = @course.user
+		@company = @course.company
+		@car = @course.car
 	end
 	def new
 		@course = Course.new

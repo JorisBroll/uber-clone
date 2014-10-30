@@ -4,6 +4,11 @@
 		$("#company_postcode").mask("99999");
 		$("#company_tva_number").mask("FRaa999999999");
 
+		$(".select2").select2({
+			allowClear: true,
+			placeholder: "Sélectionner..."
+		});
+
 		$(".new_company, .edit_company").validate({
 			focusInvalid: false,
 			rules: {
@@ -86,6 +91,13 @@
 				<%= f.label :notes, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_area :notes, class: "form-control", :placeholder => "Renseignements divers" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :partner_id, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:partner_id, partners_for_select('Aucune'), {}, { :class => 'select2' }) %>
 				</div>
 			</div>
 

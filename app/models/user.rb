@@ -5,16 +5,32 @@ class User < ActiveRecord::Base
 	has_many :person, :foreign_key => "created_by"
 	has_many :cars, inverse_of: :user
 	has_many :notifications, inverse_of: :user
-	has_one :promocode, inverse_of: :user
+	has_one :promocode, inverse_of: :users
 	has_and_belongs_to_many :companies
 
 	before_save { self.email = email.downcase }
 
-	enum account_type: [:superadmin, :admin, :partneradmin, :driver, :client ]
-	Account_type_select = [ ["Client", :client], ["Conducteur", :driver], ["Administrateur d'entreprise", :partneradmin], ["Administrateur", :admin], ["Gérant", :superadmin] ]
-	Account_type_alias = {'superadmin' => "Gérant", 'admin' => "Administrateur", 'partneradmin' => "Administrateur d'entreprise", 'driver' => "Conducteur", 'client' => "Client"}
-	Account_type_select_noadmin = [ ['Client', :client], ['Conducteur', :driver], ["Administrateur d'entreprise", :partneradmin] ]
+	Account_types = {
+		:superadmin => {
+			:name => "Gérant"
+		},
+		:admin => {
+			:name => "Administrateur"
+		},
+		:partneradmin => {
+			:name => "Administrateur d'entreprise"
+		},
+		:driver => {
+			:name => "Conducteur"
+		},
+		:client => {
+			:name => "Client"
+		}
+	}
 	
+	enum account_type: Account_types.collect { |key, o| key }
+	Account_types_select = Account_types.collect { |key, o| [o[:name], key] }
+
 	validates :name, presence: true, length: { maximum: 50 }
 	VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
 	validates :email, presence:   true,

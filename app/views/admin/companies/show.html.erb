@@ -6,9 +6,28 @@
 		});
 	});
 </script>
-<h2>Entreprise numéro <%= @company.id %> : <%= @company.name %></h2>
 <div class="row">
-	<div class="col-md-7">
+	<div class="col-md-6">
+		<div class="panel panel-info panel-dark widget-profile">
+			<div class="panel-heading">
+				<div class="widget-profile-bg-icon"><i class="fa fa-gears"></i></div>
+				<img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" class="widget-profile-avatar">
+				<div class="widget-profile-header">
+					<span><%= @company.name %> <em class="text-sm">[#<%= @company.id %>]</em></span><br/>
+					<span><%= @company.email %></span>
+				</div>
+			</div>
+			<div class="list-group">
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Adresse<span class="text-default text-sm" style="float:right;"><%= build_address(@company) %></span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Téléphone<span class="text-default text-sm" style="float:right;"><%= @company.phone %></span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>SIRET<span class="text-default text-sm" style="float:right;"><%= @company.company_code %></span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Code TVA<span class="text-default text-sm" style="float:right;"><%= @company.tva_number %></span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Interlocuteur<span class="text-default text-sm" style="float:right;"><%= @company.bookmanager %></span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Précisions<span class="text-default text-sm" style="float:right;"><%= @company.notes %></span></div>
+				
+				<%= link_to edit_admin_company_path(@company), class: "list-group-item" do %><button class="btn btn-labeled btn-block">Editer les informations</button><% end %>
+			</div>
+		</div>
 		<div class="panel panel-dark panel-light-green">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Utilisateurs de cette entreprise</span>
@@ -30,7 +49,7 @@
 							<td><%= user.id %></td>
 							<td><%= link_to admin_user_path(user), { :title => "Voir" } do %><%= build_name(user) %><% end %></td>
 							<td><%= user.email %></td>
-							<td><%= User::Account_type_alias[user.account_type] %></td>
+							<td><%= User::Account_types[user.account_type.to_sym][:name] %></td>
 							<td><%= link_to admin_company_path(company_id: @company, user_id: user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Détacher" do %><i class="menu-icon fa fa-times"></i><% end %></td>
 						</tr>
 						<% end %>
@@ -53,6 +72,18 @@
 				</div>
 			</div>
 		</div>
+	</div>
+	<div class="col-md-6">
+		<% if @company.partner %>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Partenaire rattaché</span>
+			</div>
+			<div class="panel-body">
+				<%= @company.partner.name %>
+			</div>
+		</div>
+		<% end %>
 	</div>
 </div>
 
