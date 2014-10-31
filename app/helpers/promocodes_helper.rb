@@ -6,4 +6,13 @@ module PromocodesHelper
 		end
 		return @table
 	end
+
+	def compute_price(promocode, price)
+		case promocode.effect_type
+		when 'percent'
+			return price - price*(promocode.effect_type_value.to_f/100)
+		when 'fixed'
+			return price - promocode.effect_type_value
+		end
+	end
 end

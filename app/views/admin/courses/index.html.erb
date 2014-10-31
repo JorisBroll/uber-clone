@@ -18,6 +18,13 @@
 	});
 </script>
 
+<div class="panel">
+	<div class="panel-body">
+		<%# @a = Course.where("status = ?", Course.statuses[:done]).collect { |o| compute_price(Promocode.find_by(id: o.promocode_id), o.computed_price)} %>
+		<span>Chiffre d'affaire du mois (somme des montants facturés) : </span><span><%#= @a.inspect %> **A Venir**</span> 
+	</div>
+</div>
+
 <ul id="courses-tabs" class="nav nav-tabs nav-tabs-simple">
 	<li class="">
 		<a href="#in-progress" data-toggle="tab">Courses en cours</a>

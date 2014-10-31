@@ -82,6 +82,20 @@
 			</div>
 		</div>
 		<% end %>
+		<% @promocode = Promocode.find_by(id: @client.promocode_id) %>
+		<% if !@promocode.nil? %>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-user"></i>Code promo utilisé par le client</span>
+			</div>
+			<div class="panel-body">
+				<p><span>Nom : </span>#<%= @promocode.id %>/<%= @promocode.name %></p>
+				<p><span>Type de code</span><%= Promocode::Effect_type_alias[@promocode.effect_type] %></p>
+				<p><span>Durée (jours ou utilisations) : </span><%= Promocode::Effect_length_alias[@promocode.effect_length] %></p>
+				<p><span>Prix après réduction : </span><%= compute_price(@promocode, @course.computed_price) %></p>
+			</div>
+		</div>
+		<% end %>
 		<% if @company %>
 		<div class="panel">
 			<div class="panel-heading">

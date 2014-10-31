@@ -4,7 +4,8 @@ class PartnerAdmin::UsersController < ApplicationController
 	def index
 		@users = current_partner.users || current_user.partner.users
 		@clients = @users.where("account_type = ?", User.account_types[:client])
-		@drivers = @users.where("account_type in (?)", [ User.account_types[:driver], User.account_types[:partneradmin] ])
+		@drivers = @users.where("account_type = ?", User.account_types[:driver])
+		@partneradmins = @users.where("account_type = ?", User.account_types[:partneradmin])
 	end
 	def show
 		@user = get_correct_user

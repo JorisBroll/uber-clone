@@ -1,2 +1,84 @@
-<h1>Voir un utilisateur et ses détails</h1>
-<td><%= link_to "Éditer cet utilisateur", edit_partner_admin_user_path(@user) %></td>
+<h2>Informations de l'utilisateur</h2>
+
+<div class="row">
+	<div class="col-md-6">
+		<div class="panel panel-info panel-dark widget-profile">
+			<div class="panel-heading">
+				<div class="widget-profile-bg-icon"><i class="fa fa-gears"></i></div>
+				<img src="<%= image_path('pixel-admin/avatar.png') %>" class="widget-profile-avatar">
+				<div class="widget-profile-header">
+					<span><%= build_name(@user) %> <em class="text-sm">[#<%= @user.id %>]</em></span><br>
+					<a href="mailto:<%= @user.email %>"><%= @user.email %></a>
+				</div>
+			</div> <!-- / .panel-heading -->
+			<div class="list-group">
+				<div class="list-group-item"><i class="fa fa-phone list-group-icon"></i>Téléphone<span class="text-default text-sm" style="float:right;"><%= @user.phone %></span></div>
+				<div class="list-group-item"><i class="fa fa-phone list-group-icon"></i>Téléphone portable<span class="text-default text-sm" style="float:right;"><%= @user.cellphone %></span></div>
+				<div class="list-group-item"><i class="fa fa-phone list-group-icon"></i>Adresse<span class="text-default text-sm" style="float:right;"><%= build_address(@user) %></span></div>
+				<div class="list-group-item"><i class="fa fa-phone list-group-icon"></i>Type de compte<span class="text-default text-sm" style="float:right;"><%= User::Account_types[@user.account_type.to_sym][:name] %></span></div>
+				
+				<%= link_to edit_partner_admin_user_path(@user), class: "list-group-item" do %><button class="btn btn-labeled btn-block">Editer les informations</button><% end %>
+			</div>
+		</div>
+		<div class="panel widget-support-tickets panel-warning">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses de l'utilisateur</span>
+			</div>
+			<div class="panel-body">
+				<% if @user.courses.each do |course| %>
+					<div class="ticket">
+						<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
+						<%= link_to partner_partner_admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
+						<span class="ticket-info">
+							Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
+						</span><br />
+						<%= link_to edit_partner_partner_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
+						<%= link_to partner_partner_admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
+					</div> <!-- / .ticket -->
+				<% end.empty? %>
+					Aucune course
+				<% end %>
+			</div>
+			<div class="panel-footer clearfix">
+				<%= link_to(new_partner_admin_course_path) do %>
+					<button class="btn btn-flat btn-labeled btn-warning btn-xs ">
+				    	<span class="btn-label icon fa fa-flag-checkered"></span>Nouvelle course
+					</button>
+				<% end %>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-6">
+		<% if @user.partner %>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Partenaire rattaché</span>
+			</div>
+			<div class="panel-body">
+				<%= @user.partner.name %>
+			</div>
+		</div>
+		<% end %>
+		<% if @user.companies %>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Entreprise cliente rattachée</span>
+			</div>
+			<div class="panel-body">
+				<%= @user.companies.name %>
+			</div>
+		</div>
+		<% end %>
+		<% if @promocode %>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Codes promos rattachés</span>
+			</div>
+			<div class="panel-body">
+				<%= @promocode.name %>
+			</div>
+		</div>
+		<% end %>
+	</div>
+</div>

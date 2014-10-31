@@ -1,6 +1,13 @@
 module UsersHelper
-	def users_for_select(add_blank = false)
-	  	@table = User.all.collect { |o| [build_name(o), o.id] }
+	def users_for_select(add_blank = false, options = false)
+		@users = User.all
+		if options
+			if options[:partner_id]
+				@users = Partner.find_by(id: options[:partner_id]).users
+			end
+		end
+
+	  	@table = @users.collect { |o| [build_name(o), o.id] }
 		if add_blank
 			@table.unshift([add_blank, 0])
 		end

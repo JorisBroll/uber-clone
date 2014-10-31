@@ -12,10 +12,15 @@ class User < ActiveRecord::Base
 
 	Account_types = {
 		:superadmin => {
-			:name => "Gérant"
+			:name => "Gérant",
+			:privileges => true
 		},
 		:admin => {
-			:name => "Administrateur"
+			:name => "Administrateur",
+			:privileges => {
+				:users => ['show', 'edit', 'delete'],
+				:courses => ['show', 'edit', 'delete']
+			}
 		},
 		:partneradmin => {
 			:name => "Administrateur d'entreprise"
@@ -30,6 +35,11 @@ class User < ActiveRecord::Base
 	
 	enum account_type: Account_types.collect { |key, o| key }
 	Account_types_select = Account_types.collect { |key, o| [o[:name], key] }
+	Account_types_select_partneradmin = Account_types.collect { |key, o|
+		if ![:superadmin, :admin].include? key
+			[o[:name], key]
+		end
+	}
 
 	validates :name, presence: true, length: { maximum: 50 }
 	VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
