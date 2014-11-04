@@ -73,7 +73,7 @@
 				</thead>
 				<tbody class="valign-middle">
 
-				<% if @drivers.each do |user| %>			
+				<% @drivers.each do |user| %>			
 				<tr>
 					<td><%= user.id %></td>
 					<td><img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#" title=""><%= user.name %></a></td>
@@ -81,9 +81,7 @@
 					<td>0102030405</td>
 					<td style="font-size:16px;"><%= link_to partner_admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 				</tr>
-			<% end.empty? %>
-				Aucun chauffeur
-			<% end %>
+				<% end %>
 			</table>
 			<div class="panel-footer">
 				<%= link_to(new_partner_admin_user_path) do %>
@@ -97,6 +95,22 @@
 
 
 	<div class="col-md-6">
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">Récapitulatif financier</span>
+			</div>
+			<div class="list-group">
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Nombre de courses effectuées<span class="text-default text-sm" style="float:right;"><%= @courses.count %></span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale des courses (avant codes promos)<span class="text-default text-sm" style="float:right;"><%= @totalPrice %> €</span></div>
+				<!--<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale facturée (après codes promos)<span class="text-default text-sm" style="float:right;"><%= @totalPriceAfterCodes %> €</span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale redistribuée aux chauffeurs<span class="text-default text-sm" style="float:right;"><%= (@totalPrice*0.8).round(2) %> €</span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale revenant à Naveco<span class="text-default text-sm" style="float:right;"><%= ((@totalPrice*0.2) - @totalNavecoMargin).round(2) %> €</span></div>
+				<span> </span><span><%= @a.to_s %></span> -->
+			</div>
+			<div class="panel-footer">
+				
+			</div>
+		</div>
 		<div class="panel">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-taxi"></i>Liste des voitures de l'entreprise</span>
@@ -113,7 +127,7 @@
 							<th>Actions</th>
 						</tr>
 					</thead>
-					<% if @cars.each do |car| %>
+					<% @cars.each do |car| %>
 						<tr>
 							<td><%= car.id %></td>
 							<td><%= car.name %></td>
@@ -122,8 +136,6 @@
 							<td><%= car.partner.name %> | <%= car.user.name unless car.user.nil? %></td>
 							<td style="font-size:16px;"><%= link_to partner_admin_car_path(car), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_car_path(car), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_car_path(car), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 						</tr>
-					<% end.empty? %>
-						Aucune voiture
 					<% end %>
 				</table>
 			</div>
@@ -141,7 +153,7 @@
 				<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses de l'entreprise</span>
 			</div> <!-- / .panel-heading -->
 			<div class="panel-body">
-				<% if @courses.each do |course| %>
+				<% @courses.each do |course| %>
 					<div class="ticket">
 						<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
 						<%= link_to partner_admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
@@ -150,9 +162,7 @@
 						</span><br />
 						<%= link_to edit_partner_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
 						<%= link_to partner_admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
-					</div> <!-- / .ticket -->
-				<% end.empty? %>
-					Aucune course
+					</div>
 				<% end %>
 			</div>
 			<div class="panel-footer clearfix">

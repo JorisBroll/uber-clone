@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
 	has_many :person, :foreign_key => "created_by"
 	has_many :cars, inverse_of: :user
 	has_many :notifications, inverse_of: :user
-	has_one :promocode, inverse_of: :users
+	has_and_belongs_to_many :promocodes
 	has_and_belongs_to_many :companies
 
 	before_save { self.email = email.downcase }

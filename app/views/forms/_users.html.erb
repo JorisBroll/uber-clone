@@ -2,6 +2,7 @@
 	init.push(function () {
 		$("#user_phone").mask("99.99.99.99.99");
 		$("#user_cellphone").mask("99.99.99.99.99");
+		$("#user_postcode").mask("99999");
 
 		rules = {
 			'user[name]': {
@@ -39,55 +40,51 @@
 			}
 		}
 
-		$(".new_user, .edit_user").validate({
+		/*$(".new_user, .edit_user").validate({
 			focusInvalid: false,
 			rules: rules
 		});
-				
+				*/
 		$("#user_companies").attr('multiple', 'multiple').attr('name', $("#user_companies").attr('name')+'[]');
 		$("#user_companies option:selected").removeAttr("selected");
-		$("#user_account_type, #user_partner_id, #user_promocode_id, #user_companies").select2({
+		$("#user_account_type, #user_partner_id, #user_promocode_ids, #user_company_ids").select2({
 			allowClear: true,
 			placeholder: "Sélectionner..."
 		});
+
+		$("#dropzonejs-example").dropzone({
+			url: "//dummy.html",
+			paramName: "photo", // The name that will be used to transfer the file
+			maxFilesize: 1, // MB
+
+			addRemoveLinks : true,
+			dictResponseError: "Impossible d'uploader l'image!",
+			autoProcessQueue: false,
+			thumbnailWidth: 138,
+			thumbnailHeight: 120,
+			dictDefaultMessage: "Test",
+
+			previewTemplate: '<div class="dz-preview dz-file-preview"><div class="dz-details"><div class="dz-filename"><span data-dz-name></span></div><div class="dz-size">File size: <span data-dz-size></span></div><div class="dz-thumbnail-wrapper"><div class="dz-thumbnail"><img data-dz-thumbnail><span class="dz-nopreview">No preview</span><div class="dz-success-mark"><i class="fa fa-check-circle-o"></i></div><div class="dz-error-mark"><i class="fa fa-times-circle-o"></i></div><div class="dz-error-message"><span data-dz-errormessage></span></div></div></div></div><div class="progress progress-striped active"><div class="progress-bar progress-bar-success" data-dz-uploadprogress></div></div></div>',
+
+			resize: function(file) {
+				var info = { srcX: 0, srcY: 0, srcWidth: file.width, srcHeight: file.height },
+					srcRatio = file.width / file.height;
+				if (file.height > this.options.thumbnailHeight || file.width > this.options.thumbnailWidth) {
+					info.trgHeight = this.options.thumbnailHeight;
+					info.trgWidth = info.trgHeight * srcRatio;
+					if (info.trgWidth > this.options.thumbnailWidth) {
+						info.trgWidth = this.options.thumbnailWidth;
+						info.trgHeight = info.trgWidth / srcRatio;
+					}
+				} else {
+					info.trgHeight = file.height;
+					info.trgWidth = file.width;
+				}
+				return info;
+			}
+		});
 	});
 </script>
-				<script>
-					init.push(function () {
-						$("#dropzonejs-example").dropzone({
-							url: "//dummy.html",
-							paramName: "file", // The name that will be used to transfer the file
-							maxFilesize: 0.5, // MB
-
-							addRemoveLinks : true,
-							dictResponseError: "Impossible d'uploader l'image!",
-							autoProcessQueue: false,
-							thumbnailWidth: 138,
-							thumbnailHeight: 120,
-							dictDefaultMessage: "Test",
-
-							previewTemplate: '<div class="dz-preview dz-file-preview"><div class="dz-details"><div class="dz-filename"><span data-dz-name></span></div><div class="dz-size">File size: <span data-dz-size></span></div><div class="dz-thumbnail-wrapper"><div class="dz-thumbnail"><img data-dz-thumbnail><span class="dz-nopreview">No preview</span><div class="dz-success-mark"><i class="fa fa-check-circle-o"></i></div><div class="dz-error-mark"><i class="fa fa-times-circle-o"></i></div><div class="dz-error-message"><span data-dz-errormessage></span></div></div></div></div><div class="progress progress-striped active"><div class="progress-bar progress-bar-success" data-dz-uploadprogress></div></div></div>',
-
-							resize: function(file) {
-								var info = { srcX: 0, srcY: 0, srcWidth: file.width, srcHeight: file.height },
-									srcRatio = file.width / file.height;
-								if (file.height > this.options.thumbnailHeight || file.width > this.options.thumbnailWidth) {
-									info.trgHeight = this.options.thumbnailHeight;
-									info.trgWidth = info.trgHeight * srcRatio;
-									if (info.trgWidth > this.options.thumbnailWidth) {
-										info.trgWidth = this.options.thumbnailWidth;
-										info.trgHeight = info.trgWidth / srcRatio;
-									}
-								} else {
-									info.trgHeight = file.height;
-									info.trgWidth = file.width;
-								}
-								return info;
-							}
-						});
-					});
-				</script>
-
 <div class="panel">
 	<div class="panel-heading">
 		<span class="panel-title">Utilisateur</span>
@@ -179,13 +176,6 @@
 			</div>
 
 			<div class="form-group">
-				<%= f.label :promocode_id, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.select(:promocode_id, promocodes_for_select('Aucun'), class: "form-control select") %>
-				</div>
-			</div>
-
-			<div class="form-group">
 				<%= f.label :photo, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<div id="dropzonejs-example" class="dropzone-box">
@@ -193,11 +183,9 @@
 							<i class="fa fa-cloud-upload"></i>
 							Drop files in here<br><span class="dz-text-small">or click to pick manually</span>
 						</div>
-						<form action="//dummy.html">
-							<div class="fallback">
-								<input name="file" type="file" multiple="" />
-							</div>
-						</form>
+						<div class="fallback">
+							<%= file_field(:user, :photo) %>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -217,17 +205,26 @@
 				<%= f.label :companies, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<% if controller == 'admin' %>
-					<%= f.select(:companies, companies_for_select) %>
+					<%= f.collection_select :company_ids, Company.all, :id, :name, {}, {:multiple => true} %>
 					<% elsif controller == 'partner_admin' %>
-					<%= f.select(:companies, companies_for_select(false, {:partner_id => current_partner.id})) %>
+					<%= f.collection_select :company_ids, @current_partner.companies, :id, :name, {}, {:multiple => true} %>
 					<% end %>
 				</div>
 			</div>
+
+			<div class="form-group">
+				<%= f.label :promocodes, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.collection_select :promocode_ids, Promocode.all, :id, :name, {}, {:multiple => true} %>
+				</div>
+			</div>
+			
 
 			<%#= hidden_field(:user, :created_by, :value => current_user.id.to_s) %>
 			<%#= hidden_field(:user, :created_for_partner, :value => current_partner.id.to_s) %>
 
 	</div>
+
 	<div class="panel-footer text-right">
 		<a class="btn btn-flat btn-danger" href="<%= send("#{controller}_users_path") %>">Annuler</a>
 		<%= f.submit action, class: "btn btn-primary btn-flat", 'data-autocomplete' => "lame sauce" %>

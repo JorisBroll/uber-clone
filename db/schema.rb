@@ -11,10 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141030104305) do
+ActiveRecord::Schema.define(version: 20141104094509) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "app_configs", force: true do |t|
+    t.string "course_margin"
+  end
 
   create_table "cars", force: true do |t|
     t.string   "name"
@@ -75,11 +79,11 @@ ActiveRecord::Schema.define(version: 20141030104305) do
     t.integer  "payment_when",      default: 0
     t.integer  "company_id",        default: 0
     t.string   "flight_number"
-    t.boolean  "paid",              default: false
     t.datetime "paid_when"
-    t.string   "paid_by__type"
-    t.integer  "paid_by__id"
     t.integer  "nb_luggage"
+    t.integer  "payment_status",    default: 0
+    t.integer  "promocode_id"
+    t.integer  "payment_by",        default: 0
   end
 
   create_table "notifications", force: true do |t|
@@ -118,6 +122,13 @@ ActiveRecord::Schema.define(version: 20141030104305) do
     t.integer  "effect_type_value"
     t.string   "code"
   end
+
+  create_table "promocodes_users", id: false, force: true do |t|
+    t.integer "promocode_id"
+    t.integer "user_id"
+  end
+
+  add_index "promocodes_users", ["promocode_id", "user_id"], name: "index_promocodes_users_on_promocode_id_and_user_id", using: :btree
 
   create_table "users", force: true do |t|
     t.string   "name"

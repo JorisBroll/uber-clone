@@ -10,6 +10,8 @@ module Naveco
   class Application < Rails::Application
   	config.i18n.enforce_available_locales = true
   	config.assets.precompile += %w( application )
+
+  	config.superbite = "yoyo"
 	#config.i18n.default_locale = :fr
 	#config.i18n.locale = :fr
   end

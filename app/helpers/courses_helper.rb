@@ -5,7 +5,19 @@ module CoursesHelper
 		end
 	end
 
-	def payment_when_for_select(add_blank = false)
-		@table = Course::Payment_whens.collect { |i, o| [o['name'], i] }
+	def payment_status_for_select
+		@table = Course::Payment_status.collect { |i, o| [o[:name], i] }
+	end
+
+	def payment_when_for_select
+		@table = Course::Payment_whens.collect { |i, o| [o[:name], i] }
+	end
+
+	def payment_by_admin_for_select
+		@table = Course::Payment_by.collect { |i, o| [o[:name_admin], i] }
+	end
+
+	def payment_by_partner_for_select
+		@table = Course::Payment_by.collect { |i, o| [o[:name_partneradmin], i] }
 	end
 end

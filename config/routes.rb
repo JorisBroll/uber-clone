@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     get '/logout_partner', to: 'static_pages#logout_partner'
     get '/map', to: 'static_pages#map'
     get '/config', to: 'static_pages#config'
+    get '/payments', to: 'static_pages#payments'
     resources :users
     resources :partners
     resources :promocodes

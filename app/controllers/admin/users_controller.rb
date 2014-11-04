@@ -21,16 +21,16 @@ class Admin::UsersController < ApplicationController
 	def show
 		#current_partner
 		@user = User.find(params[:id])
-		@promocode = Promocode.find(2)
+		@promocode = @user.promocodes
 	end
 	def new
 		@user = User.new()
 	end
 	def create
 		@user = User.new(user_params)
+		fghj
 		if @user.save
 			flash[:success] = "L'utilisateur "+build_name(@user, true)+" a été crée."
-			update_user_companies
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'user', 'id' => @user.id.to_s} })
 			redirect_to admin_users_path
 		else
@@ -45,8 +45,6 @@ class Admin::UsersController < ApplicationController
 	end
 	def update
 		@user = User.find(params[:id])
-		
-		update_user_companies # If set
 		if @user.update_attributes(user_params)
 			flash[:success] = "L'utilisateur "+build_name(@user, true)+" a été modifié avec succès."
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'user', 'id' => @user.id.to_s} })
@@ -72,7 +70,7 @@ class Admin::UsersController < ApplicationController
 		private
 
 		    def user_params
-		    	params.require(:user).permit(:name, :last_name, :email, :phone, :cellphone, :photo, :account_type, :address, :postcode, :city, :password, :password_confirmation, :partner_id, :promocode_id, :created_by)
+		    	params.require(:user).permit(:name, :last_name, :email, :phone, :cellphone, :photo, :account_type, :address, :postcode, :city, :password, :password_confirmation, :partner_id, {:promocode_ids => []}, {:company_ids => []}, :created_by)
 		    end
 
 		    def set_partner
@@ -83,15 +81,4 @@ class Admin::UsersController < ApplicationController
 				@user = User.find(params[:id])
 				redirect_to(root_url) unless current_user?(@user)
 	        end
-
-	        def update_user_companies
-	        	if !params[:user][:companies].nil? and params[:user][:companies].count > 0
-		        	a = []
-		    		params[:user][:companies].each do |company|
-		    			a.push(Company.find_by(id: company))
-		    		end
-					@user.update({'companies' => a})
-				end
-	        end
-
 end
