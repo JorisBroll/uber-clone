@@ -60,23 +60,27 @@
 			</div>
 		</div>
 		<% end %>
-		<% if @user.companies %>
+		<% if @user.companies.count > 0 %>
 		<div class="panel">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Entreprise cliente rattachée</span>
 			</div>
 			<div class="panel-body">
-				<%= @user.companies.name %>
+				<% @companies.each do |company| %>
+					<div><%= company.name %></div>
+				<% end %>
 			</div>
 		</div>
 		<% end %>
-		<% if @promocode %>
+		<% if @promocodes.count > 0 %>
 		<div class="panel">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Codes promos rattachés</span>
 			</div>
 			<div class="panel-body">
-				<%= @promocode.name %>
+				<% @promocodes.each do |promocode| %>
+					<div><%= promocode.name %></div>
+				<% end %>
 			</div>
 		</div>
 		<% end %>

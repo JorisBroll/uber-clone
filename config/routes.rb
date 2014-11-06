@@ -7,7 +7,7 @@ Rails.application.routes.draw do
     get '/logout_partner', to: 'static_pages#logout_partner'
     get '/map', to: 'static_pages#map'
     get '/config', to: 'static_pages#config'
-    get '/payments', to: 'static_pages#payments'
+    get '/monthly', to: 'static_pages#monthly'
     resources :users
     resources :partners
     resources :promocodes
@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   namespace :partner_admin do
     get '/home', to: 'static_pages#home'
     get '/map', to: 'static_pages#map'
+    get '/monthly', to: 'static_pages#monthly'
     resources :users
     resources :cars
     resources :courses

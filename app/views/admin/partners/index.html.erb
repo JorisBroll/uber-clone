@@ -12,7 +12,10 @@
 			<tr>
 				<th>#</th>
 				<th>Nom</th>
-				<th>Email</th>
+				<th>Status</th>
+				<th>Code postal, ville</th>
+				<th>Numéro de téléphone</th>
+				<th>Nombre de véhicules</th>
 				<th>Actions</th>
 			</tr>
 		</thead>
@@ -21,7 +24,10 @@
 	<tr>
 		<td><%= partner.id %></td>
 		<td><%= partner.name %></td>
-		<td><%= partner.email %></td>
+		<td><%= Partner::Statuses[partner.status.to_sym][:name] %></td>
+		<td><%= partner.postcode %>, <%= partner.city %></td>
+		<td><%= partner.phone %></td>
+		<td><%= partner.cars.count %></td>
 		<td style="text-align:center; font-size:16px;"><%= link_to admin_partner_path(partner), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_partner_path(partner), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_partner_path(partner), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 	</tr>
 <% end %>

@@ -6,10 +6,10 @@ class Partner < ActiveRecord::Base
 
 	Statuses = {
 		:company => {
-			:name => "Entreprise"
+			:name => "SARL"
 		},
 		:taxi => {
-			:name => "taxi"
+			:name => "Taxi"
 		},
 		:self_employed => {
 			:name => "Auto entrepreneur"
@@ -18,7 +18,6 @@ class Partner < ActiveRecord::Base
 
 	enum status: Statuses.collect { |key, o| key }
 	Statuses_select = Statuses.collect { |key, o| [o[:name], key] }
-
 
 	validates :name, presence: true, length: { maximum: 50 }
 end

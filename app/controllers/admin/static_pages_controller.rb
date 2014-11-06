@@ -16,7 +16,7 @@ class Admin::StaticPagesController < ApplicationController
 		@partners = Partner.all
 	end
 
-	def payments
+	def monthly
 		@courses = Course.where("date_when >= ? AND date_when <= ?", Time.zone.now.beginning_of_month, Time.zone.now.end_of_month)
 		@totalPrice = 0
 		@totalPriceAfterCodes = 0
@@ -28,6 +28,9 @@ class Admin::StaticPagesController < ApplicationController
 			@totalNavecoMargin += (course.computed_price - afterCodePrice)
 		end
 		@unpaidCourses = @courses.where("status = ? AND payment_status = ?", Course.statuses[:done], Course.payment_statuses[:not_paid]).order('payment_status ASC')
+	
+		@partners = Partner.all
+		@companies = Company.all
 	end
 
 end

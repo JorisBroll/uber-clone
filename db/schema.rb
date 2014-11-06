@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141104094509) do
+ActiveRecord::Schema.define(version: 20141105142559) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -84,6 +84,12 @@ ActiveRecord::Schema.define(version: 20141104094509) do
     t.integer  "payment_status",    default: 0
     t.integer  "promocode_id"
     t.integer  "payment_by",        default: 0
+    t.integer  "rating_client"
+    t.integer  "rating_partner"
+    t.datetime "trip_started"
+    t.datetime "trip_finished"
+    t.text     "trip_feedback"
+    t.integer  "commission",        default: 20
   end
 
   create_table "notifications", force: true do |t|

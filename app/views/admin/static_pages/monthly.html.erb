@@ -1,0 +1,87 @@
+<h2>Récapitulatif mensuel des paiements</h2>
+
+<div class="row">
+	<div class="col-md-6">
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">Totaux</span>
+			</div>
+			<div class="list-group">
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Nombre de courses effectuées<span class="text-default text-sm" style="float:right;"><%= @courses.count %></span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale des courses (avant codes promos)<span class="text-default text-sm" style="float:right;"><%= @totalPrice.round(2) %> €</span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale facturée (après codes promos)<span class="text-default text-sm" style="float:right;"><%= @totalPriceAfterCodes.round(2) %> €</span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale redistribuée aux chauffeurs<span class="text-default text-sm" style="float:right;"><%= (@totalPrice*0.8).round(2) %> €</span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale revenant à Naveco<span class="text-default text-sm" style="float:right;"><%= ((@totalPrice*0.2) - @totalNavecoMargin).round(2) %> €</span></div>
+				<span> </span><span><%= @a.to_s %></span> 
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="panel widget-support-tickets">
+			<div class="panel-heading">
+				<span class="panel-title">Détails des courses effectuées</span>
+			</div>
+			<div class="panel-body">
+				<% @courses.where("status = ?", Course.statuses[:done]).order('payment_status ASC').each do |course| %>
+					<div class="ticket">
+						<% if course.payment_status == 'paid' %>
+						<span class="label label-success ticket-label">Payée</span>
+						<% else %>
+						<span class="label label-danger ticket-label">Non payée</span>
+						<% end %>
+						<a title="Voir la course" href="<%= admin_course_path(course) %>" class="ticket-title">De <b><%= course.from %></b> à <b><%= course.to %></b><span>[#<%= course.id.to_s %>]</span></a>
+						<div class="ticket-info">
+							Démarrée par <a href="<%= admin_user_path(course.user) %>"><%= build_name(course.user) %></a> <%= getDateTime(course) %>
+						</div>
+						<div class="ticket-info">
+							Effectuée par la société <a href="<%= admin_partner_path(course.partner) %>"><%= course.partner.name %></a><span class="text-default text-sm" style="float:right;"><%= compute_price(course).round(2) %> €</span>
+						</div>
+					</div>
+				<% end %>
+			</div>
+			<div class="panel-footer">
+				<% totalUnpaid = 0 %>
+				<% @unpaidCourses.each do |course| %>
+					<% totalUnpaid += compute_price(course) %>
+				<% end %>
+				<%= @unpaidCourses.count %> courses non reglées <span class="text-default text-sm" style="float:right;"><%= totalUnpaid.round(2) %> €</span>
+			</div>
+		</div>
+
+		<div class="panel widget-support-tickets">
+			<div class="panel-heading">
+				<span class="panel-title">Sommes dues par les entreprises partenaires</span>
+			</div>
+			<div class="panel-body">
+				<% @partners.each do |partner| %>
+					<% unpaidCourses = partner.courses.where("status = ? AND payment_status = ? AND payment_by = ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:partner]) %>
+					<% if unpaidCourses.count > 0 %>
+					<div class="ticket">
+						<div>
+							<span class="label label-danger ticket-label"><%= (unpaidCourses.map {|s| compute_price(s)}.reduce(0, :+)).round(2) %> €</span>
+							<a href="<%= admin_partner_path(partner) %>" class="ticket-title"><b><%= partner.name %></b></a>
+						</div>
+						<% unpaidCourses.each do |course| %>
+						<div class="ticket-info">
+							Course n°<a href="<%= admin_course_path(course) %>"><b><%= course.id %></b></a> - De <%= course.from %> à <%= course.to %><span class="text-default text-xs" style="float:right;"><%= compute_price(course).round(2) %> €</span>
+						</div>
+						<% end %>
+					</div>
+					<% end %>
+				<% end %>
+			</div>
+		</div>
+
+		<div class="panel widget-support-tickets">
+			<div class="panel-heading">
+				<span class="panel-title">Sommes dues par les entreprises clientes</span>
+			</div>
+			<div class="panel-body">
+				<% @unpaidCourses2 = @courses.where("status = ? AND payment_status = ? AND payment_by = ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:company])
+					@unpaidCourses2.each do |course| %>
+					<%= course.company.name %><span class="text-default text-xs" style="float:right;">A venir</span>
+					<% end %>
+			</div>
+		</div>
+	</div>
+</div>

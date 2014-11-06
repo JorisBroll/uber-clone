@@ -21,7 +21,8 @@ class Admin::UsersController < ApplicationController
 	def show
 		#current_partner
 		@user = User.find(params[:id])
-		@promocode = @user.promocodes
+		@companies = @user.companies
+		@promocodes = @user.promocodes
 	end
 	def new
 		@user = User.new()

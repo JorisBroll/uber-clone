@@ -1,3 +1,8 @@
+<script>
+init.push(function () {
+	$('#panel-courses .panel-body').slimScroll({ height: 400, alwaysVisible: true, color: '#888',allowPageScroll: true });
+});
+</script>
 <h2>Informations de l'entreprise</h2>
 
 <div class="row">
@@ -21,138 +26,12 @@
 				<%= link_to edit_admin_partner_path(@partner), class: "list-group-item" do %><button class="btn btn-labeled btn-block">Editer les informations</button><% end %>
 			</div>
 		</div>
-		<div class="panel panel-dark-gray">
-			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-star-o"></i>Liste des administrateurs de l'entreprise</span>
-			</div>
-			<div class="panel-body">
-				<table class="table">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Nom</th>
-							<th>Email</th>
-							<th>Téléphone</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<% if @partneradmins.each do |user| %>
-						<tr>
-							<td><%= user.id %></td>
-							<td><img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#" title=""><%= user.name %></a></td>
-							<td><a href="mailto:<%= user.email %>"><%= user.email %></a></td>
-							<td><%= user.phone %></td>
-							<td style="font-size:16px;"><%= link_to partner_admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
-						</tr>
-					<% end.empty? %>
-						Aucun administrateur
-					<% end %>
-				</table>
-			</div>
-				<div class="panel-footer">
-					<%= link_to new_partner_admin_user_path do %>
-						<button class="btn btn-flat btn-labeled btn-xs ">
-					    	<span class="btn-label icon fa fa-star-o"></span>Ajouter un administrateur
-						</button>
-					<% end %>
-				</div>
-		</div>
-		<div class="panel">
-			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-smile-o"></i>Liste des chauffeurs de l'entreprise</span>
-			</div> <!-- / .panel-heading -->
-			<table class="table">
-				<thead>
-					<tr>
-						<th>#</th>
-						<th>Nom</th>
-						<th>Email</th>
-						<th>Téléphone</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody class="valign-middle">
 
-				<% @drivers.each do |user| %>			
-				<tr>
-					<td><%= user.id %></td>
-					<td><img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#" title=""><%= user.name %></a></td>
-					<td><a href="mailto:<%= user.email %>"><%= user.email %></a></td>
-					<td>0102030405</td>
-					<td style="font-size:16px;"><%= link_to partner_admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
-				</tr>
-				<% end %>
-			</table>
-			<div class="panel-footer">
-				<%= link_to(new_partner_admin_user_path) do %>
-					<button class="btn btn-flat btn-labeled btn-xs ">
-				    	<span class="btn-label icon fa fa-smile-o"></span>Ajouter un chauffeur
-					</button>
-				<% end %>
-			</div>
-		</div>
-	</div>
-
-
-	<div class="col-md-6">
-		<div class="panel">
-			<div class="panel-heading">
-				<span class="panel-title">Récapitulatif financier</span>
-			</div>
-			<div class="list-group">
-				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Nombre de courses effectuées<span class="text-default text-sm" style="float:right;"><%= @courses.count %></span></div>
-				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale des courses (avant codes promos)<span class="text-default text-sm" style="float:right;"><%= @totalPrice %> €</span></div>
-				<!--<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale facturée (après codes promos)<span class="text-default text-sm" style="float:right;"><%= @totalPriceAfterCodes %> €</span></div>
-				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale redistribuée aux chauffeurs<span class="text-default text-sm" style="float:right;"><%= (@totalPrice*0.8).round(2) %> €</span></div>
-				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale revenant à Naveco<span class="text-default text-sm" style="float:right;"><%= ((@totalPrice*0.2) - @totalNavecoMargin).round(2) %> €</span></div>
-				<span> </span><span><%= @a.to_s %></span> -->
-			</div>
-			<div class="panel-footer">
-				
-			</div>
-		</div>
-		<div class="panel">
-			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-taxi"></i>Liste des voitures de l'entreprise</span>
-			</div> <!-- / .panel-heading -->
-			<div class="panel-body">
-				<table class="table">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Nom</th>
-							<th>Places</th>
-							<th>Type de véhicule</th>
-							<th>Propriétaire</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<% @cars.each do |car| %>
-						<tr>
-							<td><%= car.id %></td>
-							<td><%= car.name %></td>
-							<td><%= car.slots %></td>
-							<td><%= car.car_type %></td>
-							<td><%= car.partner.name %> | <%= car.user.name unless car.user.nil? %></td>
-							<td style="font-size:16px;"><%= link_to partner_admin_car_path(car), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_car_path(car), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_car_path(car), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
-						</tr>
-					<% end %>
-				</table>
-			</div>
-			<div class="panel-footer">
-				<%= link_to(new_partner_admin_car_path) do %>
-					<button class="btn btn-flat btn-labeled btn-xs ">
-				    	<span class="btn-label icon fa fa-taxi"></span>Ajouter une voiture
-					</button>
-				<% end %>
-			</div>
-		</div>
-
-		<div class="panel widget-support-tickets panel-warning">
+		<div id="panel-courses" class="panel widget-support-tickets panel-warning">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses de l'entreprise</span>
-			</div> <!-- / .panel-heading -->
-			<div class="panel-body">
+			</div>
+			<div class="panel-body" id="fdsfdsfds">
 				<% @courses.each do |course| %>
 					<div class="ticket">
 						<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
@@ -175,4 +54,119 @@
 		</div>
 	</div>
 
+
+	<div class="col-md-6">
+		<div class="panel panel-success">
+			<div class="panel-heading">
+				<span class="panel-title">Récapitulatif rapide de l'activité</span>
+			</div>
+			<div class="list-group">
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Nombre de courses effectuées<span class="text-default text-sm" style="float:right;"><%= @courses.count %></span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale des courses (avant codes promos)<span class="text-default text-sm" style="float:right;"><%= @totalPrice.round(2) %> €</span></div>
+			</div>
+			<div class="panel-footer">
+				<%= link_to partner_admin_monthly_path(@partner) do %><button class="btn btn-labeled btn-block">Voir le récapitulatif complet</button><% end %>
+			</div>
+		</div>
+		<div class="panel panel-dark panel-pa-purple">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Personnel de l'entreprise</span>
+				<ul class="nav nav-tabs nav-tabs-xs">
+					<li class="active">
+						<a data-toggle="tab" href="#partner-admins">Administrateurs</a>
+					</li>
+					<li class="">
+						<a data-toggle="tab" href="#drivers">Chauffeurs</a>
+					</li>
+				</ul>
+			</div>
+			<div class="tab-content">
+				<div id="partner-admins" class="widget-comments panel-body tab-pane active">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Nom</th>
+								<th>Email</th>
+								<th>Téléphone</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<% if @partneradmins.each do |user| %>
+							<tr>
+								<td><img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#" title=""><%= user.name %></a></td>
+								<td><a href="mailto:<%= user.email %>"><%= user.email %></a></td>
+								<td><%= user.phone %></td>
+								<td style="font-size:16px;"><%= link_to partner_admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
+							</tr>
+						<% end.empty? %>
+							Aucun administrateur
+						<% end %>
+					</table>
+				</div>
+
+				<div id="drivers" class="widget-threads panel-body tab-pane">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Nom</th>
+								<th>Email</th>
+								<th>Téléphone</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody class="valign-middle">
+
+						<% @drivers.each do |user| %>			
+						<tr>
+							<td><img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#" title=""><%= user.name %></a></td>
+							<td><a href="mailto:<%= user.email %>"><%= user.email %></a></td>
+							<td>0102030405</td>
+							<td style="font-size:16px;"><%= link_to partner_admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
+						</tr>
+						<% end %>
+					</table>
+				</div>
+			</div>
+			<div class="panel-footer">
+				<%= link_to new_partner_admin_user_path do %>
+					<button class="btn btn-labeled btn-block">
+				    	<span class="btn-label icon fa fa-user"></span>Ajouter un salarié
+					</button>
+				<% end %>
+			</div>
+		</div>
+		
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-taxi"></i>Liste des voitures de l'entreprise</span>
+			</div> <!-- / .panel-heading -->
+			<div class="panel-body">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Nom</th>
+							<th>Places</th>
+							<th>Type de véhicule</th>
+							<th>Propriétaire</th>
+						</tr>
+					</thead>
+					<% @cars.each do |car| %>
+						<tr>
+							<td><a href="<%= partner_admin_car_path(car) %>"><%= car.name %></a></td>
+							<td><%= car.slots %></td>
+							<td><%= car.car_type %></td>
+							<td><%= car.partner.name %> | <%= car.user.name unless car.user.nil? %></td>
+						</tr>
+					<% end %>
+				</table>
+			</div>
+			<div class="panel-footer">
+				<%= link_to(new_partner_admin_car_path) do %>
+					<button class="btn btn-labeled btn-block">
+				    	<span class="btn-label icon fa fa-taxi"></span>Ajouter une voiture
+					</button>
+				<% end %>
+			</div>
+		</div>
+	</div>
 </div>
