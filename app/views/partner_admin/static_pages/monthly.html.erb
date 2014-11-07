@@ -30,7 +30,7 @@
 							Démarrée par <a href="<%= admin_user_path(course.user) %>"><%= build_name(course.user) %></a> <%= getDateTime(course) %>
 						</div>
 						<div class="ticket-info">
-							Effectuée par la société <a href="<%= admin_partner_path(course.partner) %>"><%= course.partner.name %></a><span class="text-default text-sm" style="float:right;"><%= compute_price(course).round(2) %> €</span>
+							Effectuée par la société <a href="<%= admin_partner_path(course.partner) %>"><%= course.partner.name %></a><span class="text-default text-sm" style="float:right;"><%= price_afterPromo(course).round(2) %> €</span>
 						</div>
 					</div>
 				<% end %>
@@ -38,9 +38,29 @@
 			<div class="panel-footer">
 				<% totalUnpaid = 0 %>
 				<% @unpaidCourses.each do |course| %>
-					<% totalUnpaid += compute_price(course) %>
+					<% totalUnpaid += price_afterPromo(course) %>
 				<% end %>
 				<%= @unpaidCourses.count %> courses non reglées <span class="text-default text-sm" style="float:right;"><%= totalUnpaid.round(2) %> €</span>
+			</div>
+		</div>
+
+		<% if @toNaveco.count > 0 %>
+		<div class="panel widget-support-tickets">
+			<div class="panel-heading">
+				<span class="panel-title">Sommes dues à Naveco</span><span class="label label-danger ticket-label"><%= (@toNaveco.map {|s| price_afterPromo(s, true)}.reduce(0, :+)).round(2) %> €</span>
+			</div>
+			<div class="panel-body">
+					<div class="ticket">
+						<div>
+							
+						</div>
+						<% @toNaveco.each do |course| %>
+						<div class="ticket-info">
+							Course n°<a href="<%= admin_course_path(course) %>"><b><%= course.id %></b></a> - De <%= course.from %> à <%= course.to %><span class="text-default text-xs" style="float:right;"><b><%= price_afterPromo(course, true).round(2) %> € </b> (de <%= price_afterPromo(course).round(2) %> €)</span>
+						</div>
+						<% end %>
+					</div>
+				<% end %>
 			</div>
 		</div>
 	</div>

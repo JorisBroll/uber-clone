@@ -1,7 +1,7 @@
 class PartnerAdmin::StaticPagesController < ApplicationController
 	before_action :partneradmins_only
 
-	include PromocodesHelper
+	include CoursesHelper
 	
 	def home
 		@partner = current_partner
@@ -14,7 +14,7 @@ class PartnerAdmin::StaticPagesController < ApplicationController
 		@totalPriceAfterCodes = 0
 		@courses.where("status = ?", Course.statuses[:done]).each do |course|
 			@totalPrice += course.computed_price
-			afterCodePrice = compute_price(course)
+			afterCodePrice = price_afterPromo(course)
 			@totalPriceAfterCodes += afterCodePrice
 		end
 		@unpaidCourses = @courses.where("status = ? AND payment_status = ?", Course.statuses[:done], Course.payment_statuses[:not_paid]).order('payment_status ASC')
@@ -30,10 +30,11 @@ class PartnerAdmin::StaticPagesController < ApplicationController
 		@totalNavecoMargin = 0
 		@courses.where("status = ?", Course.statuses[:done]).each do |course|
 			@totalPrice += course.computed_price
-			afterCodePrice = compute_price(course)
+			afterCodePrice = price_afterPromo(course)
 			@totalPriceAfterCodes += afterCodePrice
 			@totalNavecoMargin += (course.computed_price - afterCodePrice)
 		end
 		@unpaidCourses = @courses.where("status = ? AND payment_status = ?", Course.statuses[:done], Course.payment_statuses[:not_paid]).order('payment_status ASC')
+		@toNaveco = @courses.where("status = ? AND payment_status = ? AND payment_by = ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:partner]).order('payment_status ASC')
 	end
 end
