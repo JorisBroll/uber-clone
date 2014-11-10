@@ -25,6 +25,20 @@
 				}
 			}
 		});
+
+		datepickerOptions = {
+			daysOfWeekDisabled: "6",
+			todayHighlight: true
+		};
+
+		timepickerOptions = {
+			minuteStep: 5,
+			showMeridian: false
+		};
+
+		$('.date').datepicker({datepickerOptions});
+		$('._time').timepicker({timepickerOptions});
+
 	});
 
 </script>
