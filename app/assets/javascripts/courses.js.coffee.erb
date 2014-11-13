@@ -183,36 +183,13 @@ class window.GmapManager
 	        	new google.maps.LatLng(45.737869,4.849144),
 	        	new google.maps.LatLng(45.737007,4.848892),
 	        	new google.maps.LatLng(45.734970,4.849477),
-	        	new google.maps.LatLng(45.733700,4.849284),
 	        	new google.maps.LatLng(45.731220,4.848908),
 	        	new google.maps.LatLng(45.728119,4.847782),
-	        	new google.maps.LatLng(45.726292,4.847825),
-	        	new google.maps.LatLng(45.719139,4.848908),
+	        	new google.maps.LatLng(45.726299,4.847850),
+	        	new google.maps.LatLng(45.719120,4.848940),
 	        	new google.maps.LatLng(45.716621,4.850560),
 	        	new google.maps.LatLng(45.715870,4.843210),
 	        	new google.maps.LatLng(45.708988,4.843340),
-	        	new google.maps.LatLng(45.708961,4.841770),
-	        	new google.maps.LatLng(45.711941,4.840820),
-	        	new google.maps.LatLng(45.712440,4.840220),
-	        	new google.maps.LatLng(45.723930,4.838570),
-	        	new google.maps.LatLng(45.723850,4.837460),
-	        	new google.maps.LatLng(45.720291,4.837860),
-	        	new google.maps.LatLng(45.720268,4.837350),
-	        	new google.maps.LatLng(45.721642,4.835220),
-	        	new google.maps.LatLng(45.721352,4.834990),
-	        	new google.maps.LatLng(45.719360,4.838160),
-	        	new google.maps.LatLng(45.713638,4.838870),
-	        	new google.maps.LatLng(45.713551,4.837910),
-	        	new google.maps.LatLng(45.714512,4.836020),
-	        	new google.maps.LatLng(45.718761,4.835400),
-	        	new google.maps.LatLng(45.718670,4.834260),
-	        	new google.maps.LatLng(45.714870,4.834670),
-	        	new google.maps.LatLng(45.717819,4.829040),
-	        	new google.maps.LatLng(45.717522,4.828700),
-	        	new google.maps.LatLng(45.716808,4.829130),
-	        	new google.maps.LatLng(45.712502,4.837520),
-	        	new google.maps.LatLng(45.709492,4.839790),
-	        	new google.maps.LatLng(45.708809,4.838700),
 	        	new google.maps.LatLng(45.711342,4.833290),
 	        	new google.maps.LatLng(45.712318,4.828960),
 	        	new google.maps.LatLng(45.713699,4.826040),
@@ -243,16 +220,16 @@ class window.GmapManager
 	        	new google.maps.LatLng(45.730721,4.859750),
 	        	new google.maps.LatLng(45.729641,4.853550),
 	        	new google.maps.LatLng(45.716980,4.854560),
-	        	new google.maps.LatLng(45.716629,4.850570),
+	        	new google.maps.LatLng(45.716621,4.850560),
 	        	new google.maps.LatLng(45.719120,4.848940),
 	        	new google.maps.LatLng(45.726299,4.847850),
-	        	new google.maps.LatLng(45.728100,4.847820),
-	        	new google.maps.LatLng(45.731232,4.848940),
-	        	new google.maps.LatLng(45.734970,4.849500),
-	        	new google.maps.LatLng(45.737049,4.848930),
-	        	new google.maps.LatLng(45.737862,4.849160),
+	        	new google.maps.LatLng(45.728119,4.847782),
+	        	new google.maps.LatLng(45.731220,4.848908),
+	        	new google.maps.LatLng(45.734970,4.849477),
+	        	new google.maps.LatLng(45.737007,4.848892),
+	        	new google.maps.LatLng(45.737869,4.849144),
 	        	new google.maps.LatLng(45.738289,4.849960),
-	        	new google.maps.LatLng(45.739170,4.851780),
+	        	new google.maps.LatLng(45.739243,4.851848),
 	        	new google.maps.LatLng(45.740101,4.855290),
 	        	new google.maps.LatLng(45.740662,4.856250),
 	        	new google.maps.LatLng(45.742458,4.857910),
@@ -285,6 +262,12 @@ class window.GmapManager
 			    fillColor: zonesColors[i],
 			    fillOpacity: 0.3
 			})
+			#for point, j in coords
+			#	marker = new google.maps.Marker({
+			#		position: point,
+			#		map: @map,
+			#		title:j+' - '+point.lat()+' / '+point.lng()
+			#	});
 			@zones.push(newZone)
 			newZone.setMap(@map)
 
@@ -309,6 +292,7 @@ class window.GmapManager
 			for course, i in list
 				request = @makeRequest(course.start, course.end)
 				((i) =>
+
 					@directionsService.route(request, (response, status) =>
 						@printRoutes(response, status, i)
 					)
@@ -354,23 +338,67 @@ class window.GmapManager
 			)
 
 	@distanceCheck: (route) ->
-		start_type = @getType_point(route.start_location, route.start_address)
-		end_type = @getType_point(route.end_location, route.end_address)
+		_start_type = @getType_point(route.start_location, route.start_address)
+		_end_type = @getType_point(route.end_location, route.end_address)
+
+		start_type = _start_type[0]
+		end_type = _end_type[0]
 
 		console.log start_type
 		console.log end_type
 
-		if route.distance.value > 50000
+		if start_type == 'airport' && end_type == 'airport'
 			return result = 
 				status: 'KO'
-				message: "Trajet trop long, une notification sera envoyée à Naveco pour traiter votre demande lorsque vous validerez la course."
-		else
-			if route.distance.value > 10000
-				timePrice = 0.3
-				kmPrice = 1.5
+				message: "Trajet non valide."
+
+		else if (start_type == 'airport' && end_type == 'indoors') || (start_type == 'indoors' && end_type == 'airport')
+			prices = [50, 45, 45, 50 ,50, 45, 45, 45, 55]
+			if _start_type[1] != false
+				zone = _start_type[1]
+			else if _end_type[1] != false
+				zone = _end_type[1]
 			else
-				timePrice = 0.3
-				kmPrice = 2.5
+				zone = false
+
+			console.log "Arrondissement : "+(zone+1)
+
+			return result = 
+				status: 'OK'
+				route:
+					duration: route.duration
+					distance: route.distance
+					timePrice: 'FORFAIT'
+					kmPrice: 'FORFAIT'
+					totalPrice: 'FORFAIT : '+prices[zone]
+
+
+
+		else if (start_type == 'airport' && end_type == 'outdoors') || (start_type == 'outdoors' && end_type == 'airport') || (start_type == 'indoors' && end_type == 'indoors')
+			if route.distance.value > 50000
+				return result = 
+					status: 'KO'
+					message: "Trajet trop long, une notification sera envoyée à Naveco pour traiter votre demande lorsque vous validerez la course."
+			else
+				if route.distance.value > 10000
+					timePrice = 0.3
+					kmPrice = 1.5
+				else
+					timePrice = 0.3
+					kmPrice = 2.5
+
+				return result = 
+					status: 'OK'
+					route:
+						duration: route.duration
+						distance: route.distance
+						timePrice: timePrice
+						kmPrice: kmPrice
+						totalPrice: Math.round((timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000))*10)/10
+
+		else if (start_type == 'indoors' && end_type == 'outdoors') || (start_type == 'outdoors' && end_type == 'indoors')
+			timePrice = 0.3
+			kmPrice = 1.5
 
 			return result = 
 				status: 'OK'
@@ -381,22 +409,58 @@ class window.GmapManager
 					kmPrice: kmPrice
 					totalPrice: Math.round((timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000))*10)/10
 
+		else if (start_type == 'outdoors' && end_type == 'outdoors')
+			if route.distance.value < 10000
+				return result = 
+					status: 'KO'
+					message: "Il faut que le trajet soit d'au moins 10Km (actuellement "+route.distance.value/1000+")" 
+			else
+				e = (3.14159265358979*route.start_location.lat()/180)
+				f = (3.14159265358979*route.start_location.lng()/180)
+				g = (3.14159265358979*45.757609/180)
+				h = (3.14159265358979*4.832043/180)
+				i = (Math.cos(e)*Math.cos(g)*Math.cos(f)*Math.cos(h)+Math.cos(e)*Math.sin(f)*Math.cos(g)*Math.sin(h)+Math.sin(e)*Math.sin(g));
+				j = (Math.acos(i))
+				k = Math.round((6371*j)*Math.pow(10,3))/Math.pow(10,3);
+
+
+				if k > 20
+					return result = 
+					status: 'KO'
+					message: "Il faut que le départ du trajet soit à moins de 20Km de Lyon (actuellement "+k+")" 
+
+				else
+					timePrice = 0.3
+					kmPrice = 1.5
+					return result = 
+						status: 'OK'
+						route:
+							duration: route.duration
+							distance: route.distance
+							timePrice: timePrice
+							kmPrice: kmPrice
+							totalPrice: Math.round((timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000))*10)/10
+
+
+			
+		
+
 	@getType_point: (point, address) ->
 		type = 'outdoors'
+		start_inLyon = false;
 		if address == "Aéroport de Lyon-Saint Exupéry (LYS), 69125 Colombier-Saugnieu, France"
 			type = 'airport'
 		else
-			start_inLyon = false;
 			for zone, i in @zones
 				if google.maps.geometry.poly.containsLocation(point, zone)
 					start_inLyon = i
 
-			if start_inLyon
+			if start_inLyon != false
 				type = 'indoors'
 			else
 				type = 'outdoors'
 
-		return type
+		return [type, start_inLyon]
 	
 
 	@printMarker: (options, icon) ->

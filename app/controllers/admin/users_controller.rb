@@ -2,6 +2,7 @@ class Admin::UsersController < ApplicationController
   	before_action :admins_only
 
   	include UsersHelper
+  	include UploadsHelper
 
 	def index
 		@clients = User.where("account_type = ?", User.account_types[:client])
@@ -28,15 +29,17 @@ class Admin::UsersController < ApplicationController
 		@user = User.new()
 	end
 	def create
+		store_photo
+
 		@user = User.new(user_params)
-		fghj
 		if @user.save
+			update_photo(@user)
 			flash[:success] = "L'utilisateur "+build_name(@user, true)+" a été crée."
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'user', 'id' => @user.id.to_s} })
 			redirect_to admin_users_path
 		else
 			flash[:error] = "L'utilisateur n'a pas pu être crée."
-			AppLogger.log ({'user_id' => @current_user, 'action' => 'fail_created', 'target_object' => {'type' => 'user'} })
+			AppLogger.log ({ 'user_id' => @current_user, 'action' => 'fail_created', 'target_object' => {'type' => 'user'} })
 			render 'new'
 	    end
 	end
@@ -45,8 +48,11 @@ class Admin::UsersController < ApplicationController
 		@partners = Partner.all
 	end
 	def update
+		store_photo
+
 		@user = User.find(params[:id])
 		if @user.update_attributes(user_params)
+			update_photo(@user)
 			flash[:success] = "L'utilisateur "+build_name(@user, true)+" a été modifié avec succès."
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'user', 'id' => @user.id.to_s} })
 			redirect_to admin_users_path
@@ -81,5 +87,16 @@ class Admin::UsersController < ApplicationController
 		    def correct_user # Make a user unable to edit anyone but himself
 				@user = User.find(params[:id])
 				redirect_to(root_url) unless current_user?(@user)
+	        end
+
+	        def update_photo(user)
+	        	if photo_name = save_photo(@photo, 'user'+user.id.to_s)
+	        		@user.update_attributes(photo: photo_name)
+	        	end
+	        end
+
+	        def store_photo
+				@photo = params[:user][:photo]
+				params[:user][:photo] = ""
 	        end
 end

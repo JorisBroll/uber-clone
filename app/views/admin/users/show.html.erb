@@ -5,7 +5,7 @@
 		<div class="panel panel-info panel-dark widget-profile">
 			<div class="panel-heading">
 				<div class="widget-profile-bg-icon"><i class="fa fa-gears"></i></div>
-				<img src="<%= image_path('pixel-admin/avatar.png') %>" class="widget-profile-avatar">
+				<img src="<%= if @user.photo then image_path('photos/'+@user.photo) else image_path('photos/user.png') end %>" class="widget-profile-avatar">
 				<div class="widget-profile-header">
 					<span><%= build_name(@user) %> <em class="text-sm">[#<%= @user.id %>]</em></span><br>
 					<a href="mailto:<%= @user.email %>"><%= @user.email %></a>
@@ -23,17 +23,20 @@
 		<div class="panel widget-support-tickets panel-warning">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses de l'utilisateur</span>
+				<div class="panel-heading-controls">
+					<span class="label label-success"><%= (@user.courses.map {|s| price_afterPromo(s)}.reduce(0, :+)).round(2) %> €</span>
+				</div>
 			</div>
 			<div class="panel-body">
 				<% if @user.courses.each do |course| %>
 					<div class="ticket">
 						<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
-						<%= link_to partner_admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
+						<%= link_to admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
 						<span class="ticket-info">
 							Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
 						</span><br />
-						<%= link_to edit_partner_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
-						<%= link_to partner_admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
+						<%= link_to edit_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
+						<%= link_to admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
 					</div> <!-- / .ticket -->
 				<% end.empty? %>
 					Aucune course

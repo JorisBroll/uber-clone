@@ -190,6 +190,14 @@
 				</div>
 			</div>
 
+			<div class="form-group">
+				<%= f.label :photo, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">	
+					<%= f.file_field :photo %>
+				</div>
+			</div>
+
+
 			<% if controller == 'admin' %>
 
 			<div class="form-group">
