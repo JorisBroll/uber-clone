@@ -385,10 +385,9 @@ class window.GmapManager
 
 				if route.distance.value > 10000
 					add_kmPrice = 1.5
-					totalPrice = 'yyy'+timePrice*(route.duration.value/60) + kmPrice*10 + add_kmPrice*(route.distance.value-10000)
-					#totalPrice = Math.round( ( timePrice*(route.duration.value/60) + kmPrice*10 + add_kmPrice*(route.distance.value-10000) /1000)*10)/10
+					totalPrice = Math.round( (timePrice*(route.duration.value/60) + kmPrice*10 + add_kmPrice*(route.distance.value-10000)/1000)*100) /100
 				else
-					totalPrice = 'yyy'+Math.round( ( timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000) )*10)/10
+					totalPrice = Math.round( ( timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000) )*100)/100
 
 				return result = 
 					status: 'OK'
@@ -439,9 +438,8 @@ class window.GmapManager
 					if route.distance.value > 10000
 						add_kmPrice = 1.5
 						totalPrice = Math.round( (timePrice*(route.duration.value/60) + kmPrice*10 + add_kmPrice*(route.distance.value-10000)/1000)*100) /100
-						#totalPrice = Math.round( ( timePrice*(route.duration.value/60) + kmPrice*10 + add_kmPrice*(route.distance.value-10000) /1000)*10)/10
 					else
-						totalPrice = 'yyy'+Math.round( ( timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000) )*10)/10
+						totalPrice = Math.round( ( timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000) )*100)/100
 
 					return result = 
 						status: 'OK'
