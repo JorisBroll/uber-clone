@@ -5,7 +5,7 @@
 		<div class="panel panel-info panel-dark widget-profile">
 			<div class="panel-heading">
 				<div class="widget-profile-bg-icon"><i class="fa fa-gears"></i></div>
-				<img src="<%= if @user.photo then image_path('photos/'+@user.photo) else image_path('photos/user.png') end %>" class="widget-profile-avatar">
+				<img src="<%= get_photo(@user) %>" class="widget-profile-avatar">
 				<div class="widget-profile-header">
 					<span><%= build_name(@user) %> <em class="text-sm">[#<%= @user.id %>]</em></span><br>
 					<a href="mailto:<%= @user.email %>"><%= @user.email %></a>

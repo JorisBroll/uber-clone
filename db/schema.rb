@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141105142559) do
+ActiveRecord::Schema.define(version: 20141114094759) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -156,6 +156,8 @@ ActiveRecord::Schema.define(version: 20141105142559) do
     t.integer  "promocode_id"
     t.string   "city"
     t.string   "cellphone"
+    t.integer  "status"
+    t.boolean  "enabled",         default: true
   end
 
 end

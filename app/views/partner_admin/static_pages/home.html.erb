@@ -10,7 +10,7 @@ init.push(function () {
 		<div class="panel panel-info panel-dark widget-profile">
 			<div class="panel-heading">
 				<div class="widget-profile-bg-icon"><i class="fa fa-gears"></i></div>
-				<img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" class="widget-profile-avatar">
+				<img src="<%= get_logo(@partner) %>" alt="" class="widget-profile-avatar">
 				<div class="widget-profile-header">
 					<span><%= @partner.name %> <em class="text-sm">[#<%= @partner.id %>]</em></span><br>
 					<a href="mailto:<%= @partner.email %>"><%= @partner.email %></a>

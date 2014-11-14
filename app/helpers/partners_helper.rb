@@ -6,4 +6,12 @@ module PartnersHelper
 		end
 		return @table
 	end
+
+	def get_logo(partner)
+		if partner.logo
+			return image_path('photos/'+partner.logo)
+		else
+			return image_path('photos/user.png')
+		end
+	end
 end

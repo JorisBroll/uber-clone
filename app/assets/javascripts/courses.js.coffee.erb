@@ -370,7 +370,7 @@ class window.GmapManager
 					distance: route.distance
 					timePrice: 'FORFAIT'
 					kmPrice: 'FORFAIT'
-					totalPrice: 'FORFAIT : '+prices[zone]
+					totalPrice: prices[zone]
 
 
 
@@ -380,12 +380,15 @@ class window.GmapManager
 					status: 'KO'
 					message: "Trajet trop long, une notification sera envoyée à Naveco pour traiter votre demande lorsque vous validerez la course."
 			else
+				timePrice = 0.3
+				kmPrice = 2.5
+
 				if route.distance.value > 10000
-					timePrice = 0.3
-					kmPrice = 1.5
+					add_kmPrice = 1.5
+					totalPrice = 'yyy'+timePrice*(route.duration.value/60) + kmPrice*10 + add_kmPrice*(route.distance.value-10000)
+					#totalPrice = Math.round( ( timePrice*(route.duration.value/60) + kmPrice*10 + add_kmPrice*(route.distance.value-10000) /1000)*10)/10
 				else
-					timePrice = 0.3
-					kmPrice = 2.5
+					totalPrice = 'yyy'+Math.round( ( timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000) )*10)/10
 
 				return result = 
 					status: 'OK'
@@ -394,7 +397,7 @@ class window.GmapManager
 						distance: route.distance
 						timePrice: timePrice
 						kmPrice: kmPrice
-						totalPrice: Math.round((timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000))*10)/10
+						totalPrice: totalPrice
 
 		else if (start_type == 'indoors' && end_type == 'outdoors') || (start_type == 'outdoors' && end_type == 'indoors')
 			timePrice = 0.3
@@ -431,7 +434,15 @@ class window.GmapManager
 
 				else
 					timePrice = 0.3
-					kmPrice = 1.5
+					kmPrice = 2.5
+
+					if route.distance.value > 10000
+						add_kmPrice = 1.5
+						totalPrice = Math.round( (timePrice*(route.duration.value/60) + kmPrice*10 + add_kmPrice*(route.distance.value-10000)/1000)*100) /100
+						#totalPrice = Math.round( ( timePrice*(route.duration.value/60) + kmPrice*10 + add_kmPrice*(route.distance.value-10000) /1000)*10)/10
+					else
+						totalPrice = 'yyy'+Math.round( ( timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000) )*10)/10
+
 					return result = 
 						status: 'OK'
 						route:
@@ -439,7 +450,7 @@ class window.GmapManager
 							distance: route.distance
 							timePrice: timePrice
 							kmPrice: kmPrice
-							totalPrice: Math.round((timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000))*10)/10
+							totalPrice: totalPrice
 
 
 			
@@ -500,11 +511,14 @@ $(".courses.edit, .courses.new").ready ->
 			{distanceCap: true},
 			(results)->
 				console.log results
-				if(results.status == 'OK')
+				if results.status == 'OK'
 					$('#gcompute-error-display').hide()
 					$('#course_computed_distance').val(results.route.distance.text)
 					$('#course_computed_duration').val(results.route.duration.text)
-					$('#course_computed_price').val(results.route.totalPrice+' €')
+					if results.route.timePrice == "FORFAIT"
+						$('#course_computed_price').val(results.route.totalPrice+' € (Forfait Aéroport)')
+					else
+						$('#course_computed_price').val(results.route.totalPrice+' €')
 				else
 					$('#gcompute-error-display').html(results.message).show();
 					$('#course_computed_distance').val('#Erreur#')

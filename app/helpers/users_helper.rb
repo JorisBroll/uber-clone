@@ -24,4 +24,12 @@ module UsersHelper
 		@name = user.id.to_s+'/'+@name unless !with_id
 		return @name
 	end
+
+	def get_photo(user)
+		if user.photo
+			return image_path('photos/'+user.photo)
+		else
+			return image_path('photos/user.png')
+		end
+	end
 end
