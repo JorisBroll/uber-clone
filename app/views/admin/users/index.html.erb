@@ -55,7 +55,7 @@
 							<td><%= build_name(user) %></td>
 							<td><%= user.email %></td>
 							<td><%= user.partner.name unless user.partner.nil? %></td>
-							<td><%= user.created_by_user.name unless user.created_by.nil? %></td>
+							<td><%#= user.created_by_user.name unless user.created_by.nil? %></td>
 							<td style="text-align:center; font-size:16px;"><%= link_to admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 						</tr>
 					<% end %>
@@ -84,7 +84,7 @@
 							<td><%= build_name(user) %></td>
 							<td><%= user.email %></td>
 							<td><%= user.partner.name unless user.partner.nil? %></td>
-							<td><%= user.created_by_user.name unless user.created_by.nil? %></td>
+							<td><%#= user.created_by_user.name unless user.created_by.nil? %></td>
 							<td><%= User::Account_types[user.account_type.to_sym][:name] %></td>
 							<td style="text-align:center; font-size:16px;"><%= link_to admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 						</tr>
@@ -114,7 +114,7 @@
 							<td><%= build_name(user) %></td>
 							<td><%= user.email %></td>
 							<td><%= user.partner.name unless user.partner.nil? %></td>
-							<td><%= user.created_by_user.name unless user.created_by.nil? %></td>
+							<td><%#= user.created_by_user.name unless user.created_by.nil? %></td>
 							<td><%= User::Account_types[user.account_type.to_sym][:name] %></td>
 							<td style="text-align:center; font-size:16px;"><%= link_to admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 						</tr>
