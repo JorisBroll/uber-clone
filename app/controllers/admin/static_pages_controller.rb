@@ -17,7 +17,12 @@ class Admin::StaticPagesController < ApplicationController
 	end
 
 	def monthly
-		@courses = Course.where("date_when >= ? AND date_when <= ?", Time.zone.now.beginning_of_month, Time.zone.now.end_of_month)
+		if !params['recap'].nil?
+			@month = Date.new(params['recap']['date(1i)'].to_i, params['recap']['date(2i)'].to_i, 1)
+		else
+			@month = Time.zone.now
+		end
+		@courses = Course.where("date_when >= ? AND date_when <= ?", @month.beginning_of_month, @month.end_of_month)
 		@totalPrice = 0
 		@totalPriceAfterCodes = 0
 		@totalNavecoMargin = @courses.where("status = ? AND payment_status = ? AND payment_by = ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:partner]).map {|s| price_afterPromo(s, true)}.reduce(0, :+)

@@ -15,6 +15,8 @@ gem 'turbolinks'
 gem 'jquery-turbolinks'
 gem 'jbuilder', '~> 2.0'
 gem 'unicorn'
+gem "wicked_pdf"
+gem "wkhtmltopdf"
 
 group :development, :test do
   gem 'rspec-rails'
@@ -26,4 +28,5 @@ end
 
 group :production do
   gem 'rails_12factor', '0.0.2'
+  gem "wkhtmltopdf-heroku"
 end

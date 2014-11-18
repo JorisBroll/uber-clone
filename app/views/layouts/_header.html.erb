@@ -138,7 +138,14 @@
 									<spa class="text-info"><%= User::Account_types[current_user.account_type.to_sym][:name] %></span>
 								</a>
 								<ul class="dropdown-menu">
-									<li><a href="#"><i class="dropdown-icon fa fa-user"></i>&nbsp;&nbsp;Profil</a></li>
+									<%
+									if is_superadmin?
+										profile_link = admin_user_path(current_user)
+									else
+										profile_link = partner_admin_user_path(current_user)
+									end
+									%>
+									<li><a href="<%= profile_link %>"><i class="dropdown-icon fa fa-user"></i>&nbsp;&nbsp;Profil</a></li>
 									<li class="divider"></li>
 									<li><%= link_to '/logout', method: :delete do %><i class="dropdown-icon fa fa-power-off"></i>&nbsp;&nbsp;Se déconnecter<% end %></li>
 								</ul>
@@ -211,7 +218,7 @@
 			</ul>
 			<div class="menu-content">
 			<% if currently_admining_partner? || current_partner %>
-				<%= link_to "Créer une course", new_partner_admin_course_path, class:"btn btn-primary btn-block btn-outline dark" %>
+				<%= link_to "Créer une course (partenaire)", new_partner_admin_course_path, class:"btn btn-primary btn-block btn-outline dark" %>
 			<% end %>			
 			<% if is_superadmin? %>
 				<%= link_to "Créer une course", new_admin_course_path, class:"btn btn-primary btn-block btn-outline dark" %>

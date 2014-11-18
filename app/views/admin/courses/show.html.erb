@@ -92,7 +92,7 @@
 				<p><span>Nom : </span>#<%= @promocode.id %>/<%= @promocode.name %></p>
 				<p><span>Type de code</span><%= Promocode::Effect_type_alias[@promocode.effect_type] %></p>
 				<p><span>Durée (jours ou utilisations) : </span><%= Promocode::Effect_length_alias[@promocode.effect_length] %></p>
-				<p><span>Prix après réduction : </span><%= compute_price(@promocode, @course.computed_price) %></p>
+				<p><span>Prix après réduction : </span><%= price_afterPromo(@course) %></p>
 			</div>
 		</div>
 		<% end %>

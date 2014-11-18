@@ -1,4 +1,17 @@
 <h2>Récapitulatif mensuel des paiements</h2>
+<div class="row">
+	<div class="col-md-12">
+		<div class="panel">
+			<div class="panel-body">
+				<form id="select-date" class="form-inline col-xs-12" action="<%= admin_monthly_path %>">
+					<%= date_select("recap", "date", {:start_year => 2014, :end_year => Time.new.year, :discard_day => true }, {:class => "form-control"} ) %>
+					<button type="submit" class="btn btn-info">Voir</button>
+				</form>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+	</div>
+</div>
 
 <div class="row">
 	<div class="col-md-6">
@@ -21,7 +34,7 @@
 			</div>
 			<div class="panel-body">
 				<% @partners.each do |partner| %>
-					<% unpaidCourses = partner.courses.where("status = ? AND payment_status = ? AND payment_by = ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:partner]) %>
+					<% unpaidCourses = partner.courses.where("status = ? AND payment_status = ? AND payment_by = ? AND date_when >= ? AND date_when <= ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:partner], @month.beginning_of_month, @month.end_of_month) %>
 					<% if unpaidCourses.count > 0 %>
 					<div class="ticket">
 						<div>
@@ -45,7 +58,7 @@
 			</div>
 			<div class="panel-body">
 				<% @companies.each do |company|
-					@unpaidCourses2 = company.courses.where("status = ? AND payment_status = ? AND payment_by = ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:company])
+					@unpaidCourses2 = company.courses.where("status = ? AND payment_status = ? AND payment_by = ? AND date_when >= ? AND date_when <= ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:company], @month.beginning_of_month, @month.end_of_month)
 					if @unpaidCourses2.count > 0 %>
 					<div class="ticket">
 						<div>

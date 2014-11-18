@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141114094759) do
+ActiveRecord::Schema.define(version: 20141117134852) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -90,6 +90,7 @@ ActiveRecord::Schema.define(version: 20141114094759) do
     t.datetime "trip_finished"
     t.text     "trip_feedback"
     t.integer  "commission",        default: 20
+    t.boolean  "need_review",       default: false
   end
 
   create_table "notifications", force: true do |t|

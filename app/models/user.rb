@@ -32,6 +32,18 @@ class User < ActiveRecord::Base
 			:name => "Client"
 		}
 	}
+
+	Status = {
+		:ready => {
+			:name => "En ligne et prêt"
+		},
+		:offline => {
+			:name => "Hors-ligne"
+		},
+		:on_break => {
+			:name => "En pause"
+		}
+	}
 	
 	enum account_type: Account_types.collect { |key, o| key }
 	Account_types_select = Account_types.collect { |key, o| [o[:name], key] }
