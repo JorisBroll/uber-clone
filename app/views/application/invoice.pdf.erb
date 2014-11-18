@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset='utf-8' />
+		<%= wicked_pdf_stylesheet_link_tag "pdf" -%>
+		<%= wicked_pdf_javascript_include_tag "number_pages" %>
+		<style>
+			body {
+				font-size:11px;
+			}
+			.column {
+				width:50%;
+			}
+			.left {
+				float:left;
+			}
+			.right {
+				float:right;
+			}
+			.clear {
+				clear:both;
+			}
+
+				#header .left p {
+					margin:0;
+				}
+				#header .right {
+					text-align:right;
+				}
+			#overview_courses {
+				border-collapse:collapse;
+				border:1px solid #00B2A9;
+				width:100%;
+			}
+				#overview_courses th {
+					background:#00B2A9;
+					padding:8px;
+					text-align:center;
+					color:white;
+				}
+				#overview_courses td {
+					border:1px solid #00B2A9;
+					padding:8px;
+				}
+		</style>
+	</head>
+	<body onload='number_pages'>
+		<div id="header">
+			<div class="columns"></div>
+				<div class="column left">
+					<p><%= @partner.name %></p>
+					<p><%= build_address(@partner) %></p>
+					<p><%= @partner.email %></p>
+					<p>Numéro TVA : <%= @partner.tva_number.to_s %></p>
+				</div>
+				<div class="column right">
+					<%= wicked_pdf_image_tag 'pixel-admin/main-navbar-logo.png',:width => "90",  :height=>"90" %>
+				</div>
+				<div class="clear"></div>
+			</div>
+			
+		</div>
+		<div id="content">
+			<div class="category">
+				<h1>Récapitulatif des prestations</h1>
+				<table id="overview_courses">
+					<tr>
+						<th>Numéro de course</td>
+						<th>Départ</td>
+						<th>Arrivée</td>
+						<th>Date/Heure</td>
+						<th>Prix client</td>
+						<th>Prix proposé</td>
+					</tr>
+					<% @courses.where("status = ?", Course.statuses[:done]).order('payment_status ASC').each do |course| %>
+					<tr>
+						<td><%= course.id.to_s %></td>
+						<td><%= course.from %></td>
+						<td><%= course.to %></td>
+						<td><%= getDateTime(course) %></td>
+						<td><%= price_afterPromo(course).round(2) %> €</td>
+						<td><%= price_afterPromo(course, false, true).round(2) %> €</td>
+					</tr>
+					<% end %>
+				</table>
+			</div>
+		</div>
+	</body>
+</html>

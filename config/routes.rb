@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     get '/map', to: 'static_pages#map'
     get '/config', to: 'static_pages#config'
     get '/monthly', to: 'static_pages#monthly'
+    get '/monthly/pdf', to: 'static_pages#monthly_pdf'
     resources :users
     resources :partners
     resources :promocodes
@@ -19,6 +20,7 @@ Rails.application.routes.draw do
     get '/home', to: 'static_pages#home'
     get '/map', to: 'static_pages#map'
     get '/monthly', to: 'static_pages#monthly'
+    get '/monthly/pdf', to: 'static_pages#monthly_pdf'
     resources :users
     resources :cars
     resources :courses

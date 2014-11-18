@@ -12,8 +12,6 @@ class Admin::CoursesController < ApplicationController
 		@client = @course.user
 		@company = @course.company
 		@car = @course.car
-
-        render :pdf => "file_name", :template => 'admin/courses/show.html.erb'
 	end
 	def new
 		@course = Course.new

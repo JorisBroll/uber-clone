@@ -1,6 +1,7 @@
 class Admin::StaticPagesController < ApplicationController
 	before_action :admins_only
 
+	include ApplicationHelper
 	include CoursesHelper
 	
 	def home
@@ -39,4 +40,18 @@ class Admin::StaticPagesController < ApplicationController
 		@companies = Company.all
 	end
 
+	def monthly_pdf
+		if !params['p'].nil?
+			@partner = Partner.find_by(id: params['p'])
+			if !params['recap'].nil?
+				@month = Date.new(params['recap']['date(1i)'].to_i, params['recap']['date(2i)'].to_i, 1)
+			else
+				@month = Time.zone.now
+			end
+			@courses = Course.where("date_when >= ? AND date_when <= ?", @month.beginning_of_month, @month.end_of_month)
+			render :pdf => "file_name", :template => 'application/invoice.pdf.erb'
+		else
+
+		end
+	end
 end

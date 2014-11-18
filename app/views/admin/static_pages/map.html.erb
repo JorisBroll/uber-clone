@@ -18,7 +18,7 @@
 </script>
 <div id="map-filters" class="panel panel-info">
 	<div class="panel-heading">
-		<span class="panel-title">Filtres</span>
+		<span class="panel-title">Filtres (En construction)</span>
 		<div class="panel-heading-controls">
 			<span id="status-ok-counter" class="label label-success popsover" data-content="Courses affichées" data-placement="top" data-toggle="popover">0</span>
 			<span id="status-ko-counter" class="label label-danger popsover" data-content="Courses invalides" data-placement="top" data-toggle="popover">0</span>
@@ -32,24 +32,24 @@
 					<label for="course-visu">Visualiser le trajet des courses</label>
 					<div>
 						<label class="checkbox-inline">
-							<input type="radio" class="px" value="1" id="course-visu"><span class="lbl">Oui</span>
+							<input type="radio" class="px" value="1" id="course-visu" name="course-visu" checked><span class="lbl">Oui</span>
 						</label>
 						<label class="checkbox-inline">
-							<input type="radio" class="px" value="0" id="course-visu"><span class="lbl">Non</span>
+							<input type="radio" class="px" value="0" id="course-visu" name="course-visu"><span class="lbl">Non</span>
 						</label>
 					</div>
 				</div>
 				<div>
-					<label for="partner-select">Courses appartenant à :</label>
-					<select id="partner-select">
+					<label for="partner-courses-select">Courses appartenant à :</label>
+					<select id="partner-courses-select">
 						<% @partners.each do |partner| %>
 							<option value="<%= partner.id %>"><%= partner.name %></option>
 						<% end %>
 					</select>
 				</div>
 				<div>
-					<label for="status-select">Status des courses :</label>
-					<select id="status-select">
+					<label for="course-status-select">Status des courses :</label>
+					<select id="course-status-select">
 						<% Course.statuses.each do |status| %>
 							<option value="<%= status[1] %>"><%= Course::Status_alias[status[0]] %></option>
 						<% end %>
@@ -60,25 +60,25 @@
 				<label for="course-visu">Visualiser les positions des chauffeurs</label>
 				<div>
 					<label class="checkbox-inline">
-						<input type="radio" class="px" value="1" id="course-visu"><span class="lbl">Oui</span>
+						<input type="radio" class="px" value="1" id="partner-visu" name="partner-visu" checked><span class="lbl">Oui</span>
 					</label>
 					<label class="checkbox-inline">
-						<input type="radio" class="px" value="0" id="course-visu"><span class="lbl">Non</span>
+						<input type="radio" class="px" value="0" id="partner-visu" name="partner-visu"><span class="lbl">Non</span>
 					</label>
 				</div>
 				<div>
-					<label for="partner-select">Chauffeurs de l'entreprise :</label>
-					<select id="partner-select">
+					<label for="partner-drivers-select">Chauffeurs de l'entreprise :</label>
+					<select id="partner-drivers-select">
 						<% @partners.each do |partner| %>
 							<option value="<%= partner.id %>"><%= partner.name %></option>
 						<% end %>
 					</select>
 				</div>
 				<div>
-					<label for="status-select">Status des chauffeurs :</label>
-					<select id="status-select">
-						<% Course.statuses.each do |status| %>
-							<option value="<%= status[1] %>"><%= Course::Status_alias[status[0]] %></option>
+					<label for="driver-status-select">Status des chauffeurs :</label>
+					<select id="driver-status-select">
+						<% User::Status.each do |i, status| %>
+							<option value="<%= i.to_s %>"><%= status[:name] %></option>
 						<% end %>
 					</select>
 				</div>
