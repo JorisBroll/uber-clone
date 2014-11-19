@@ -160,7 +160,7 @@
 							<td>
 								SOLDE TTC restant dû
 							</td>
-							<td><%= @totals[:ttc] - @totals[:naveco_collected] %> €</td>
+							<td><%= (@totals[:ttc] - @totals[:naveco_collected]).round(2) %> €</td>
 						</tr>
 					</table>
 					<div class="clear"></div>
