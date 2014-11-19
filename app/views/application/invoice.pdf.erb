@@ -1,10 +1,29 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset='utf-8' />
+		<link href="http://fonts.googleapis.com/css?family=Roboto:400,300,400italic" rel='stylesheet' type='text/css'>
 		<style>
 			body {
+				font-family: 'Roboto';
 				font-size:11px;
+			}
+			p {
+				margin:0;
+			}
+			table {
+				border-collapse:collapse;
+				border:0.2mm solid #00B2A9;
+			}
+			table th {
+				background:#00B2A9;
+				padding:1.5mm 2mm;
+				text-align:center;
+				color:white;
+			}
+			table td {
+				border:0.2mm solid #00B2A9;
+				padding:2mm;
 			}
 			.column {
 				width:50%;
@@ -18,28 +37,47 @@
 			.clear {
 				clear:both;
 			}
+			.relative {
+				position:relative;
+			}
 
-				#header .left p {
-					margin:0;
-				}
-				#header .right {
-					text-align:right;
-				}
+			#header .right {
+				text-align:right;
+			}
 			#overview_courses {
 				border-collapse:collapse;
-				border:1px solid #00B2A9;
+				border:0.2mm solid #00B2A9;
 				width:100%;
+				margin-bottom:5mm;
 			}
 				#overview_courses th {
 					background:#00B2A9;
-					padding:8px;
+					padding:1.5mm 2mm;
 					text-align:center;
 					color:white;
 				}
 				#overview_courses td {
-					border:1px solid #00B2A9;
-					padding:8px;
+					border:0.2mm solid #00B2A9;
+					padding:2mm;
 				}
+				#overview_courses tr td:nth-last-child(-n+3) {
+					text-align:center;
+				}
+
+			.right-table {
+				position:absolute;
+				right:0;
+			}
+
+			#courses_totals {
+				border-collapse:collapse;
+				border:0.2mm solid #00B2A9;
+				margin-bottom:5mm;
+			}
+
+			#partner_total_collected {
+				margin-bottom:5mm;
+			}
 		</style>
 	</head>
 	<body onload='number_pages'>
@@ -52,7 +90,10 @@
 					<p>Numéro TVA : <%= @partner.tva_number.to_s %></p>
 				</div>
 				<div class="column right">
-					<%= wicked_pdf_image_tag 'pixel-admin/main-navbar-logo.png',:width => "90",  :height=>"90" %>
+					<p><%= wicked_pdf_image_tag 'pixel-admin/main-navbar-logo.png',:width => "68",  :height=>"68" %></p>
+					<p><%= @naveco.name %></p>
+					<p><%= build_address(@naveco) %></p>
+					<p><%= @naveco.email %></p>
 				</div>
 				<div class="clear"></div>
 			</div>
@@ -77,10 +118,53 @@
 						<td><%= course.to %></td>
 						<td><%= getDateTime(course) %></td>
 						<td><%= price_afterPromo(course).round(2) %> €</td>
-						<td><%= price_afterPromo(course, false, true).round(2) %> €</td>
+						<td><%= price_afterPromo(course, 'partner').round(2) %> €</td>
 					</tr>
 					<% end %>
 				</table>
+
+				<div>
+					<table id="courses_totals" class="right">
+						<tr>
+							<td>TOTAL TTC</td>
+							<td><%= @totals[:ttc] %> €</td>
+						</tr>
+						<tr>
+							<td>TOTAL HT</td>
+							<td><%= @totals[:ht] %> €</td>
+						</tr>
+						<tr>
+							<td>TOTAL TVA à 10%</td>
+							<td><%= @totals[:tva] %> €</td>
+						</tr>
+					</table>
+					<div class="clear"></div>
+				</div>
+
+				<div>
+					<table id="partner_total_collected" class="right">
+						<tr>
+							<td style="padding:3mm">
+								<p>Total des sommes encaissées auprès des clients</p>
+								<p style="margin-top:5mm;font-size:9px; font-style:italic">de Naveco au nom et pour le compte de Naveco</p>
+							</td>
+							<td><%= @totals[:naveco_collected] %> €</td>
+						</tr>
+					</table>
+					<div class="clear"></div>
+				</div>
+
+				<div>
+					<table id="partner_total_collected" class="right">
+						<tr>
+							<td>
+								SOLDE TTC restant dû
+							</td>
+							<td><%= @totals[:ttc] - @totals[:naveco_collected] %> €</td>
+						</tr>
+					</table>
+					<div class="clear"></div>
+				</div>
 			</div>
 		</div>
 	</body>

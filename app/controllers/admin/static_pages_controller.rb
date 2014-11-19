@@ -26,13 +26,12 @@ class Admin::StaticPagesController < ApplicationController
 		@courses = Course.where("date_when >= ? AND date_when <= ?", @month.beginning_of_month, @month.end_of_month)
 		@totalPrice = 0
 		@totalPriceAfterCodes = 0
-		@totalNavecoMargin = @courses.where("status = ? AND payment_status = ? AND payment_by = ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:partner]).map {|s| price_afterPromo(s, true)}.reduce(0, :+)
-		@totalPartnersShare = @courses.where("status = ? AND payment_status = ? AND payment_by = ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:partner]).map {|s| price_afterPromo(s, false, true)}.reduce(0, :+)
+		@totalNavecoMargin = @courses.where("status = ? AND payment_status = ? AND payment_by = ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:partner]).map {|s| price_afterPromo(s, 'naveco')}.reduce(0, :+)
+		@totalPartnersShare = @courses.where("status = ? AND payment_status = ? AND payment_by = ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:partner]).map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+)
 		@courses.where("status = ?", Course.statuses[:done]).each do |course|
 			@totalPrice += course.computed_price
 			afterCodePrice = price_afterPromo(course)
 			@totalPriceAfterCodes += afterCodePrice
-			
 		end
 		@unpaidCourses = @courses.where("status = ? AND payment_status = ?", Course.statuses[:done], Course.payment_statuses[:not_paid]).order('payment_status ASC')
 	
@@ -48,7 +47,20 @@ class Admin::StaticPagesController < ApplicationController
 			else
 				@month = Time.zone.now
 			end
-			@courses = Course.where("date_when >= ? AND date_when <= ?", @month.beginning_of_month, @month.end_of_month)
+			@courses = @partner.courses.where("date_when >= ? AND date_when <= ?", @month.beginning_of_month, @month.end_of_month)
+			@courses_to_naveco = @partner.courses.where("date_when >= ? AND date_when <= ? AND payment_by = ?", @month.beginning_of_month, @month.end_of_month, Course.payment_bies[:partner])
+			
+			@totals = {
+				:ttc => (@courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+)).round(2),
+				:ht => ((@courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+))*0.9).round(2),
+				:tva => ((@courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+))*0.1).round(2),
+				:naveco_collected => (@courses_to_naveco.map {|s| price_afterPromo(s)}.reduce(0, :+)).round(2)
+			}
+
+			(@courses_to_naveco.map {|s| price_afterPromo(s, 'naveco')}.reduce(0, :+)).round(2)
+
+			@naveco = Partner.find(1)
+
 			render :pdf => "file_name", :template => 'application/invoice.pdf.erb'
 		else
 
