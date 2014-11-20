@@ -47,8 +47,8 @@ class Admin::StaticPagesController < ApplicationController
 			else
 				@month = Time.zone.now
 			end
-			@courses = @partner.courses.where("date_when >= ? AND date_when <= ?", @month.beginning_of_month, @month.end_of_month)
-			@courses_to_naveco = @partner.courses.where("date_when >= ? AND date_when <= ? AND payment_by = ?", @month.beginning_of_month, @month.end_of_month, Course.payment_bies[:partner])
+			@courses = @partner.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @month.beginning_of_month, @month.end_of_month, Course.statuses[:done])
+			@courses_to_naveco = @partner.courses.where("date_when >= ? AND date_when <= ? AND status = ? AND payment_by = ?", @month.beginning_of_month, @month.end_of_month, Course.statuses[:done], Course.payment_bies[:partner])
 			
 			@totals = {
 				:ttc => (@courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+)).round(2),

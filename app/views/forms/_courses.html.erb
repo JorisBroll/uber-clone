@@ -161,7 +161,7 @@
 			<div class="form-group">
 				<%= f.label :date_when, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.text_field :date_when, class: "form-control date", :placeholder => "Date", style: "position: relative; z-index: 100;" %>
+					<%= f.text_field :date_when, class: "form-control date", :placeholder => "Date", style: "position: relative; z-index: 100;", :value => @course.date_when.strftime("%d/%m/%Y") %>
 				</div>
 			</div>
 

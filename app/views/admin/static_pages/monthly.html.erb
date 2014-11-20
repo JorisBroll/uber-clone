@@ -94,7 +94,7 @@
 						<% end %>
 						<a title="Voir la course" href="<%= admin_course_path(course) %>" class="ticket-title">De <b><%= course.from %></b> à <b><%= course.to %></b><span>[#<%= course.id.to_s %>]</span></a>
 						<div class="ticket-info">
-							Démarrée par <a href="<%= admin_user_path(course.user) %>"><%= build_name(course.user) %></a> <%= getDateTime(course) %>
+							Client : <a href="<%= if course.user then admin_user_path(course.user) else "#" end %>"><%= if course.user then build_name(course.user) else "#" end %></a> <%= getDateTime(course) %>
 						</div>
 						<div class="ticket-info">
 							Effectuée par la société <a href="<%= admin_partner_path(course.partner) %>"><%= course.partner.name %></a><span class="text-default text-sm" style="float:right;"><%= price_afterPromo(course).round(2) %> €</span>
