@@ -13,7 +13,7 @@
 			}
 			table {
 				border-collapse:collapse;
-				border:0.2mm solid #00B2A9;
+				border:0.5mm solid #00B2A9;
 			}
 			table th {
 				background:#00B2A9;
@@ -22,7 +22,7 @@
 				color:white;
 			}
 			table td {
-				border:0.2mm solid #00B2A9;
+				border:0.5mm solid #00B2A9;
 				padding:2mm;
 			}
 			.column {
@@ -43,12 +43,12 @@
 
 			#header {
 				padding-bottom:8mm;
-				margin-bottom:7mm;
+				margin-bottom:9mm;
 				border-bottom:0.5mm solid #000;
 			}
 
 			#header .columns p {
-				font-size:15px;
+				font-size:13px;
 			}
 				#header .right {
 					text-align:right;
@@ -57,12 +57,12 @@
 			#date {
 				margin-left:12cm;
 				margin-bottom:7mm;
-				font-size:12px;
+				font-size:15px;
 			}
 
 			#overview_courses {
 				border-collapse:collapse;
-				border:0.2mm solid #00B2A9;
+				border:0.5mm solid #00B2A9;
 				width:100%;
 				margin-bottom:5mm;
 			}
@@ -73,7 +73,6 @@
 					color:white;
 				}
 				#overview_courses td {
-					border:0.2mm solid #00B2A9;
 					padding:2mm;
 				}
 				#overview_courses tr td:nth-last-child(-n+3) {
@@ -87,7 +86,7 @@
 
 			#courses_totals {
 				border-collapse:collapse;
-				border:0.2mm solid #00B2A9;
+				border:0.5mm solid #00B2A9;
 				margin-bottom:5mm;
 			}
 
@@ -115,8 +114,8 @@
 			</div>
 		</div>
 		<div id="date">
-			<p><%= @partner.name %></p>
-			<p><%= build_address(@partner) %></p>
+			<p><%= I18n.localize(@date.end_of_month, :format => "Le %d %B %Y") %></p>
+			<p>Facture n° : <%= @partner.name[0,3].upcase %>-<%= @date.end_of_month.strftime("%m/%Y") %>-1</p>
 		</div>
 		<div id="content">
 			<div class="category">
@@ -183,9 +182,9 @@
 						</tr>
 						<tr>
 							<td>
-								SOLDE TTS dû totale : 
+								SOLDE TTC dû totale : 
 							</td>
-							<td><%= (@totals[:ttc] - @totals[:naveco_collected]).round(2) %> €</td>
+							<td>A venir</td>
 						</tr>
 					</table>
 					<div class="clear"></div>

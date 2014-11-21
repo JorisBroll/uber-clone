@@ -224,16 +224,13 @@
 			<hr class="panel-wide">
 
 			<div class="form-group">
-				<%= f.label :status, class: "col-sm-3 control-label" %>
+				<%= f.label :user_id, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.select(:status, Course::Status_select, {}, { :class => 'select2' }) %>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<%= f.label :promocode_id, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.select(:promocode_id, promocodes_for_select('Aucun'), {}, { :class => 'select2' }) %>
+					<% if controller == 'admin' %>
+					<%= f.select(:user_id, users_for_select('Personne (ajouter plus tard)'), {}, { :class => 'select2' }) %>
+					<% elsif controller == 'partner_admin' %>
+					<%= f.select(:user_id, users_for_select('Personne (ajouter plus tard)', {:partner_id => current_partner.id}), {}, { :class => 'select2' }) %>
+					<% end %>
 				</div>
 			</div>
 
@@ -262,17 +259,6 @@
 				</div>
 			</div>
 
-			<div class="form-group">
-				<%= f.label :user_id, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<% if controller == 'admin' %>
-					<%= f.select(:user_id, users_for_select('Personne (ajouter plus tard)'), {}, { :class => 'select2' }) %>
-					<% elsif controller == 'partner_admin' %>
-					<%= f.select(:user_id, users_for_select('Personne (ajouter plus tard)', {:partner_id => current_partner.id}), {}, { :class => 'select2' }) %>
-					<% end %>
-				</div>
-			</div>
-
 			<% if controller == 'admin' %>
 
 			<div class="form-group">
@@ -296,6 +282,20 @@
 			</div>
 
 			<div class="form-group">
+				<%= f.label :promocode_id, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:promocode_id, promocodes_for_select('Aucun'), {}, { :class => 'select2' }) %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :status, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:status, Course::Status_select, {}, { :class => 'select2' }) %>
+				</div>
+			</div>
+
+			<div class="form-group">
 				<%= f.label :company_id, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<% if controller == 'admin' %>
@@ -308,6 +308,14 @@
 			</div>
 
 			<%= hidden_field(:user, :created_by) %>
+
+			<hr class="panel-wide">
+
+			<div class="alert">
+				<p>- Proposer au clients un trajet retour (aéroport)</p>
+				<p>- Proposer au client une affiche avec son nom (aéroport)</p>
+				<p>- Adapter le véhicule pour plus de quatre personnes avec bagages (aéroport)</p>
+			</div>
 
 	</div>
 	<div class="panel-footer text-right">

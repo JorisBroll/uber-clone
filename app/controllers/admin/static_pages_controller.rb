@@ -19,11 +19,11 @@ class Admin::StaticPagesController < ApplicationController
 
 	def monthly
 		if !params['recap'].nil?
-			@month = Date.new(params['recap']['date(1i)'].to_i, params['recap']['date(2i)'].to_i, 1)
+			@date = Date.new(params['recap']['date(1i)'].to_i, params['recap']['date(2i)'].to_i, 1)
 		else
-			@month = Time.zone.now
+			@date = Time.zone.now
 		end
-		@courses = Course.where("date_when >= ? AND date_when <= ?", @month.beginning_of_month, @month.end_of_month)
+		@courses = Course.where("date_when >= ? AND date_when <= ?", @date.beginning_of_month, @date.end_of_month)
 		@totalPrice = 0
 		@totalPriceAfterCodes = 0
 		@totalNavecoMargin = @courses.where("status = ? AND payment_status = ? AND payment_by = ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:partner]).map {|s| price_afterPromo(s, 'naveco')}.reduce(0, :+)
@@ -43,11 +43,11 @@ class Admin::StaticPagesController < ApplicationController
 		if !params['p'].nil?
 			@partner = Partner.find_by(id: params['p'])
 			if !params['recap'].nil?
-				@month = Date.new(params['recap']['date(1i)'].to_i, params['recap']['date(2i)'].to_i, 1)
+				@date = Date.new(params['recap']['date(1i)'].to_i, params['recap']['date(2i)'].to_i, 1)
 			else
-				@month = Time.zone.now
+				@date = Time.zone.now
 			end
-			@courses = @partner.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @month.beginning_of_month, @month.end_of_month, Course.statuses[:done]).order(date_when: :asc)
+			@courses = @partner.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @date.beginning_of_month, @date.end_of_month, Course.statuses[:done]).order(date_when: :asc)
 			@courses_to_naveco = @courses.where("payment_by = ?", Course.payment_bies[:partner])
 			
 			@totals = {

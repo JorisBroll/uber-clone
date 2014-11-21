@@ -34,7 +34,7 @@
 			</div>
 			<div class="panel-body">
 				<% @partners.each do |partner| %>
-					<% unpaidCourses = partner.courses.where("status = ? AND payment_status = ? AND payment_by = ? AND date_when >= ? AND date_when <= ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:partner], @month.beginning_of_month, @month.end_of_month) %>
+					<% unpaidCourses = partner.courses.where("status = ? AND payment_status = ? AND payment_by = ? AND date_when >= ? AND date_when <= ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:partner], @date.beginning_of_month, @date.end_of_month) %>
 					<% if unpaidCourses.count > 0 %>
 					<div class="ticket">
 						<div>
@@ -61,7 +61,7 @@
 			</div>
 			<div class="panel-body">
 				<% @companies.each do |company|
-					@unpaidCourses2 = company.courses.where("status = ? AND payment_status = ? AND payment_by = ? AND date_when >= ? AND date_when <= ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:company], @month.beginning_of_month, @month.end_of_month)
+					@unpaidCourses2 = company.courses.where("status = ? AND payment_status = ? AND payment_by = ? AND date_when >= ? AND date_when <= ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:company], @date.beginning_of_month, @date.end_of_month)
 					if @unpaidCourses2.count > 0 %>
 					<div class="ticket">
 						<div>
