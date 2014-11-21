@@ -417,10 +417,10 @@ class window.GmapManager
 					status: 'KO'
 					message: "Il faut que le trajet soit d'au moins 10Km (actuellement "+route.distance.value/1000+")" 
 			else
-				e = (3.14159265358979*route.start_location.lat()/180)
-				f = (3.14159265358979*route.start_location.lng()/180)
-				g = (3.14159265358979*45.757609/180)
-				h = (3.14159265358979*4.832043/180)
+				e = (Math.PI*route.start_location.lat()/180)
+				f = (Math.PI*route.start_location.lng()/180)
+				g = (Math.PI*45.757609/180)
+				h = (Math.PI*4.832043/180)
 				i = (Math.cos(e)*Math.cos(g)*Math.cos(f)*Math.cos(h)+Math.cos(e)*Math.sin(f)*Math.cos(g)*Math.sin(h)+Math.sin(e)*Math.sin(g));
 				j = (Math.acos(i))
 				k = Math.round((6371*j)*Math.pow(10,3))/Math.pow(10,3);

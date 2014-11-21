@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141117134852) do
+ActiveRecord::Schema.define(version: 20141121094131) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -69,7 +69,6 @@ ActiveRecord::Schema.define(version: 20141117134852) do
     t.integer  "nb_people",         default: 1
     t.integer  "status",            default: 0
     t.float    "computed_distance"
-    t.float    "computed_price"
     t.json     "stops"
     t.integer  "created_by"
     t.date     "date_when"
@@ -91,6 +90,7 @@ ActiveRecord::Schema.define(version: 20141117134852) do
     t.text     "trip_feedback"
     t.integer  "commission",        default: 20
     t.boolean  "need_review",       default: false
+    t.integer  "computed_price",    default: 0
   end
 
   create_table "notifications", force: true do |t|

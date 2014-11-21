@@ -26,7 +26,7 @@
 			}
 		});
 
-		$('.date').datepicker({
+		$('._date').datepicker({
 			daysOfWeekDisabled: "6",
 			todayHighlight: true,
 			format: 'mm/dd/yyyy'
@@ -158,10 +158,12 @@
 				</div>
 			</div>
 
+			<% if @course.date_when then date = @course.date_when.strftime("%d/%m/%Y") else date = '' end %>
+
 			<div class="form-group">
 				<%= f.label :date_when, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.text_field :date_when, class: "form-control date", :placeholder => "Date", style: "position: relative; z-index: 100;", :value => @course.date_when.strftime("%d/%m/%Y") %>
+					<%= f.text_field :date_when, class: "form-control _date", :placeholder => "Date", style: "position: relative; z-index: 100;", :value => date %>
 				</div>
 			</div>
 

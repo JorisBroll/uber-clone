@@ -41,9 +41,25 @@
 				position:relative;
 			}
 
-			#header .right {
-				text-align:right;
+			#header {
+				padding-bottom:8mm;
+				margin-bottom:7mm;
+				border-bottom:0.5mm solid #000;
 			}
+
+			#header .columns p {
+				font-size:15px;
+			}
+				#header .right {
+					text-align:right;
+				}
+
+			#date {
+				margin-left:12cm;
+				margin-bottom:7mm;
+				font-size:12px;
+			}
+
 			#overview_courses {
 				border-collapse:collapse;
 				border:0.2mm solid #00B2A9;
@@ -82,22 +98,25 @@
 	</head>
 	<body onload='number_pages'>
 		<div id="header">
-			<div class="columns"></div>
+			<div class="columns">
 				<div class="column left">
 					<p><%= @partner.name %></p>
 					<p><%= build_address(@partner) %></p>
-					<p><%= @partner.email %></p>
 					<p>Numéro TVA : <%= @partner.tva_number.to_s %></p>
+					<p><%= @partner.email %></p>
 				</div>
 				<div class="column right">
-					<p><%= wicked_pdf_image_tag 'pixel-admin/main-navbar-logo.png',:width => "68",  :height=>"68" %></p>
+					<p class="right" style="margin-left:5mm"><%= wicked_pdf_image_tag 'pixel-admin/main-navbar-logo.png',:width => "68",  :height=>"68" %></p>
 					<p><%= @naveco.name %></p>
 					<p><%= build_address(@naveco) %></p>
 					<p><%= @naveco.email %></p>
 				</div>
 				<div class="clear"></div>
 			</div>
-			
+		</div>
+		<div id="date">
+			<p><%= @partner.name %></p>
+			<p><%= build_address(@partner) %></p>
 		</div>
 		<div id="content">
 			<div class="category">
@@ -158,7 +177,13 @@
 					<table id="partner_total_collected" class="right">
 						<tr>
 							<td>
-								SOLDE TTC restant dû
+								SOLDE TTC restant dû ce mois ci
+							</td>
+							<td><%= (@totals[:ttc] - @totals[:naveco_collected]).round(2) %> €</td>
+						</tr>
+						<tr>
+							<td>
+								SOLDE TTS dû totale : 
 							</td>
 							<td><%= (@totals[:ttc] - @totals[:naveco_collected]).round(2) %> €</td>
 						</tr>

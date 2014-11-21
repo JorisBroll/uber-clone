@@ -47,14 +47,15 @@ class Admin::StaticPagesController < ApplicationController
 			else
 				@month = Time.zone.now
 			end
-			@courses = @partner.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @month.beginning_of_month, @month.end_of_month, Course.statuses[:done])
-			@courses_to_naveco = @partner.courses.where("date_when >= ? AND date_when <= ? AND status = ? AND payment_by = ?", @month.beginning_of_month, @month.end_of_month, Course.statuses[:done], Course.payment_bies[:partner])
+			@courses = @partner.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @month.beginning_of_month, @month.end_of_month, Course.statuses[:done]).order(date_when: :asc)
+			@courses_to_naveco = @courses.where("payment_by = ?", Course.payment_bies[:partner])
 			
 			@totals = {
 				:ttc => (@courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+)).round(2),
 				:ht => ((@courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+))*0.9).round(2),
 				:tva => ((@courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+))*0.1).round(2),
-				:naveco_collected => (@courses_to_naveco.map {|s| price_afterPromo(s)}.reduce(0, :+)).round(2)
+				:naveco_collected => (@courses_to_naveco.map {|s| price_afterPromo(s)}.reduce(0, :+)).round(2),
+				:naveco_collected_lifetime => @partner.courses.where("status = ? AND payment_by = ?", Course.statuses[:done], Course.payment_bies[:partner])
 			}
 
 			(@courses_to_naveco.map {|s| price_afterPromo(s, 'naveco')}.reduce(0, :+)).round(2)
