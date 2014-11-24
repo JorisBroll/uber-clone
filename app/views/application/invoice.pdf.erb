@@ -113,8 +113,8 @@
 			</div>
 		</div>
 		<div id="date">
-			<p><%= I18n.localize(@date.end_of_month, :format => "Le %d %B %Y") %></p>
-			<p>Facture n° : <%= @partner.name[0,3].upcase %>-<%= @date.end_of_month.strftime("%m/%Y") %>-1</p>
+			<p><%= I18n.localize(@date[:end], :format => "Le %d %B %Y") %></p>
+			<p>Facture n° : <%= @partner.name[0,3].upcase %>-<%= @date[:end].strftime("%m/%Y") %>-1</p>
 		</div>
 		<div id="content">
 			<div class="category">
