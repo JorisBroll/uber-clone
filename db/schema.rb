@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141121094131) do
+ActiveRecord::Schema.define(version: 20141124091137) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -91,6 +91,7 @@ ActiveRecord::Schema.define(version: 20141121094131) do
     t.integer  "commission",        default: 20
     t.boolean  "need_review",       default: false
     t.integer  "computed_price",    default: 0
+    t.integer  "car_type",          default: 0
   end
 
   create_table "notifications", force: true do |t|

@@ -154,9 +154,9 @@
 				<%= f.label :account_type, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<% if controller == 'admin' %>
-					<%= f.select(:account_type, User::Account_types_select, class: "form-control select") %>
+					<%= f.select(:account_type, User::Account_types_select, :selected => 'client', class: "form-control select") %>
 					<% elsif controller == 'partner_admin' %>
-					<%= f.select(:account_type, User::Account_types_select_partneradmin, class: "form-control select") %>
+					<%= f.select(:account_type, User::Account_types_select_partneradmin, :selected => 'client', class: "form-control select") %>
 					<% end %>
 				</div>
 			</div>
@@ -215,7 +215,11 @@
 					<% if controller == 'admin' %>
 					<%= f.collection_select :company_ids, Company.all, :id, :name, {}, {:multiple => true} %>
 					<% elsif controller == 'partner_admin' %>
-					<%= f.collection_select :company_ids, @current_partner.companies, :id, :name, {}, {:multiple => true} %>
+						<% if !current_partner.companies.nil? %>
+						<%= f.collection_select :company_ids, current_partner.companies, :id, :name, {}, {:multiple => true} %>
+						<% else %>
+						"Aucune entreprise cliente pour le moment"
+						<% end %>
 					<% end %>
 				</div>
 			</div>

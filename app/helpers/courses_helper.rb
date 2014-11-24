@@ -36,7 +36,7 @@ module CoursesHelper
 		case to
 			when 'naveco'
 				shareToPartner = (course.computed_price*((100-course.commission.to_f)/100))
-				price = course.computed_price - shareToPartner
+				price = price - shareToPartner
 			when 'partner'
 				price = (course.computed_price*((100-course.commission.to_f)/100))
 		end

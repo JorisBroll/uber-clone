@@ -1,10 +1,43 @@
+<script>
+	init.push(function () {
+		$('.date').datepicker({
+			daysOfWeekDisabled: "6",
+			todayHighlight: true,
+			format: 'mm/dd/yyyy'
+		});
+	
+		var tax_data = <%= raw @chartData.to_json %>
+
+		Morris.Line({
+			element: 'sup',
+			data: tax_data,
+			xkey: 'period',
+			ykeys: ['ca', 'course_count'],
+			labels: ["Chiffre d'affaire", 'Nombre de courses'],
+			lineColors: ['#666', '#888'],
+			lineWidth: 2,
+			pointSize: 4,
+			gridLineColor: '#cfcfcf',
+			resize: true
+		});
+
+	});
+
+</script>
 <h2>Récapitulatif mensuel des paiements</h2>
 <div class="row">
 	<div class="col-md-12">
 		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">Sélectionner une période</span>
+			</div>
 			<div class="panel-body">
-				<form id="select-date" class="form-inline col-xs-12" action="<%= admin_monthly_path %>">
-					<%= date_select("recap", "date", {:start_year => 2014, :end_year => Time.new.year, :discard_day => true }, {:class => "form-control"} ) %>
+				<form id="select-date" class="form-inline col-xs-6" action="<%= admin_monthly_path %>">
+					<span>Par mois : </span><%= date_select("recap", "date", {:start_year => 2014, :end_year => Time.new.year, :discard_day => true }, {:class => "form-control"} ) %>
+					<button type="submit" class="btn btn-info">Voir</button>
+				</form>
+				<form id="select-date" class="form-inline col-xs-6" action="<%= admin_monthly_path %>">
+					<span>Ou par dates précises : </span>Du <input class="form-control date" name="date_start"/> au <input class="form-control date" name="date_end"/> 
 					<button type="submit" class="btn btn-info">Voir</button>
 				</form>
 				<div class="clearfix"></div>
@@ -21,31 +54,56 @@
 			</div>
 			<div class="list-group">
 				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Nombre de courses effectuées<span class="text-default text-sm" style="float:right;"><%= @courses.count %></span></div>
-				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale des courses (avant codes promos)<span class="text-default text-sm" style="float:right;"><%= @totalPrice.round(2) %> €</span></div>
-				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale facturée (après codes promos)<span class="text-default text-sm" style="float:right;"><%= @totalPriceAfterCodes.round(2) %> €</span></div>
-				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale redistribuée aux chauffeurs<span class="text-default text-sm" style="float:right;"><%= @totalPartnersShare.round(2) %> €</span></div>
-				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale revenant à Naveco<span class="text-default text-sm" style="float:right;"><%= @totalNavecoMargin.round(2) %> €</span></div>
-				<span> </span><span><%= @a.to_s %></span> 
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Prix total brut des courses (avant codes promos)<span class="text-default text-sm" style="float:right;"><%= @totals[:full_price].round(2) %> €</span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Prix total des courses (après codes promos)<span class="text-default text-sm" style="float:right;"><%= @totals[:promo_price].round(2) %> €</span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale redistribuée aux chauffeurs<span class="text-default text-sm" style="float:right;"><%= @totals[:partner_share].round(2) %> €</span></div>
+				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale revenant à Naveco<span class="text-default text-sm" style="float:right;"><%= @totals[:naveco_share].round(2) %> €</span></div>
+				<span> </span><span><%= @a.to_s %></span>
+				<div id="sup" class="list-group-item graph" style="height:200px"></div>
 			</div>
 		</div>
 		<div class="panel widget-support-tickets">
 			<div class="panel-heading">
-				<span class="panel-title">Balance des chauffeurs partenaires</span>
+				<span class="panel-title">Balance des entreprises partenaires</span>
 			</div>
 			<div class="panel-body">
 				<% @partners.each do |partner| %>
-					<% unpaidCourses = partner.courses.where("status = ? AND payment_status = ? AND payment_by = ? AND date_when >= ? AND date_when <= ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:partner], @date.beginning_of_month, @date.end_of_month) %>
-					<% if unpaidCourses.count > 0 %>
+					<%
+					courses = partner.courses.where("status = ? AND date_when >= ? AND date_when <= ?", Course.statuses[:done], @date[:start], @date[:end])
+					total_to_partner = courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+).round(2)
+					total_courses_paid_to_partner = courses.where("payment_by = ?", Course.payment_bies[:partner]).map {|s| price_afterPromo(s)}.reduce(0, :+).round(2)
+					%>
+					<% if courses.count > 0 %>
 					<div class="ticket">
-						<div>
-							<span class="label label-danger ticket-label"><%= (unpaidCourses.map {|s| price_afterPromo(s)}.reduce(0, :+)).round(2) %> €</span>
+						<div style="margin-bottom:5px">
+							<% balance = total_courses_paid_to_partner - total_to_partner %>
+							<span class="label label-<%= if balance < 0 then 'success' else 'danger' end %> ticket-label"><%= balance.round(2) %> €</span>
 							<a href="<%= admin_partner_path(partner) %>" class="ticket-title"><b><%= partner.name %></b></a>
 						</div>
-						<% unpaidCourses.each do |course| %>
-						<div class="ticket-info">
-							Course n°<a href="<%= admin_course_path(course) %>"><b><%= course.id %></b></a> - De <%= course.from %> à <%= course.to %><span class="text-default text-xs" style="float:right;"><%= price_afterPromo(course).round(2) %> €</span>
+						<div class="panel">
+						<table class="table text-xs">
+							<tr>
+								<th class="text-center">#</th>
+								<th>Départ</th>
+								<th>Destination</th>
+								<th>Type règlement</th>
+								<th>Prix client</th>
+								<th>Prix affilié</th>
+								<th>Marge</th>
+							</tr>
+							<% courses.each do |course| %>
+							<tr>
+								<td class="text-center"><a href="<%= admin_course_path(course) %>"><b><%= course.id %></b></a></td>
+								<td><%= course.from %></td>
+								<td><%= course.to %></td>
+								<td><%= Course::Payment_by[course.payment_by.to_sym][:name_admin] %></td>
+								<td><%= price_afterPromo(course).round(2) %> € </td>
+								<td><%= price_afterPromo(course, 'partner').round(2) %> €</td>
+								<td><%= price_afterPromo(course, 'naveco').round(2) %> €</td>
+							</tr>
+							<% end %>
+						</table>
 						</div>
-						<% end %>
 						<div class="text-right">
 							<a href="<%= admin_monthly_pdf_path %>?p=<%= partner.id.to_s %>" class="btn btn-sm">Voir la facture</a>
 						</div>
@@ -61,7 +119,7 @@
 			</div>
 			<div class="panel-body">
 				<% @companies.each do |company|
-					@unpaidCourses2 = company.courses.where("status = ? AND payment_status = ? AND payment_by = ? AND date_when >= ? AND date_when <= ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:company], @date.beginning_of_month, @date.end_of_month)
+					@unpaidCourses2 = company.courses.where("status = ? AND payment_status = ? AND payment_by = ? AND date_when >= ? AND date_when <= ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:company], @date[:start], @date[:end])
 					if @unpaidCourses2.count > 0 %>
 					<div class="ticket">
 						<div>
@@ -110,5 +168,17 @@
 				<%= @unpaidCourses.count %> courses non reglées <span class="text-default text-sm" style="float:right;"><%= totalUnpaid.round(2) %> €</span>
 			</div>
 		</div>
-	</div>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">Email</span>
+			</div>
+			<div class="panel-body">
+				<form name="test-email">
+					<input name="email" type="text"/><button id="mailSubmit" type="submit" class="btn btn-info">Envoyer</button>
+				</form>
+			</div>
+			<div class="panel-footer">
+				(Ne fonctionne pas encore)
+			</div>
+		</div>
 </div>

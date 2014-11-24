@@ -48,7 +48,6 @@
 		});
 
 	});
-
 </script>
 
 <div class="panel">
@@ -114,6 +113,13 @@
 			</div>
 			
 			<div class="form-group">
+				<%= f.label :car_type, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:car_type, Car::Car_type_alias.reverse, {}, { :class => 'select2' }) %>
+				</div>
+			</div>
+			
+			<div class="form-group">
 				<div class="col-sm-3">
 					<button id="calculer" class="btn btn-flat btn-lg" type="button">Calculer le prix</button>
 					<div id="gcompute-error-display" class="alert alert-danger" style="display:none"></div>
@@ -162,28 +168,22 @@
 
 			<div class="form-group">
 				<%= f.label :date_when, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
+				<div class="col-sm-3">
 					<%= f.text_field :date_when, class: "form-control _date", :placeholder => "Date", style: "position: relative; z-index: 100;", :value => date %>
 				</div>
-			</div>
-
-			<div class="form-group">
-				<%= f.label :time_when, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
+				<div class="col-sm-6">
 					<%= f.text_field :time_when, class: "form-control _time", :placeholder => "Heure" %>
 				</div>
 			</div>
 
-			<div class="form-group">
-				<%= f.label :flight_number, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :flight_number, class: "form-control", :placeholder => "Numéro"  %>
-				</div>
-			</div>
 
 			<div class="form-group">
-				<%= f.label :nb_luggage, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
+				<%= f.label :flight_number, class: "col-sm-1 control-label" %>
+				<%= f.label :nb_luggage, class: "col-sm-2 control-label" %>
+				<div class="col-sm-3">
+					<%= f.text_field :flight_number, class: "form-control", :placeholder => "Numéro de vol / Provenance / Destination"  %>
+				</div>
+				<div class="col-sm-6">
 					<%= f.text_field :nb_luggage, class: "form-control", :placeholder => "Nombre"  %>
 				</div>
 			</div>
@@ -231,6 +231,18 @@
 					<% elsif controller == 'partner_admin' %>
 					<%= f.select(:user_id, users_for_select('Personne (ajouter plus tard)', {:partner_id => current_partner.id}), {}, { :class => 'select2' }) %>
 					<% end %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :company_id, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<% if controller == 'admin' %>
+					<%= f.select(:company_id, companies_for_select("Pas d'entreprise"), {}, { :class => 'select2' }) %>
+					<% elsif controller == 'partner_admin' %>
+					<%= f.select(:company_id, companies_for_select("Pas d'entreprise", {:partner_id => current_partner.id}), {}, { :class => 'select2' }) %>
+					<% end %>
+					
 				</div>
 			</div>
 
@@ -295,26 +307,14 @@
 				</div>
 			</div>
 
-			<div class="form-group">
-				<%= f.label :company_id, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<% if controller == 'admin' %>
-					<%= f.select(:company_id, companies_for_select("Pas d'entreprise"), {}, { :class => 'select2' }) %>
-					<% elsif controller == 'partner_admin' %>
-					<%= f.select(:company_id, companies_for_select("Pas d'entreprise", {:partner_id => current_partner.id}), {}, { :class => 'select2' }) %>
-					<% end %>
-					
-				</div>
-			</div>
-
 			<%= hidden_field(:user, :created_by) %>
 
 			<hr class="panel-wide">
 
 			<div class="alert">
-				<p>- Proposer au clients un trajet retour (aéroport)</p>
+				<p>- Proposer au client un trajet retour (aéroport)</p>
 				<p>- Proposer au client une affiche avec son nom (aéroport)</p>
-				<p>- Adapter le véhicule pour plus de quatre personnes avec bagages (aéroport)</p>
+				<p>- Adapter le véhicule : 5 personnes avec bagages = Caravelle (aéroport)</p>
 			</div>
 
 	</div>

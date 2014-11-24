@@ -290,9 +290,8 @@ class window.GmapManager
 		if list.length
 			@totalRequests = list.length
 			for course, i in list
-				request = @makeRequest(course.start, course.end)
+				request = @makeRequest(course.start.val(), course.end.val())
 				((i) =>
-
 					@directionsService.route(request, (response, status) =>
 						@printRoutes(response, status, i)
 					)
@@ -300,9 +299,11 @@ class window.GmapManager
 			
 		else
 			@totalRequests = 1
-			request = @makeRequest(list.start, list.end)
+			request = @makeRequest(list.start.val(), list.end.val())
 			@directionsService.route(request, (response, status) =>
 				@printRoutes(response, status, 0)
+				list.start.val(response.routes[0].legs[0].start_address)
+				list.end.val(response.routes[0].legs[0].end_address)
 			)
 			
 
@@ -375,28 +376,23 @@ class window.GmapManager
 
 
 		else if (start_type == 'airport' && end_type == 'outdoors') || (start_type == 'outdoors' && end_type == 'airport') || (start_type == 'indoors' && end_type == 'indoors')
-			if route.distance.value > 50000
-				return result = 
-					status: 'KO'
-					message: "Trajet trop long, une notification sera envoyée à Naveco pour traiter votre demande lorsque vous validerez la course."
+			timePrice = 0.3
+			kmPrice = 2.5
+
+			if route.distance.value > 10000
+				add_kmPrice = 1.5
+				totalPrice = Math.round( (timePrice*(route.duration.value/60) + kmPrice*10 + add_kmPrice*(route.distance.value-10000)/1000)*100) /100
 			else
-				timePrice = 0.3
-				kmPrice = 2.5
+				totalPrice = Math.round( ( timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000) )*100)/100
 
-				if route.distance.value > 10000
-					add_kmPrice = 1.5
-					totalPrice = Math.round( (timePrice*(route.duration.value/60) + kmPrice*10 + add_kmPrice*(route.distance.value-10000)/1000)*100) /100
-				else
-					totalPrice = Math.round( ( timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000) )*100)/100
-
-				return result = 
-					status: 'OK'
-					route:
-						duration: route.duration
-						distance: route.distance
-						timePrice: timePrice
-						kmPrice: kmPrice
-						totalPrice: totalPrice
+			return result = 
+				status: 'OK'
+				route:
+					duration: route.duration
+					distance: route.distance
+					timePrice: timePrice
+					kmPrice: kmPrice
+					totalPrice: totalPrice
 
 		else if (start_type == 'indoors' && end_type == 'outdoors') || (start_type == 'outdoors' && end_type == 'indoors')
 			timePrice = 0.3
@@ -505,7 +501,7 @@ $(".courses.edit, .courses.new").ready ->
 
 	$("body").on "click", "#calculer", ->
 		GmapManager.computeCourse(
-			{start: $('#course_from').val(), end: $('#course_to').val()}, 
+			{start: $('#course_from'), end: $('#course_to')}, 
 			{distanceCap: true},
 			(results)->
 				console.log results

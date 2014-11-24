@@ -178,16 +178,16 @@
 					<%= link_to(admin_partners_path) do %><i class="menu-icon fa fa-briefcase"></i><span class="mm-text">Partenaires</span><% end %>
 				</li>
 				<li>
-					<%= link_to(admin_promocodes_path) do %><i class="menu-icon fa fa-ticket"></i><span class="mm-text">Codes promotions</span><% end %>
+					<%= link_to(admin_courses_path) do %><i class="menu-icon fa fa-flag-checkered"></i><span class="mm-text">Courses</span><% end %>
 				</li>
 				<li>
-					<%= link_to(admin_courses_path) do %><i class="menu-icon fa fa-flag-checkered"></i><span class="mm-text">Courses</span><% end %>
+					<%= link_to(admin_map_path) do %><i class="menu-icon fa fa-map-marker"></i><span class="mm-text">Carte des taxis</span><% end %>
 				</li>
 				<li>
 					<%= link_to(admin_monthly_path) do %><i class="menu-icon fa fa-usd"></i><span class="mm-text">Récapitulatif mensuel</span><% end %>
 				</li>
 				<li>
-					<%= link_to(admin_map_path) do %><i class="menu-icon fa fa-map-marker"></i><span class="mm-text">Carte des taxis</span><% end %>
+					<%= link_to(admin_promocodes_path) do %><i class="menu-icon fa fa-ticket"></i><span class="mm-text">Codes promotions</span><% end %>
 				</li>
 				<% end %>
 				<% if currently_admining_partner? || current_partner %>

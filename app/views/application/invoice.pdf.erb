@@ -102,7 +102,6 @@
 					<p><%= @partner.name %></p>
 					<p><%= build_address(@partner) %></p>
 					<p>Numéro TVA : <%= @partner.tva_number.to_s %></p>
-					<p><%= @partner.email %></p>
 				</div>
 				<div class="column right">
 					<p class="right" style="margin-left:5mm"><%= wicked_pdf_image_tag 'pixel-admin/main-navbar-logo.png',:width => "68",  :height=>"68" %></p>
@@ -127,7 +126,7 @@
 						<th>Arrivée</td>
 						<th>Date/Heure</td>
 						<th>Prix client</td>
-						<th>Prix proposé</td>
+						<th>Prix affilié</td>
 					</tr>
 					<% @courses.where("status = ?", Course.statuses[:done]).order('payment_status ASC').each do |course| %>
 					<tr>
@@ -144,16 +143,16 @@
 				<div>
 					<table id="courses_totals" class="right">
 						<tr>
-							<td>TOTAL TTC</td>
-							<td><%= @totals[:ttc] %> €</td>
-						</tr>
-						<tr>
 							<td>TOTAL HT</td>
 							<td><%= @totals[:ht] %> €</td>
 						</tr>
 						<tr>
-							<td>TOTAL TVA à 10%</td>
+							<td>TOTAL TVA (10%)</td>
 							<td><%= @totals[:tva] %> €</td>
+						</tr>
+						<tr>
+							<td>TOTAL TTC</td>
+							<td><%= @totals[:ttc] %> €</td>
 						</tr>
 					</table>
 					<div class="clear"></div>
