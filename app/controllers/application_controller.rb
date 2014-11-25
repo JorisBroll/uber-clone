@@ -18,4 +18,9 @@ class ApplicationController < ActionController::Base
       def set_locale
         I18n.locale = :fr
       end
+
+      def to_bool(str)
+        if str == 'true' || str == '1' then return true end
+      end
+
 end

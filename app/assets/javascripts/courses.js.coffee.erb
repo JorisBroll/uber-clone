@@ -21,6 +21,9 @@ class window.GmapManager
 		# Draw Map
 		@map = new google.maps.Map(document.getElementById(@options.rendererOptions.map), @options.mapOptions)
 
+		@markers = []
+		@courses = []
+
 		zonesCoords = [
 			[
 				new google.maps.LatLng(45.774761, 4.811110),
@@ -290,7 +293,7 @@ class window.GmapManager
 		if list.length
 			@totalRequests = list.length
 			for course, i in list
-				request = @makeRequest(course.start.val(), course.end.val())
+				request = @makeRequest(course.start, course.end)
 				((i) =>
 					@directionsService.route(request, (response, status) =>
 						@printRoutes(response, status, i)
@@ -468,13 +471,32 @@ class window.GmapManager
 		return [type, start_inLyon]
 	
 
-	@printMarker: (options, icon) ->
+	@printMarker: (options, icon, title, infoWindowContents) ->
+		for marker in @markers
+			marker.setMap(null);
+
+
 		markerOptions =
 			map: @map
 			icon: @options.iconsOptions[icon]
 			position: new google.maps.LatLng(options[0], options[1])
+			title: title
 
 		marker = new google.maps.Marker(markerOptions);
+		@markers.push(marker)
+		
+		infowindow = new google.maps.InfoWindow(
+			content: infoWindowContents
+		)
+		google.maps.event.addListener(marker, 'mouseover', ()->
+		    infowindow.open(@map,marker);
+		)
+		google.maps.event.addListener(marker, 'mouseout', ()->
+			setTimeout(()=>
+				infowindow.close()
+			, 500);
+		)
+
 		
 
 $(".courses.edit, .courses.new").ready ->
@@ -554,51 +576,59 @@ $(".static_pages.map").ready ->
 	class pointsManager
 		@infosbulles = []
 
-		@get_workingDrivers: () ->
-			$.ajax({
-	            url: '/ajax/get_pos',
-	            type: "GET",
-	            dataType: "json",
-	            data: {
-	            	type:'LastConnecWorkers',
-	            	id_user: 4
-	            }
-	        }).done((response) =>
-	        	@printCars(response);
-	        );
-		
-		@get_currentCourses: (customOptions) ->
-			defaultOptions =
-				partner_id: 'current'
-				status: 2 # In progress
+		@buildOptions: (form) ->
+			rData = {}
+			form.find('input[type="text"], input[type="hidden"], input[type="password"], select, textarea').each(()->
+				rData[$(this).attr('id')] = $(this).val()
+			)
+			form.find('input[type=radio]:checked').each(()->
+				rData[$(this).attr('name')] = $(this).val()
+			)
+			return rData;
+
+		@get: (customOptions) ->
+			defaultOptions = {}
 
 			options = $.extend(true, {}, defaultOptions, customOptions);
 
-			$.ajax(
-	            url: '/ajax/get_courses',
+			$.ajax({
+	            url: '/ajax/get',
 	            type: "GET",
 	            dataType: "json",
-	            data:
-	            	partner_id: options.partner_id
-	            	status: options.status
-	        ).done((response) =>
-	        	@printCourses(response);
-	        );
+	            data: options
+	        }).done((response) =>
+	        	console.log response
+	        	pointsManager.print(response)
+	        )
 		
-		@printCars: (list) ->
+		@print: (list) ->
 			for infosbulle in @infosbulles
 				infosbulle.close();
 			
-			for element in list
-				position = eval(element.position);
+			if list.courses && list.courses.length > 0
+				startEndsList = []
+				for course, i in list.courses
+					startEndsList[i] = 
+						start: course.from;
+						end: course.to;
 
-				#options = {
-				#    map: map,
-				#    position: new google.maps.LatLng(47.6342564, 6.8537913),
-				#};
+				getterStatus.listLength = list.length
+
+				getterStatus.status_counter.ok = 0
+				getterStatus.status_counter.ko = 0
+				getterStatus.status_counter.total = 0
+
+				GmapManager.computeCourse(startEndsList, {}, getterStatus.print)
+
+			else getterStatus.print("NOT_FOUND")
+
+			if list.users && list.users.length > 0
+				for user in list.users
+					console.log user
+					position = [user.pos_lat, user.pos_lon]
+					window.GmapManager.printMarker(position, 'car', user.name+' '+user.last_name, '<div class="scrollFix"><div>'+user.name+' '+user.last_name+"</div><div>Tel : "+user.phone+" / Port : "+user.cellphone+'</div></div>')
+				
 				#infowindow = new google.maps.InfoWindow(options);
-
-				window.GmapManager.printMarker(element, 'car')
 
 			#@infosbulles.push infowindow;
 		
@@ -644,11 +674,8 @@ $(".static_pages.map").ready ->
 					
 		window.GmapManager.init(options)
 
-		pointsManager.get_workingDrivers()
-		pointsManager.get_currentCourses()
+		pointsManager.get(pointsManager.buildOptions($('#map-filters')))
 
-	$('#partner-select, #status-select').on 'change', ->
-		pointsManager.get_currentCourses(
-			partner_id: $('#partner-select').val()
-			status: $('#status-select').val()
-		);
+	$('#map-filters #get').on 'click', ->
+		filterOptions = pointsManager.buildOptions($('#map-filters'));
+		pointsManager.get(filterOptions)

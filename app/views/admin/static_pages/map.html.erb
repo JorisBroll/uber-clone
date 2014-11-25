@@ -5,6 +5,11 @@
     padding: 0px;
     font-family:Roboto;
 }
+.scrollFix {
+    line-height: 1.35;
+    overflow: hidden;
+    white-space: nowrap;
+}
 </style>
 <script>
 	init.push(function () {
@@ -29,27 +34,27 @@
 		<div class="row">
 			<div class="col-sm-6">
 				<div>
-					<label for="course-visu">Visualiser le trajet des courses</label>
+					<label for="course-view">visualiser le trajet des courses</label>
 					<div>
 						<label class="checkbox-inline">
-							<input type="radio" class="px" value="1" id="course-visu" name="course-visu" checked><span class="lbl">Oui</span>
+							<input type="radio" class="px" value="1" id="courses-view" name="courses-view" checked><span class="lbl">Oui</span>
 						</label>
 						<label class="checkbox-inline">
-							<input type="radio" class="px" value="0" id="course-visu" name="course-visu"><span class="lbl">Non</span>
+							<input type="radio" class="px" value="0" id="courses-view" name="courses-view"><span class="lbl">Non</span>
 						</label>
 					</div>
 				</div>
 				<div>
-					<label for="partner-courses-select">Courses appartenant à :</label>
-					<select id="partner-courses-select">
+					<label for="courses-partner">Courses appartenant à :</label>
+					<select id="courses-partner">
 						<% @partners.each do |partner| %>
 							<option value="<%= partner.id %>"><%= partner.name %></option>
 						<% end %>
 					</select>
 				</div>
 				<div>
-					<label for="course-status-select">Status des courses :</label>
-					<select id="course-status-select">
+					<label for="courses-status">Status des courses :</label>
+					<select id="courses-status">
 						<% Course.statuses.each do |status| %>
 							<option value="<%= status[1] %>"><%= Course::Status_alias[status[0]] %></option>
 						<% end %>
@@ -57,26 +62,26 @@
 				</div>
 			</div>
 			<div class="col-sm-6">
-				<label for="course-visu">Visualiser les positions des chauffeurs</label>
+				<label for="course-view">visualiser les positions des chauffeurs</label>
 				<div>
 					<label class="checkbox-inline">
-						<input type="radio" class="px" value="1" id="partner-visu" name="partner-visu" checked><span class="lbl">Oui</span>
+						<input type="radio" class="px" value="1" id="partners-view" name="partners-view" checked><span class="lbl">Oui</span>
 					</label>
 					<label class="checkbox-inline">
-						<input type="radio" class="px" value="0" id="partner-visu" name="partner-visu"><span class="lbl">Non</span>
+						<input type="radio" class="px" value="0" id="partners-view" name="partners-view"><span class="lbl">Non</span>
 					</label>
 				</div>
 				<div>
-					<label for="partner-drivers-select">Chauffeurs de l'entreprise :</label>
-					<select id="partner-drivers-select">
+					<label for="partners-drivers">Chauffeurs de l'entreprise :</label>
+					<select id="partners-drivers">
 						<% @partners.each do |partner| %>
 							<option value="<%= partner.id %>"><%= partner.name %></option>
 						<% end %>
 					</select>
 				</div>
 				<div>
-					<label for="driver-status-select">Status des chauffeurs :</label>
-					<select id="driver-status-select">
+					<label for="partners-driver-status">Status des chauffeurs :</label>
+					<select id="partners-driver-status">
 						<% User::Status.each do |i, status| %>
 							<option value="<%= i.to_s %>"><%= status[:name] %></option>
 						<% end %>
@@ -85,6 +90,9 @@
 			</div>
 		</div>
 		<p id="select-status-display"></p>
+	</div>
+	<div class="panel-footer text-right">
+		<button id="get" class="btn btn-info">Voir</button>
 	</div>
 </div>
 <div id="map-canvas"></div>

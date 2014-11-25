@@ -32,6 +32,7 @@ Rails.application.routes.draw do
   match '/login', to: 'application#login', via: 'get'
   match '/logout', to: 'sessions#destroy', via: 'delete'
 
+  match '/ajax/get', to: 'ajax_functions#get', via: 'get'
   match '/ajax/get_pos', to: 'ajax_functions#get_pos', via: 'get'
   match '/ajax/get_courses', to: 'ajax_functions#get_courses', via: 'get'
   match '/ajax/notifications', to: 'ajax_functions#notifications', via: 'get'

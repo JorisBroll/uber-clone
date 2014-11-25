@@ -3,6 +3,30 @@ class AjaxFunctionsController < ApplicationController
 
 	include NotificationsHelper
 	layout 'ajax'
+	def get
+		rData = {}
+
+		if !params['courses-view'].nil? && to_bool(params['courses-view'])
+			if (currently_admining_partner? || current_partner) && params['courses-partner'] == 'current'
+				rData[:courses] = current_partner.courses.where("status = ?", params['courses-status'].to_i)
+			elsif !params['courses-partner'].nil? && params['courses-partner'] != 'current'
+				rData[:courses] = Partner.find_by(id: params['courses-partner']).courses.where("status = ?", params['courses-status'].to_i)
+			else
+				rData[:courses] = []
+			end
+		end
+		
+
+		if !params['partners-view'].nil? && to_bool(params['partners-view'])
+			users = Partner.find_by(id: params['partners-drivers']).users.where('account_type = ? AND status = ?', User::account_types[:driver], params['partners-driver-status'].to_i)
+		
+			rData[:users] = users
+		end 
+
+		respond_to do |format|
+			format.json { render :json => rData }
+		end
+	end
 	def get_pos
 		@users = [User.find(34), User.find(36)]
 		@users.each_with_index do |u, i|

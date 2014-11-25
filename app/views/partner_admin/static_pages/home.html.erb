@@ -31,7 +31,7 @@ init.push(function () {
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses de l'entreprise</span>
 			</div>
-			<div class="panel-body" id="fdsfdsfds">
+			<div class="panel-body">
 				<% @courses.each do |course| %>
 					<div class="ticket">
 						<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
@@ -109,6 +109,7 @@ init.push(function () {
 						<thead>
 							<tr>
 								<th>Nom</th>
+								<th>Status</th>
 								<th>Email</th>
 								<th>Téléphone</th>
 								<th>Actions</th>
@@ -119,6 +120,7 @@ init.push(function () {
 						<% @drivers.each do |user| %>			
 						<tr>
 							<td><img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#" title=""><%= user.name %></a></td>
+							<td><%= user.status %></td>
 							<td><a href="mailto:<%= user.email %>"><%= user.email %></a></td>
 							<td>0102030405</td>
 							<td style="font-size:16px;"><%= link_to partner_admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
