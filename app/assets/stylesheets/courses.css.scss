@@ -1,3 +1,12 @@
 #stops-group #stops-list .input-group {
 	margin-bottom:5px;
 }
+.scrollFix {
+    line-height: 1.35;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.scrollFix p {
+    padding:4px 2px;
+    margin:0
+}

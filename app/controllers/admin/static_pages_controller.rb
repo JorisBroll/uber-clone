@@ -17,6 +17,10 @@ class Admin::StaticPagesController < ApplicationController
 		@partners = Partner.all
 	end
 
+	def logs
+
+	end
+	
 	def monthly
 		if !params['recap'].nil?
 			@select_date = Date.new(params['recap']['date(1i)'].to_i, params['recap']['date(2i)'].to_i, 1)
@@ -35,6 +39,7 @@ class Admin::StaticPagesController < ApplicationController
 				:end => Time.zone.now.end_of_month
 			}
 		end
+		
 		@courses = Course.where("date_when >= ? AND date_when <= ? AND status = ?", @date[:start], @date[:end], Course.statuses[:done])
 		@totals = {
 			:full_price => @courses.map {|s| s.computed_price}.reduce(0, :+),
@@ -85,8 +90,7 @@ class Admin::StaticPagesController < ApplicationController
 				:ttc => (@courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+)).round(2),
 				:ht => ((@courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+))*0.9).round(2),
 				:tva => ((@courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+))*0.1).round(2),
-				:naveco_collected => (@courses_to_naveco.map {|s| price_afterPromo(s)}.reduce(0, :+)).round(2),
-				:naveco_collected_lifetime => @partner.courses.where("status = ? AND payment_by = ?", Course.statuses[:done], Course.payment_bies[:partner])
+				:naveco_collected => (@courses_to_naveco.map {|s| price_afterPromo(s)}.reduce(0, :+)).round(2)
 			}
 
 			(@courses_to_naveco.map {|s| price_afterPromo(s, 'naveco')}.reduce(0, :+)).round(2)

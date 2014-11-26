@@ -30,12 +30,15 @@ init.push(function () {
 		<div id="panel-courses" class="panel widget-support-tickets panel-warning">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses de l'entreprise</span>
+				<div class="panel-heading-controls">
+					<span class="label label-success"><%= @courses.count %></span>
+				</div>
 			</div>
 			<div class="panel-body">
 				<% @courses.each do |course| %>
 					<div class="ticket">
 						<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
-						<%= link_to partner_admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
+						<%= link_to partner_admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span> - <span><%= price_afterPromo(course, 'partner').round(2) %> €</span><% end %>
 						<span class="ticket-info">
 							Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
 						</span><br />

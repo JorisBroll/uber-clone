@@ -1,0 +1,71 @@
+<script>
+	init.push(function () {
+		/*$(".new_car, .edit_car").validate({
+			focusInvalid: false,
+			rules: {
+				'car[name]': {
+				  required: true
+				},
+				'car[nb_slots]': {
+				  required: true
+				}
+			}
+		});*/
+
+		$(".select2").select2({
+			allowClear: true,
+			placeholder: "Choisir"
+		});
+	});
+</script>
+
+<div class="panel">
+	<div class="panel-heading">
+		<span class="panel-title">Enregistrer un nouveau paiement</span>
+	</div>
+	<div class="panel-body">
+		<%= form_for [controller, @payment] do |f| %>
+		    
+			<%= render 'common/error_messages', object: f.object %>
+
+			<div class="form-group">
+				<%= f.label :to_type, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :to_type, class: "form-control", :placeholder => "Type de récepteur" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :to_id, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :to_id, class: "form-control", :placeholder => "Id recepteur" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :amount, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :amount, class: "form-control", :placeholder => "Montant de la transaction" %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :method, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.select(:method, Car::Car_type_alias.reverse, {}, { :class => 'select2' }) %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<%= f.label :notes, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_area :notes, class: "form-control", :placeholder => "Couleur" %>
+				</div>
+			</div>
+	</div>
+	<div class="panel-footer text-right">
+		<a class="btn btn-flat btn-danger" href="<%= send("#{controller}_payments_path") %>">Annuler</a>
+		<%= f.submit action, class: "btn btn-primary btn-flat" %>
+		<% end %>
+	</div>
+</div>

@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     get '/logout_partner', to: 'static_pages#logout_partner'
     get '/map', to: 'static_pages#map'
     get '/config', to: 'static_pages#config'
+    get '/logs', to: 'static_pages#logs'
     get '/monthly', to: 'static_pages#monthly'
     get '/monthly/pdf', to: 'static_pages#monthly_pdf'
     resources :users
@@ -14,6 +15,7 @@ Rails.application.routes.draw do
     resources :promocodes
     resources :courses
     resources :companies
+    resources :payments
   end
 
   namespace :partner_admin do
@@ -33,8 +35,6 @@ Rails.application.routes.draw do
   match '/logout', to: 'sessions#destroy', via: 'delete'
 
   match '/ajax/get', to: 'ajax_functions#get', via: 'get'
-  match '/ajax/get_pos', to: 'ajax_functions#get_pos', via: 'get'
-  match '/ajax/get_courses', to: 'ajax_functions#get_courses', via: 'get'
   match '/ajax/notifications', to: 'ajax_functions#notifications', via: 'get'
 
 end

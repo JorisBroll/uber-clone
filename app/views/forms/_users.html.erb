@@ -150,13 +150,14 @@
 				</div>
 			</div>
 
+			<% if params["action"] == 'new' then selected = 'client' else selected = nil end %>
 			<div class="form-group">
 				<%= f.label :account_type, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<% if controller == 'admin' %>
-					<%= f.select(:account_type, User::Account_types_select, :selected => 'client', class: "form-control select") %>
+					<%= f.select(:account_type, User::Account_types_select, :selected => selected, class: "form-control select") %>
 					<% elsif controller == 'partner_admin' %>
-					<%= f.select(:account_type, User::Account_types_select_partneradmin, :selected => 'client', class: "form-control select") %>
+					<%= f.select(:account_type, User::Account_types_select_partneradmin, :selected => selected, class: "form-control select") %>
 					<% end %>
 				</div>
 			</div>

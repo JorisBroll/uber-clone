@@ -70,6 +70,9 @@
 				<% @partners.each do |partner| %>
 					<%
 					courses = partner.courses.where("status = ? AND date_when >= ? AND date_when <= ?", Course.statuses[:done], @date[:start], @date[:end])
+					
+					alltime_balance = getBalance(partner)
+
 					total_to_partner = courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+).round(2)
 					total_courses_paid_to_partner = courses.where("payment_by = ?", Course.payment_bies[:partner]).map {|s| price_afterPromo(s)}.reduce(0, :+).round(2)
 					%>
@@ -106,6 +109,7 @@
 						</div>
 						<div class="text-right">
 							<a href="<%= admin_monthly_pdf_path %>?p=<%= partner.id.to_s %>" class="btn btn-sm">Voir la facture</a>
+							<p>Balance au <%= @date[:start].beginning_of_month.strftime("%d/%m/%Y") %> : <%= alltime_balance.round(2) %> €</p>
 						</div>
 					</div>
 					<% end %>

@@ -58,7 +58,7 @@ class Admin::CoursesController < ApplicationController
 
 		    def course_params
 		    	params['course']['stops'] = params['course']['stops'].to_json
-		    	params.require(:course).permit(:from, :to, :date_when, :time_when, :computed_distance, :computed_duration, :computed_price, :commission, :stops, :nb_people, :nb_luggage, :user_id, :partner_id, :car_id, :company_id, :status, :notes, :created_by, :company_id, :promocode_id, :payment_when, :payment_by, :payment_status, :payment_type, :flight_number)
+		    	params.require(:course).permit(:from, :to, :date_when, :time_when, :computed_distance, :computed_duration, :computed_price, :commission, :stops, :nb_people, :nb_luggage, :user_id, :partner_id, :car_id, :company_id, :status, :notes, :created_by, :company_id, :promocode_id, :payment_when, :payment_by, :payment_status, :payment_type, :flight_number, :need_review)
 		    end
 
 		    def make_notif(type, title, content)

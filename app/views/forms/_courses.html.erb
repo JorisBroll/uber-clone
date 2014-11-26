@@ -47,6 +47,7 @@
 			var b = $('#course_to').val(a);
 		});
 
+		$("#refresh-cars").trigger('click') // Show cars
 	});
 </script>
 
@@ -60,12 +61,12 @@
 		    
 			<%= render 'common/error_messages', object: f.object %>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :from, class: "col-sm-3 control-label" %>
 				<div class="col-sm-8">
 					<%= f.text_field :from, class: "form-control", :placeholder => "(Ville), (Numéro de rue) (Nom de rue)" %>
 				</div>
-				<div class="col-sm-1 destination-selector">
+				<div class="destination-selector col-sm-1">
 					<div class="btn-group">
 						<button data-toggle="dropdown" class="btn btn-info dropdown-toggle" type="button">Destinations <i class="fa fa-caret-down"></i></button>
 						<ul class="dropdown-menu pull-right">
@@ -83,12 +84,12 @@
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :to, class: "col-sm-3 control-label" %>
 				<div class="col-sm-8">
 					<%= f.text_field :to, class: "form-control", :placeholder => "(Ville), (Numéro de rue) (Nom de rue)" %>
 				</div>
-				<div class="col-sm-1 destination-selector">
+				<div class="destination-selector col-sm-1">
 					<div class="btn-group">
 						<button data-toggle="dropdown" class="btn btn-info dropdown-toggle" type="button">Destinations <i class="fa fa-caret-down"></i></button>
 						<ul class="dropdown-menu pull-right">
@@ -106,58 +107,59 @@
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<div class="col-sm-1 col-md-offset-3">
 					<button id="invert" class="btn" type="button"><i class="fa fa-refresh"></i></button>
 				</div>
 			</div>
 			
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :car_type, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.select(:car_type, Car::Car_type_alias.reverse, {}, { :class => 'select2' }) %>
 				</div>
 			</div>
 			
-			<div class="form-group">
+			<div class="row form-group">
 				<div class="col-sm-3">
-					<button id="calculer" class="btn btn-flat btn-lg" type="button">Calculer le prix</button>
-					<div id="gcompute-error-display" class="alert alert-danger" style="display:none"></div>
+					<button id="compute-course" class="btn btn-flat btn-lg" style="margin-bottom:10px" type="button">Calculer le prix</button>
+					<div id="gcompute-error-display" class="alert alert-danger" style="display:none;margin-bottom:10px"></div>
+					<button id="refresh-cars" class="btn btn-flat btn-lg" style="margin-bottom:10px" type="button">Actualiser la position des voitures</button>
 				</div>
 				<div class="col-sm-9">
 					<div id="map-canvas" style="height:360px"></div>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :computed_distance, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :computed_distance, class: "form-control",:readonly => true %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :computed_duration, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :computed_duration, class: "form-control", :readonly => true %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :computed_price, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :computed_price, class: "form-control" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :commission, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :commission, class: "form-control", :placeholder => "(%)" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :nb_people, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :nb_people, class: "form-control" %>
@@ -166,7 +168,7 @@
 
 			<% if @course.date_when then date = @course.date_when.strftime("%d/%m/%Y") else date = '' end %>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :date_when, class: "col-sm-3 control-label" %>
 				<div class="col-sm-3">
 					<%= f.text_field :date_when, class: "form-control _date", :placeholder => "Date", style: "position: relative; z-index: 100;", :value => date %>
@@ -177,7 +179,7 @@
 			</div>
 
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :flight_number, class: "col-sm-1 control-label" %>
 				<%= f.label :nb_luggage, class: "col-sm-2 control-label" %>
 				<div class="col-sm-3">
@@ -188,7 +190,7 @@
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :notes, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_area :notes, class: "form-control", :placeholder => "Notes" %>
@@ -197,7 +199,7 @@
 
 			<hr class="panel-wide">
 
-			<div id="stops-group" class="form-group">
+			<div id="stops-group" class="row form-group">
 				<div class="col-sm-3">
 					<p><%= f.label :stops, class: "control-label" %></p>
 					<p><button id="add-stops" class="btn btn-flat btn-lg" type="button">Ajouter un arrêt</button></p>
@@ -223,7 +225,7 @@
 
 			<hr class="panel-wide">
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :user_id, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<% if controller == 'admin' %>
@@ -234,7 +236,7 @@
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :company_id, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<% if controller == 'admin' %>
@@ -242,11 +244,10 @@
 					<% elsif controller == 'partner_admin' %>
 					<%= f.select(:company_id, companies_for_select("Pas d'entreprise", {:partner_id => current_partner.id}), {}, { :class => 'select2' }) %>
 					<% end %>
-					
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :payment_by, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<% if controller == 'admin' %>
@@ -257,14 +258,14 @@
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :payment_status, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.select(:payment_status, payment_status_for_select, {}, { :class => 'select2' }) %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :payment_when, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.select(:payment_when, payment_when_for_select, {}, { :class => 'select2' }) %>
@@ -273,7 +274,7 @@
 
 			<% if controller == 'admin' %>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :partner_id, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.select(:partner_id, partners_for_select, {}, { :class => 'select2' }) %>
@@ -282,7 +283,7 @@
 
 			<% end %>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :car_id, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 				<% if controller == 'admin' %>
@@ -293,17 +294,31 @@
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :promocode_id, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.select(:promocode_id, promocodes_for_select('Aucun'), {}, { :class => 'select2' }) %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :status, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.select(:status, Course::Status_select, {}, { :class => 'select2' }) %>
+				</div>
+			</div>
+
+			<div class="row form-group">
+				<%= f.label :need_review, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<label class="checkbox-inline">
+						<%= f.radio_button :need_review, '0', :checked => true, :class => "px" %>
+						<span class="lbl"><%= label :contactmethod_0, 'Non' %></span>
+					</label>
+					<label class="checkbox-inline">
+						<%= f.radio_button :need_review, '1', :class => "px" %>
+						<span class="lbl"><%= label :contactmethod_1, 'Oui' %></span>
+					</label>
 				</div>
 			</div>
 

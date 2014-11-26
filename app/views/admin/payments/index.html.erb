@@ -1,0 +1,21 @@
+<div class="row">
+	<div class="col-md-12">
+		<div class="panel panel-info panel-dark widget-profile">
+			<div class="panel-heading">
+				<div class="widget-profile-bg-icon"><i class="fa fa-gears"></i></div>
+				<img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" class="widget-profile-avatar">
+				<div class="widget-profile-header">
+					
+				</div>
+			</div>
+			<div class="list-group">
+				
+			</div>
+		</div>
+	</div>
+</div>
+<%= link_to(new_admin_payment_path) do %>
+	<button class="btn btn-flat btn-labeled btn-primary">
+	    <span class="btn-label icon fa fa-paypal"></span>Enregistrer un paiement
+	</button>
+<% end %>

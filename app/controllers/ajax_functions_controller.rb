@@ -18,36 +18,17 @@ class AjaxFunctionsController < ApplicationController
 		
 
 		if !params['partners-view'].nil? && to_bool(params['partners-view'])
-			users = Partner.find_by(id: params['partners-drivers']).users.where('account_type = ? AND status = ?', User::account_types[:driver], params['partners-driver-status'].to_i)
-		
-			rData[:users] = users
-		end 
+			if params['partners-drivers'] == 'all'
+				users = User.where('account_type = ? AND status = ?', User::account_types[:driver], 0) # All online drivers
+			elsif !params['partners-drivers'].nil? && params['courses-partner'] != 'all'
+				users = Partner.find_by(id: params['partners-drivers']).users.where('account_type = ? AND status = ?', User::account_types[:driver], params['partners-driver-status'].to_i)
+			end
+				#users = users.to_json(:include => :partner)
+				rData[:users] = users
+			end
 
 		respond_to do |format|
-			format.json { render :json => rData }
-		end
-	end
-	def get_pos
-		@users = [User.find(34), User.find(36)]
-		@users.each_with_index do |u, i|
-			@users[i] = [u.pos_lat.to_f, u.pos_lon.to_f]
-		end
-		
-		respond_to do |format|
-			format.json { render :json => @users }
-		end
-	end
-	def get_courses
-		if (currently_admining_partner? || current_partner) && params['partner_id'] == 'current'
-			@courses = current_partner.courses.where("status = ?", params['status'].to_i)
-		elsif !params['partner_id'].nil? && params['partner_id'] != 'current'
-			@courses = Partner.find_by(id: params['partner_id']).courses.where("status = ?", params['status'].to_i)
-		else
-			@courses = []
-		end
-
-		respond_to do |format|
-			format.json { render :json => @courses }
+			format.json { render :json => rData.to_json(:include => { :partner => { :only => :name } }) }
 		end
 	end
 

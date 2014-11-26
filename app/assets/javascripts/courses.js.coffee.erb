@@ -11,6 +11,12 @@ class window.GmapManager
 				zoom: 12
 			rendererOptions: 
 				map: 'map-canvas'
+			iconsOptions :
+				car:
+					url: '<%= image_path("map-car.png") %>'
+					size: new google.maps.Size(26, 22)
+					origin: new google.maps.Point(0,0)
+					anchor: new google.maps.Point(13, 11)
 
 		# Merge options objects to override defaults ones with passed ones
 		@options = $.extend(true, {}, @defaultOptions, customOptions);
@@ -516,7 +522,7 @@ $(".courses.edit, .courses.new").ready ->
 	$("body").on "click", ".stop-container .close-btn", ->
 		$(this).closest(".stop-container").remove()
 
-	$("body").on "click", "#calculer", ->
+	$("body").on "click", "#compute-course", ->
 		GmapManager.computeCourse(
 			{start: $('#course_from'), end: $('#course_to')}, 
 			{distanceCap: true},
@@ -535,6 +541,30 @@ $(".courses.edit, .courses.new").ready ->
 					$('#course_computed_distance').val('#Erreur#')
 					$('#course_computed_duration').val('#Erreur#')
 					$('#course_computed_price').val('#Erreur#')
+		)
+
+	$("body").on "click", "#refresh-cars", ->
+		$.ajax({
+			url: '/ajax/get',
+			type: "GET",
+			dataType: "json",
+			data: {
+				'partners-view' : '1',
+				'partners-drivers' : 'all'
+			}
+		}).done((response) =>
+			#console.log response
+			for marker in GmapManager.markers
+				marker.setMap(null);
+
+			if response.users && response.users.length > 0
+				message = $('<div/>', {"class":'scrollFix'}).append($('<p/>', {text:user.name+' '+user.last_name})).append($('<p/>', {text: 'Tel : '+user.phone+' / Port : '+user.cellphone}))
+					
+				if user.partner != null
+					message.append($('<p/>', {text: user.partner.name}))
+
+				position = [user.pos_lat, user.pos_lon]
+				window.GmapManager.printMarker(position, 'car', user.name+' '+user.last_name, message.prop('outerHTML'))
 		)
 
 
@@ -624,9 +654,13 @@ $(".static_pages.map").ready ->
 
 			if list.users && list.users.length > 0
 				for user in list.users
-					#console.log user
+					message = $('<div/>', {"class":'scrollFix'}).append($('<p/>', {text:user.name+' '+user.last_name})).append($('<p/>', {text: 'Tel : '+user.phone+' / Port : '+user.cellphone}))
+					
+					if user.partner != null
+						message.append($('<p/>', {text: user.partner.name}))
+
 					position = [user.pos_lat, user.pos_lon]
-					window.GmapManager.printMarker(position, 'car', user.name+' '+user.last_name, '<div class="scrollFix"><div>'+user.name+' '+user.last_name+"</div><div>Tel : "+user.phone+" / Port : "+user.cellphone+'</div></div>')
+					window.GmapManager.printMarker(position, 'car', user.name+' '+user.last_name, message.prop('outerHTML'))
 
 	$(window).on 'gmap-loaded', ->
 		options =

@@ -5,11 +5,6 @@
     padding: 0px;
     font-family:Roboto;
 }
-.scrollFix {
-    line-height: 1.35;
-    overflow: hidden;
-    white-space: nowrap;
-}
 </style>
 <script>
 	init.push(function () {
@@ -74,6 +69,7 @@
 				<div>
 					<label for="partners-drivers">Chauffeurs de l'entreprise :</label>
 					<select id="partners-drivers">
+						<option value="all">Tous</option>
 						<% @partners.each do |partner| %>
 							<option value="<%= partner.id %>"><%= partner.name %></option>
 						<% end %>

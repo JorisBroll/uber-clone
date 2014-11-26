@@ -14,4 +14,12 @@ module PartnersHelper
 			return image_path('photos/user.png')
 		end
 	end
+
+	def getBalance(partner)
+		courses = partner.courses
+		naveco_collected = courses.where("status = ? AND payment_by = ?", Course.statuses[:done], Course.payment_bies[:partner]).map {|s| price_afterPromo(s)}.reduce(0, :+)
+		ttc = courses.where("status = ?", Course.statuses[:done]).map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+)
+		balance = ttc - naveco_collected
+		return balance
+	end
 end

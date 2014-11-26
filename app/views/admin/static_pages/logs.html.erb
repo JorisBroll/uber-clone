@@ -1,0 +1,142 @@
+<h2>Journal d'évènements</h2>
+
+<div class="row">
+	<div class="col-md-6">
+		<div class="panel panel-dark panel-pa-purple">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Utilisateurs</span>
+				<ul class="nav nav-tabs nav-tabs-xs">
+					<li class="active">
+						<a data-toggle="tab" href="#partner-admins">Administrateurs</a>
+					</li>
+					<li class="">
+						<a data-toggle="tab" href="#drivers">Chauffeurs</a>
+					</li>
+				</ul>
+			</div>
+			<div class="tab-content">
+				<div id="partner-admins" class="widget-comments panel-body tab-pane active">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Nom</th>
+								<th>Email</th>
+								<th>Téléphone</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<% @partneradmins.each do |user| %>
+							<tr>
+								<td><img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#" title=""><%= user.name %></a></td>
+								<td><a href="mailto:<%= user.email %>"><%= user.email %></a></td>
+								<td><%= user.phone %></td>
+								<td style="font-size:16px;"><%= link_to partner_admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
+							</tr>
+						<% end %>
+					</table>
+				</div>
+
+				<div id="drivers" class="widget-threads panel-body tab-pane">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Nom</th>
+								<th>Status</th>
+								<th>Email</th>
+								<th>Téléphone</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody class="valign-middle">
+
+						<% @drivers.each do |user| %>			
+						<tr>
+							<td><img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#" title=""><%= user.name %></a></td>
+							<td><%= user.status %></td>
+							<td><a href="mailto:<%= user.email %>"><%= user.email %></a></td>
+							<td>0102030405</td>
+							<td style="font-size:16px;"><%= link_to partner_admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
+						</tr>
+						<% end %>
+					</table>
+				</div>
+			</div>
+			<div class="panel-footer">
+				<%= link_to new_partner_admin_user_path do %>
+					<button class="btn btn-labeled btn-block">
+				    	<span class="btn-label icon fa fa-user"></span>Ajouter un salarié
+					</button>
+				<% end %>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="panel panel-dark panel-pa-purple">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Personnel de l'entreprise</span>
+				<ul class="nav nav-tabs nav-tabs-xs">
+					<li class="active">
+						<a data-toggle="tab" href="#partner-admins">Administrateurs</a>
+					</li>
+					<li class="">
+						<a data-toggle="tab" href="#drivers">Chauffeurs</a>
+					</li>
+				</ul>
+			</div>
+			<div class="tab-content">
+				<div id="partner-admins" class="widget-comments panel-body tab-pane active">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Nom</th>
+								<th>Email</th>
+								<th>Téléphone</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<% @partneradmins.each do |user| %>
+							<tr>
+								<td><img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#" title=""><%= user.name %></a></td>
+								<td><a href="mailto:<%= user.email %>"><%= user.email %></a></td>
+								<td><%= user.phone %></td>
+								<td style="font-size:16px;"><%= link_to partner_admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
+							</tr>
+						<% end %>
+					</table>
+				</div>
+
+				<div id="drivers" class="widget-threads panel-body tab-pane">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Nom</th>
+								<th>Status</th>
+								<th>Email</th>
+								<th>Téléphone</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody class="valign-middle">
+
+						<% @drivers.each do |user| %>			
+						<tr>
+							<td><img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#" title=""><%= user.name %></a></td>
+							<td><%= user.status %></td>
+							<td><a href="mailto:<%= user.email %>"><%= user.email %></a></td>
+							<td>0102030405</td>
+							<td style="font-size:16px;"><%= link_to partner_admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
+						</tr>
+						<% end %>
+					</table>
+				</div>
+			</div>
+			<div class="panel-footer">
+				<%= link_to new_partner_admin_user_path do %>
+					<button class="btn btn-labeled btn-block">
+				    	<span class="btn-label icon fa fa-user"></span>Ajouter un salarié
+					</button>
+				<% end %>
+			</div>
+		</div>
+	</div>
+</div>
