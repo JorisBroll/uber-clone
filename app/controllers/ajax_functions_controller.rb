@@ -32,6 +32,23 @@ class AjaxFunctionsController < ApplicationController
 		end
 	end
 
+	def get_objects
+		rData = {}
+
+		if !params['objects'].nil?
+			select_array = [:id, :name]
+			if params['objects'] == 'users'
+				select_array.push(:last_name)
+			end
+			rData = params['objects'].classify.constantize.all.select(select_array)
+			
+		end
+		
+		respond_to do |format|
+			format.json { render :json => rData.to_json }
+		end
+	end
+
 	def notifications
 		case params['notif_action']
 		when 'set_seen'

@@ -324,7 +324,7 @@ class window.GmapManager
 
 
 	@printRoutes: (response, status, i) =>
-		#console.log response
+		console.log response
 
 		if status == google.maps.DirectionsStatus.OK
 			route = response.routes[0].legs[0]
@@ -405,7 +405,13 @@ class window.GmapManager
 
 		else if (start_type == 'indoors' && end_type == 'outdoors') || (start_type == 'outdoors' && end_type == 'indoors')
 			timePrice = 0.3
-			kmPrice = 1.5
+			kmPrice = 2.5
+
+			if route.distance.value > 10000
+				add_kmPrice = 1.5
+				totalPrice = Math.round( (timePrice*(route.duration.value/60) + kmPrice*10 + add_kmPrice*(route.distance.value-10000)/1000)*100) /100
+			else
+				totalPrice = Math.round( ( timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000) )*100)/100
 
 			return result = 
 				status: 'OK'
@@ -414,7 +420,7 @@ class window.GmapManager
 					distance: route.distance
 					timePrice: timePrice
 					kmPrice: kmPrice
-					totalPrice: Math.round((timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000))*10)/10
+					totalPrice: totalPrice
 
 		else if (start_type == 'outdoors' && end_type == 'outdoors')
 			if route.distance.value < 10000
@@ -462,7 +468,7 @@ class window.GmapManager
 	@getType_point: (point, address) ->
 		type = 'outdoors'
 		start_inLyon = false;
-		if address == "Aéroport de Lyon-Saint Exupéry (LYS), 69125 Colombier-Saugnieu, France"
+		if address == "Aéroport de Lyon-Saint Exupéry (LYS), 69125 Colombier-Saugnieu, France" || address == 'Lyon-St Exupery(TGV), Aéroport de Lyon-Saint Exupéry (LYS), 69125 Colombier-Saugnieu, France'
 			type = 'airport'
 		else
 			for zone, i in @zones

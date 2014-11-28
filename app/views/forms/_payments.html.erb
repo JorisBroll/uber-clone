@@ -16,6 +16,27 @@
 			allowClear: true,
 			placeholder: "Choisir"
 		});
+
+		$(".type_select").on('change', function() {
+			$.ajax({
+	            url: '/ajax/get_objects',
+	            type: "GET",
+	            dataType: "json",
+	            data: {
+	            	objects : $(this).val()
+	            }
+	        }).done(function(response) {
+	        	console.log(response)
+	        	newArray = []
+	        	for (var i=0; i < response.length; i++) {
+	        		newArray.push({id: response[i].id, text: response[i].name})
+	        	}
+	        	console.log(newArray)
+	        	$("#payment_to_id").select2({
+        			data: newArray
+        		});
+	        });
+		}).trigger('change');
 	});
 </script>
 
@@ -31,14 +52,15 @@
 			<div class="form-group">
 				<%= f.label :to_type, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.text_field :to_type, class: "form-control", :placeholder => "Type de récepteur" %>
+					<%= f.select(:to_type, AppTools::buildList('select', 'objects'), {}, { :class => 'select2 type_select' }) %>
 				</div>
 			</div>
 
 			<div class="form-group">
 				<%= f.label :to_id, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.text_field :to_id, class: "form-control", :placeholder => "Id recepteur" %>
+					<%= f.hidden_field(:to_id) %>
+					<%#= f.select(:to_type, {}, {}, { :class => 'select2 to-id_select' }) %>
 				</div>
 			</div>
 
@@ -52,14 +74,14 @@
 			<div class="form-group">
 				<%= f.label :method, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.select(:method, Car::Car_type_alias.reverse, {}, { :class => 'select2' }) %>
+					<%= f.select(:method, methods_for_select, {}, { :class => 'select2' }) %>
 				</div>
 			</div>
 
 			<div class="form-group">
 				<%= f.label :notes, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.text_area :notes, class: "form-control", :placeholder => "Couleur" %>
+					<%= f.text_area :notes, class: "form-control", :placeholder => "Description, notes, ..." %>
 				</div>
 			</div>
 	</div>

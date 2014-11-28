@@ -6,4 +6,8 @@ module ApplicationHelper
 		@address = object.address+', '+object.postcode+' - '+object.city
 		return @address
 	end
+
+	def build_date(date)
+		return 'Le '+date.strftime("%d/%m/%Y")+' à '+date.strftime("%Hh%M")
+	end
 end

@@ -10,7 +10,7 @@ class Admin::PaymentsController < ApplicationController
 	def create
 		@payment = Payment.new(payment_params)
 		if @payment.save
-			flash[:success] = "Le paiement \""+@promocode.id+"\" a été crée."
+			flash[:success] = "Le paiement numéro "+@payment.id.to_s+" a été crée."
 			#AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'promocode', 'id' => @promocode.id.to_s} })
 			redirect_to admin_payments_path
 		else
@@ -25,7 +25,7 @@ class Admin::PaymentsController < ApplicationController
 	def update
 		@payment = Payment.find(params[:id])
 		if @payment.update_attributes(payment_params)
-			flash[:success] = "Le paiement "+@promocode.name+" a été modifié avec succès."
+			flash[:success] = "Le paiement numéro "+@payment.id.to_s+" a été modifié avec succès."
 			#AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'promocode', 'id' => @promocode.id.to_s} })
 			redirect_to admin_payments_path
 		else
@@ -43,7 +43,7 @@ class Admin::PaymentsController < ApplicationController
 
 		private
 
-		    def promocode_params
+		    def payment_params
 		    	params.require(:payment).permit(:to_type, :to_id, :amount, :notes, :method)
 		    end
 end

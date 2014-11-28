@@ -22,5 +22,4 @@ class ApplicationController < ActionController::Base
       def to_bool(str)
         if str == 'true' || str == '1' then return true end
       end
-
 end
