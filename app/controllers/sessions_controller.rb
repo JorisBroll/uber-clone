@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
   		if user && user.authenticate(params[:session][:password])
 			case sign_in user
 			when true
-				redirect_to user_home
+				redirect_to admin_home_path
 			when 'x1'
 				flash[:error] = "Votre authentification a échouée. Vous n'avez peut-être pas les privilèges nécessaires."
 				redirect_to '/login'

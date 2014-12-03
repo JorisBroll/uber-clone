@@ -39,77 +39,77 @@
 		<%= form_for [controller, @partner] do |f| %>		
 			<%= render 'common/error_messages', object: f.object %>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :name, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :name, class: "form-control", :placeholder => "Nom" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :email, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :email, class: "form-control", :placeholder => "Email" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :logo, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.file_field :logo %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :phone, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :phone, class: "form-control", :placeholder => "Téléphone" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :address, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :address, class: "form-control", :placeholder => "Adresse" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :postcode, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :postcode, class: "form-control", :placeholder => "Code postal" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :city, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :city, class: "form-control", :placeholder => "Ville" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :company_code, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :company_code, class: "form-control", :placeholder => "Siret" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :tva_number, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :tva_number, class: "form-control", :placeholder => "Numéro TVA" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :status, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.select(:status, Partner::Statuses_select, {}, { :class => 'select2' }) %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :note, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_area :note, class: "form-control", :placeholder => "Note" %>

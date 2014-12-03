@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
 
   def login
     if signed_in?
-      redirect_to user_home
+      redirect_to admin_home_path
     end
   end
 
@@ -20,6 +20,6 @@ class ApplicationController < ActionController::Base
       end
 
       def to_bool(str)
-        if str == 'true' || str == '1' then return true end
+        if str == 'true' || str == '1' || str == true then return true end
       end
 end

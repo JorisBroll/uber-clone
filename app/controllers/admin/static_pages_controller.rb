@@ -1,11 +1,38 @@
 class Admin::StaticPagesController < ApplicationController
-	before_action :admins_only
+	before_action -> { requiredWeight User::Account_types[:superadmin][:weight] }, only: [:global_stats, :monthly, :monthly_pdf]
+	before_action -> { requiredWeight User::Account_types[:partneradmin][:weight] }
 
 	include ApplicationHelper
 	include CoursesHelper
 	
 	def home
-	    @users = User.all
+		case
+		when userWeight == User::Account_types[:superadmin][:weight]
+			redirect_to [:admin, 'global_stats']
+		when userWeight == User::Account_types[:admin][:weight]
+			@users = User.all
+			render 'admin_home'
+		when userWeight == User::Account_types[:partneradmin][:weight]
+			# User is a partner administrator, he get's a whole new page
+			@partner = current_partner
+			@partneradmins = @partner.users.where("account_type = ?", User.account_types[:admin])
+			@drivers = @partner.users.where("account_type = ?", User.account_types[:driver])
+			@cars = @partner.cars
+			@courses = @partner.courses
+
+			@totalPrice = 0
+			@totalPriceAfterCodes = 0
+			@courses.where("status = ?", Course.statuses[:done]).each do |course|
+				@totalPrice += course.computed_price
+				afterCodePrice = price_afterPromo(course)
+				@totalPriceAfterCodes += afterCodePrice
+			end
+			@unpaidCourses = @courses.where("status = ? AND payment_status = ?", Course.statuses[:done], Course.payment_statuses[:not_paid]).order('payment_status ASC')
+			
+			render 'partner_home'
+		end
+	    
+
 	end
 
 	def logout_partner
@@ -17,8 +44,26 @@ class Admin::StaticPagesController < ApplicationController
 		@partners = Partner.all
 	end
 
-	def logs
+	def operator_steps
+		@user = User.new
+		@course = Course.new
+	end
 
+	def logs
+		@logs = {}
+		@logs[:all] = Log.all
+		@logs[:users] = @logs[:all].where('target_type = 0')
+		@logs[:courses] = @logs[:all].where('target_type = 1')
+		@logs[:partners] = @logs[:all].where('target_type = 2')
+	end
+
+	def global_stats
+		Log.create(user_id: 1, target_type: 1, target_id: 1, action: 'create', extra: 'KIKOO')
+
+		@date = Time.zone.now
+		@users = {}
+		@users[:all] = User.all
+		@users[:this_month] = @users[:all].where('created_at >= ? AND created_at <= ?', @date.beginning_of_month, @date.end_of_month)
 	end
 	
 	def monthly

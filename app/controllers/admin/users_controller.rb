@@ -77,7 +77,7 @@ class Admin::UsersController < ApplicationController
 		private
 
 		    def user_params
-		    	params.require(:user).permit(:name, :last_name, :email, :phone, :cellphone, :photo, :account_type, :address, :postcode, :city, :password, :password_confirmation, :partner_id, {:promocode_ids => []}, {:company_ids => []}, :created_by)
+		    	params.require(:user).permit(:name, :last_name, :email, :phone, :cellphone, :photo, :account_type, :address, :postcode, :city, :password, :password_confirmation, :partner_id, {:promocode_ids => []}, {:company_ids => []}, :enabled)
 		    end
 
 		    def set_partner

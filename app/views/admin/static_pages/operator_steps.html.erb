@@ -1,0 +1,185 @@
+<script>
+init.push(function () {
+	$('.steps').pixelWizard({
+		onChange: function () {
+			console.log('Current step: ' + this.currentStep());
+			if($('#map-canvas').is(":visible")) {
+				//console.log("Resize map")
+				window.GmapManager.resize();
+			}
+		},
+		onFinish: function () {
+			// Disable changing step. To enable changing step just call this.unfreeze()
+			this.freeze();
+			console.log('Finished!');
+		}
+	});
+	$('.wizard-next-step-btn').click(function () {
+		stepsManager.goNextStep(this);
+	});
+	$('.wizard-prev-step-btn').click(function () {
+		$(this).parents('.steps').pixelWizard('prevStep');
+	});
+
+	$("#course_partner_id").on('change', function() {
+		$.ajax({
+            url: '/ajax/get_objects',
+            type: "GET",
+            dataType: "json",
+            data: {
+            	objects : 'users'
+            	options : {
+            		partner_id : $(this).val(),
+            		user_account_type : 'driver'
+            	}
+            }
+        }).done(function(response) {
+        	console.log(response)
+        	newArray = []
+        	for (var i=0; i < response.length; i++) {
+        		newArray.push({id: response[i].id, text: response[i].name})
+        	}
+        	console.log(newArray)
+        	$("#payment_to_id").select2({
+    			data: newArray
+    		});
+        });
+	}).trigger('change');
+});
+stepsManager = {
+	goNextStep: function(button) {
+		var valid = true;
+		if($(button).attr('id') == 'validate-user') {
+			//valid = $(".new_user").validate().form()
+		}
+		if($(button).attr('id') == 'validate-course') {
+			//valid = $(".new_course").validate().form()
+		}
+
+		if(valid)
+			$(button).parents('.steps').pixelWizard('nextStep');
+	}
+}
+</script>
+<div class="row">
+	<div class="col-md-12">
+		<h2>Création d'une course</h2>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="wizard steps">
+			<div class="wizard-wrapper">
+				<ul class="wizard-steps" style="left: 0px;">
+					<li data-target="#step1" style="width: 406px; max-width: 406px; min-width: 406px;" class="active">
+						<span class="wizard-step-number">1</span>
+						<span class="wizard-step-caption">
+							Utilisateur
+							<span class="wizard-step-description">Enregistrer les infos</span>
+						</span>
+					</li>
+					<li data-target="#step2" style="width: 406px; max-width: 406px; min-width: 406px;">
+						<span class="wizard-step-number">2</span>
+						<span class="wizard-step-caption">
+							Tarif
+							<span class="wizard-step-description">Calculer le prix de la course</span>
+						</span>
+					</li>
+					<li data-target="#step3" style="width: 406px; max-width: 406px; min-width: 406px;">
+						<span class="wizard-step-number">3</span>
+						<span class="wizard-step-caption">
+							Détails
+							<span class="wizard-step-description">Paiement et attribution</span>
+						</span>
+					</li>
+				</ul>
+			</div>
+
+			<div class="wizard-content panel">
+				<div id="step1" class="wizard-pane" style="display: block;">
+					<%= render "forms/users", type: "basic" %>
+
+					<hr class="panel-wide">
+					<div class="text-right">
+						<button id="validate-user" class="btn btn-flat btn-primary wizard-next-step-btn">Suivant</button>
+					</div>
+				</div>
+				<div style="display: none;" id="step2" class="wizard-pane">
+					<%= render "forms/courses", type: "basic" %>
+
+					<hr class="panel-wide">
+					<div class="text-right">
+						<button class="btn btn-flat wizard-prev-step-btn">Retour</button>
+						<button id="validate-course" class="btn btn-flat btn-primary wizard-next-step-btn">Suivant</button>
+					</div>
+				</div>
+				<div style="display: none;" id="step3" class="wizard-pane">
+					<%= form_for [:admin, @course] do |f| %>
+						<div class="row">
+							<div class="col-sm-12">
+								<h2>Paiement</h2>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-4">
+								<%= f.label :company_id, class: "control-label"  %>
+								<div class="alert alert-info">
+									<p>L'utilisateur fait-il une réservation au nom de son entreprise ?</p>
+								</div>
+								<%= f.select(:company_id, companies_for_select("Pas d'entreprise"), {}, { :class => 'select2' }) %>
+							</div>
+
+							<div class="col-sm-4">
+								<%= f.label :payment_by, class: "control-label" %>
+								<div class="alert alert-info">
+									<p>Qui paie cette course et à qui ?</p>
+								</div>
+								<%= f.select(:payment_by, payment_by_admin_for_select, {}, { :class => 'select2' }) %>
+							</div>
+
+							<div class="col-sm-4">
+								<%= f.label :payment_when, class: "control-label" %>
+								<div class="alert alert-info">
+									<p>Quand sera payée cette course ?</p>
+								</div>
+								<%= f.select(:payment_when, payment_when_for_select, {}, { :class => 'select2' }) %>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-12">
+								<h2>Attribution</h2>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<%= f.label :partner_id, class: "control-label" %>
+								<div class="alert alert-info">
+									<p>Quel partenaire va effectuer cette course ?</p>
+								</div>
+								<%= f.select(:partner_id, partners_for_select, {}, { :class => 'select2' }) %>
+							</div>
+							<div class="col-sm-6">
+								<%= f.label :driver_id, class: "control-label" %>
+								<div class="alert alert-info">
+									<p>Quel chauffeur va effectuer cette course ?</p>
+								</div>
+								<%= f.select(:driver_id, drivers_for_select, {}, { :class => 'select2' }) %>
+							</div>
+						</div>
+					<% end %>
+
+					<div class="row">
+						<div class="col-sm-12" id="driver-map">Google Map des chauffeurs, à venir</div>
+					</div>
+
+					<hr class="panel-wide">
+					<div class="text-right">
+						<button class="btn btn-flat wizard-prev-step-btn">Retour</button>
+						<button class="btn btn-flat btn-success wizard-next-step-btn">Terminer (non fonctionnel)</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

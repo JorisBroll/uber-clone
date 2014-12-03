@@ -40,16 +40,9 @@
 			}
 		}
 
-		/*$(".new_user, .edit_user").validate({
+		$(".new_user, .edit_user").validate({
 			focusInvalid: false,
 			rules: rules
-		});
-				*/
-		$("#user_companies").attr('multiple', 'multiple').attr('name', $("#user_companies").attr('name')+'[]');
-		$("#user_companies option:selected").removeAttr("selected");
-		$("#user_account_type, #user_partner_id, #user_promocode_ids, #user_company_ids").select2({
-			allowClear: true,
-			placeholder: "Sélectionner..."
 		});
 
 		$("#dropzonejs-example").dropzone({
@@ -83,164 +76,170 @@
 				return info;
 			}
 		});
+
+		$("#user_account_type").select2({
+			allowClear: true,
+			placeholder: "Sélectionner..."
+		});
+
+
+		<% if type == 'extended' %>
+		$("#user_companies").attr('multiple', 'multiple').attr('name', $("#user_companies").attr('name')+'[]');
+		$("#user_companies option:selected").removeAttr("selected");
+		$("#user_partner_id, #user_promocode_ids, #user_company_ids").select2({
+			allowClear: true,
+			placeholder: "Sélectionner..."
+		});
+		<% end %>
 	});
 </script>
-<div class="panel">
-	<div class="panel-heading">
-		<span class="panel-title">Utilisateur</span>
-	</div>
-	<div class="panel-body">
-
-		<%= form_for [controller, @user], :html => { :multipart => true } do |f| %>
-			<%= render 'common/error_messages', object: f.object %>
-
-			<div class="form-group">
-				<%= f.label :name, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :name, class: "form-control", :placeholder => "Nom" %>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<%= f.label :last_name, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :last_name, class: "form-control", :placeholder => "Prénom" %>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<%= f.label :email, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :email, class: "form-control", :placeholder => "Email" %>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<%= f.label :phone, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :phone, class: "form-control", :placeholder => "Téléphone" %>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<%= f.label :cellphone, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :cellphone, class: "form-control", :placeholder => "Téléphone portable" %>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<%= f.label :address, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :address, class: "form-control", :placeholder => "Adresse" %>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<%= f.label :postcode, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :postcode, class: "form-control", :placeholder => "Code postal" %>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<%= f.label :city, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :city, class: "form-control", :placeholder => "Ville" %>
-				</div>
-			</div>
-
-			<% if params["action"] == 'new' then selected = 'client' else selected = nil end %>
-			<div class="form-group">
-				<%= f.label :account_type, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<% if controller == 'admin' %>
-					<%= f.select(:account_type, User::Account_types_select, :selected => selected, class: "form-control select") %>
-					<% elsif controller == 'partner_admin' %>
-					<%= f.select(:account_type, User::Account_types_select_partneradmin, :selected => selected, class: "form-control select") %>
-					<% end %>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<%= f.label :password, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.password_field :password, class: "form-control", :placeholder => "Mot de passe" %>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<%= f.label :password_confirmation, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.password_field :password_confirmation, class: "form-control", :placeholder => "Confirmation" %>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<%= f.label :photo, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<div id="dropzonejs-example" class="dropzone-box">
-						<div class="dz-default dz-message">
-							<i class="fa fa-cloud-upload"></i>
-							Drop files in here<br><span class="dz-text-small">or click to pick manually</span>
-						</div>
-						<div class="fallback">
-							<%= file_field(:user, :photo) %>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<%= f.label :photo, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">	
-					<%= f.file_field :photo %>
-				</div>
-			</div>
-
-
-			<% if controller == 'admin' %>
-
-			<div class="form-group">
-				<%= f.label :partner_id, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.select(:partner_id, partners_for_select('Aucune'), class: "form-control select") %>
-				</div>
-			</div>
-
-			<% end %>
-
-			<div class="form-group">
-				<%= f.label :companies, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<% if controller == 'admin' %>
-					<%= f.collection_select :company_ids, Company.all, :id, :name, {}, {:multiple => true} %>
-					<% elsif controller == 'partner_admin' %>
-						<% if !current_partner.companies.nil? %>
-						<%= f.collection_select :company_ids, current_partner.companies, :id, :name, {}, {:multiple => true} %>
-						<% else %>
-						"Aucune entreprise cliente pour le moment"
-						<% end %>
-					<% end %>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<%= f.label :promocodes, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.collection_select :promocode_ids, Promocode.all, :id, :name, {}, {:multiple => true} %>
-				</div>
-			</div>
-			
-
-			<%#= hidden_field(:user, :created_by, :value => current_user.id.to_s) %>
-			<%#= hidden_field(:user, :created_for_partner, :value => current_partner.id.to_s) %>
-
+<%= form_for [:admin, @user], :html => { :multipart => true } do |f| %>
+	<div class="row form-group">
+		<%= f.label :name, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.text_field :name, class: "form-control", :placeholder => "Nom" %>
+		</div>
 	</div>
 
-	<div class="panel-footer text-right">
-		<a class="btn btn-flat btn-danger" href="<%= send("#{controller}_users_path") %>">Annuler</a>
-		<%= f.submit action, class: "btn btn-primary btn-flat", 'data-autocomplete' => "lame sauce" %>
-		<% end %>
+	<div class="row form-group">
+		<%= f.label :last_name, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.text_field :last_name, class: "form-control", :placeholder => "Prénom" %>
+		</div>
 	</div>
-</div>
+
+	<div class="row form-group">
+		<%= f.label :email, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.text_field :email, class: "form-control", :placeholder => "Email" %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :phone, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.text_field :phone, class: "form-control", :placeholder => "Téléphone" %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :cellphone, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.text_field :cellphone, class: "form-control", :placeholder => "Téléphone portable" %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :address, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.text_field :address, class: "form-control", :placeholder => "Adresse" %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :postcode, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.text_field :postcode, class: "form-control", :placeholder => "Code postal" %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :city, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.text_field :city, class: "form-control", :placeholder => "Ville" %>
+		</div>
+	</div>
+
+	<% if params["action"] == 'new' || params["action"] == 'operator_steps' then selected = 'client' else selected = @user.account_type end %>
+	<div class="row form-group">
+		<%= f.label :account_type, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= zob=f.select(:account_type, User::Account_types_select, :selected => selected, class: "form-control select") %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :password, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.password_field :password, class: "form-control", :placeholder => "Mot de passe" %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :password_confirmation, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.password_field :password_confirmation, class: "form-control", :placeholder => "Confirmation" %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :photo, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<div id="dropzonejs-example" class="dropzone-box">
+				<div class="dz-default dz-message">
+					<i class="fa fa-cloud-upload"></i>
+					Drop files in here<br><span class="dz-text-small">or click to pick manually</span>
+				</div>
+				<div class="fallback">
+					<%= file_field(:user, :photo) %>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :photo, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">	
+			<%= f.file_field :photo %>
+		</div>
+	</div>
+
+
+	<% if params["action"] == 'new' then checked = 'true' else checked = nil end %>
+	<div class="row form-group">
+		<%= f.label :enabled, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<label class="checkbox-inline">
+				<%= f.radio_button :enabled, '0', :checked => checked, :class => "px" %>
+				<span class="lbl"><%= label :contactmethod_0, 'Non' %></span>
+			</label>
+			<label class="checkbox-inline">
+				<%= f.radio_button :enabled, '1', :checked => checked, :class => "px" %>
+				<span class="lbl"><%= label :contactmethod_1, 'Oui' %></span>
+			</label>
+		</div>
+	</div>
+
+	<% if type == 'extended' %>
+		<div class="row form-group">
+			<%= f.label :partner_id, class: "col-sm-3 control-label" %>
+			<div class="col-sm-9">
+				<%= f.select(:partner_id, partners_for_select('Aucune'), class: "form-control select") %>
+			</div>
+		</div>
+
+		<div class="row form-group">
+			<%= f.label :companies, class: "col-sm-3 control-label" %>
+			<div class="col-sm-9">
+				<%= f.collection_select :company_ids, Company.all, :id, :name, {}, {:multiple => true} %>
+			</div>
+		</div>
+
+		<div class="row form-group">
+			<%= f.label :promocodes, class: "col-sm-3 control-label" %>
+			<div class="col-sm-9">
+				<%= f.collection_select :promocode_ids, Promocode.all, :id, :name, {}, {:multiple => true} %>
+			</div>
+		</div>
+
+		<hr class="panel-wide">
+
+		<div class="text-right">
+			<a class="btn btn-flat btn-danger" href="<%= admin_users_path %>">Annuler</a>
+			<%= f.submit action, class: "btn btn-primary btn-flat" %>
+		</div>
+	</div>
+
+	<% end %>
+
+<% end %>

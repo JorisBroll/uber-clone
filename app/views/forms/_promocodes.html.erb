@@ -34,42 +34,42 @@
 		<%= form_for [controller, @promocode] do |f| %>
 			<%= render 'common/error_messages', object: f.object %>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :name, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :name, class: "form-control", :placeholder => "Nom" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :code, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :code, class: "form-control", :placeholder => "Code" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :effect_type, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.select(:effect_type, Promocode::Effect_type_select, {}, { :class => 'select2' }) %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :effect_type_value, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :effect_type_value, class: "form-control", :placeholder => "Valeur" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :effect_length, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.select(:effect_length, Promocode::Effect_length_select, {}, { :class => 'select2' }) %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :effect_length_value, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :effect_length_value, class: "form-control", :placeholder => "Valeur" %>

@@ -6,7 +6,7 @@
 			format: 'mm/dd/yyyy'
 		});
 	
-		var tax_data = <%= raw @chartData.to_json %>
+		/*var tax_data = <%= raw @chartData.to_json %>
 
 		Morris.Line({
 			element: 'sup',
@@ -19,7 +19,7 @@
 			pointSize: 4,
 			gridLineColor: '#cfcfcf',
 			resize: true
-		});
+		});*/
 
 	});
 
@@ -59,7 +59,6 @@
 				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale redistribuée aux chauffeurs<span class="text-default text-sm" style="float:right;"><%= @totals[:partner_share].round(2) %> €</span></div>
 				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale revenant à Naveco<span class="text-default text-sm" style="float:right;"><%= @totals[:naveco_share].round(2) %> €</span></div>
 				<span> </span><span><%= @a.to_s %></span>
-				<div id="sup" class="list-group-item graph" style="height:200px"></div>
 			</div>
 		</div>
 		<div class="panel widget-support-tickets">

@@ -1,11 +1,91 @@
 <script>
+	$(window).on('gmap-loaded', function() {
+		options = {
+			rendererOptions : {
+				polylineOptions: {strokeColor:'#01b3aa'}
+			}
+		}
+		window.GmapManager.init(options)
+	});
+
 	init.push(function () {
+
+		//// MAP STUFF
+		stopContainer = $(".stop-container:first").clone();
+		stop = stopContainer.find('input');
+		stop.val('').attr('value', '');
+		
+		// Events
+		$("body").on("click", "#add-stops", function() {
+			stopContainer_tmp = stopContainer.clone();
+			$('#stops-list').append(stopContainer_tmp);
+		});
+
+		$("body").on("click", ".stop-container .close-btn", function() {
+			$(this).closest(".stop-container").remove();
+		});
+
+		$("body").on("click", "#compute-course", function() {
+			GmapManager.computeCourse(
+				{start: $('#course_from'), end: $('#course_to')}, 
+				{distanceCap: true},
+				function(results) {
+					//console.log results
+					if (results.status == 'OK') {
+						$('#gcompute-error-display').hide();
+						$('#course_computed_distance').val(results.route.distance.text);
+						$('#course_computed_duration').val(results.route.duration.text);
+						if (results.route.timePrice == "FORFAIT")
+							$('#course_computed_price').val(results.route.totalPrice+' € (Forfait Aéroport)');
+						else
+							$('#course_computed_price').val(results.route.totalPrice+' €');
+					}
+					else {
+						$('#gcompute-error-display').html(results.message).show();
+						$('#course_computed_distance').val('#Erreur#');
+						$('#course_computed_duration').val('#Erreur#');
+						$('#course_computed_price').val('#Erreur#');
+					}
+				}
+			)
+		});
+
+		$("body").on("click", "#refresh-cars", function() {
+			$.ajax({
+				url: '/ajax/get',
+				type: "GET",
+				dataType: "json",
+				data: {
+					'partners-view' : '1',
+					'partners-drivers' : 'all'
+				}
+			}).done(function(response) {
+				//console.log response
+				for (var i=0; i<GmapManager.markers.length; i++) {
+					GmapManager.markers[i].setMap(null);
+				}
+
+				if (response.users && response.users.length > 0) {
+					for(var i=0; i<response.users.length; i++) {
+						var user = response.users[i];
+						var message = $('<div/>', {"class":'scrollFix'}).append($('<p/>', {text:user.name+' '+user.last_name})).append($('<p/>', {text: 'Tel : '+user.phone+' / Port : '+user.cellphone}));
+							
+						if (user.partner != null) {
+							message.append($('<p/>', {text: user.partner.name}));
+						}
+						var position = [user.pos_lat, user.pos_lon];
+						window.GmapManager.printMarker(position, 'car', user.name+' '+user.last_name, message.prop('outerHTML'));
+					}
+				}
+			});
+		});
+
 		$(".select2").select2({
 			allowClear: true,
 			placeholder: "Sélectionner..."
 		});
 
-		$(".new_course, .edit_course").validate({
+		var courseValidator = $(".new_course, .edit_course").validate({
 			focusInvalid: false,
 			rules: {
 				'course[from]': {
@@ -47,295 +127,286 @@
 			var b = $('#course_to').val(a);
 		});
 
-		$("#refresh-cars").trigger('click') // Show cars
+		$("#refresh-cars").trigger('click') // Show cars on page loading
 	});
 </script>
 
-<div class="panel">
-	<div class="panel-heading">
-		<span class="panel-title">Course</span>
+<%= form_for [:admin, @course] do |f| %>
+	<%= render 'common/error_messages', object: f.object %>
+
+	<div class="row form-group">
+		<%= f.label :from, class: "col-sm-3 control-label" %>
+		<div class="col-sm-8">
+			<%= f.text_field :from, class: "form-control", :placeholder => "(Ville), (Numéro de rue) (Nom de rue)" %>
+		</div>
+		<div class="destination-selector col-sm-1">
+			<div class="btn-group">
+				<button data-toggle="dropdown" class="btn btn-info dropdown-toggle" type="button">Destinations <i class="fa fa-caret-down"></i></button>
+				<ul class="dropdown-menu pull-right">
+					<li><a href="#">Aéroport de Lyon-Saint Exupéry</a></li>
+					<li><a href="#">Aéroport de Genève</a></li>
+					<li class="divider"></li>
+					<li><a href="#">Gare de Lyon part dieu</a></li>
+					<li><a href="#">Gare de Lyon perrache</a></li>
+					<li><a href="#">Gare TGV aéroport de Lyon</a></li>
+					<li class="divider"></li>
+					<li><a href="#">Eurexpo chassieu</a></li>
+					<li><a href="#">Place bellecour</a></li>
+				</ul>
+			</div>
+		</div>
 	</div>
-	<div class="panel-body">
 
-		<%= form_for [controller, @course] do |f| %>
-		    
-			<%= render 'common/error_messages', object: f.object %>
+	<div class="row form-group">
+		<%= f.label :to, class: "col-sm-3 control-label" %>
+		<div class="col-sm-8">
+			<%= f.text_field :to, class: "form-control", :placeholder => "(Ville), (Numéro de rue) (Nom de rue)" %>
+		</div>
+		<div class="destination-selector col-sm-1">
+			<div class="btn-group">
+				<button data-toggle="dropdown" class="btn btn-info dropdown-toggle" type="button">Destinations <i class="fa fa-caret-down"></i></button>
+				<ul class="dropdown-menu pull-right">
+					<li><a href="#">Aéroport de Lyon-Saint Exupéry</a></li>
+					<li><a href="#">Aéroport de Genève</a></li>
+					<li class="divider"></li>
+					<li><a href="#">Gare de Lyon part dieu</a></li>
+					<li><a href="#">Gare de Lyon perrache</a></li>
+					<li><a href="#">Gare TGV aéroport de Lyon</a></li>
+					<li class="divider"></li>
+					<li><a href="#">Eurexpo chassieu</a></li>
+					<li><a href="#">Place bellecour</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
 
-			<div class="row form-group">
-				<%= f.label :from, class: "col-sm-3 control-label" %>
-				<div class="col-sm-8">
-					<%= f.text_field :from, class: "form-control", :placeholder => "(Ville), (Numéro de rue) (Nom de rue)" %>
-				</div>
-				<div class="destination-selector col-sm-1">
-					<div class="btn-group">
-						<button data-toggle="dropdown" class="btn btn-info dropdown-toggle" type="button">Destinations <i class="fa fa-caret-down"></i></button>
-						<ul class="dropdown-menu pull-right">
-							<li><a href="#">Aéroport de Lyon-Saint Exupéry</a></li>
-							<li><a href="#">Aéroport de Genève</a></li>
-							<li class="divider"></li>
-							<li><a href="#">Gare de Lyon part dieu</a></li>
-							<li><a href="#">Gare de Lyon perrache</a></li>
-							<li><a href="#">Gare TGV aéroport de Lyon</a></li>
-							<li class="divider"></li>
-							<li><a href="#">Eurexpo chassieu</a></li>
-							<li><a href="#">Place bellecour</a></li>
-						</ul>
+	<div class="row form-group">
+		<div class="col-sm-1 col-md-offset-3">
+			<button id="invert" class="btn" type="button"><i class="fa fa-refresh"></i></button>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :car_type, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.select(:car_type, Car::Car_type_alias.reverse, {}, { :class => 'select2' }) %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<div class="col-sm-3">
+			<button id="compute-course" class="btn btn-flat btn-lg" style="margin-bottom:10px" type="button">Calculer le prix</button>
+			<div id="gcompute-error-display" class="alert alert-danger" style="display:none;margin-bottom:10px"></div>
+			<button id="refresh-cars" class="btn btn-flat btn-lg" style="margin-bottom:10px" type="button">Actualiser la position des voitures</button>
+		</div>
+		<div class="col-sm-9">
+			<div id="map-canvas" style="height:360px"></div>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :computed_distance, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.text_field :computed_distance, class: "form-control",:readonly => true %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :computed_duration, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.text_field :computed_duration, class: "form-control", :readonly => true %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :computed_price, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.text_field :computed_price, class: "form-control" %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :commission, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.text_field :commission, class: "form-control", :placeholder => "(%)" %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :nb_people, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.text_field :nb_people, class: "form-control" %>
+		</div>
+	</div>
+
+	<% if @course.date_when then date = @course.date_when.strftime("%d/%m/%Y") else date = '' end %>
+
+	<div class="row form-group">
+		<%= f.label :date_when, class: "col-sm-3 control-label" %>
+		<div class="col-sm-3">
+			<%= f.text_field :date_when, class: "form-control _date", :placeholder => "Date", style: "position: relative; z-index: 100;", :value => date %>
+		</div>
+		<div class="col-sm-6">
+			<%= f.text_field :time_when, class: "form-control _time", :placeholder => "Heure" %>
+		</div>
+	</div>
+
+
+	<div class="row form-group">
+		<%= f.label :flight_number, class: "col-sm-1 control-label" %>
+		<%= f.label :nb_luggage, class: "col-sm-2 control-label" %>
+		<div class="col-sm-3">
+			<%= f.text_field :flight_number, class: "form-control", :placeholder => "Numéro de vol / Provenance / Destination"  %>
+		</div>
+	<div class="col-sm-6">
+			<%= f.text_field :nb_luggage, class: "form-control", :placeholder => "Nombre"  %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :notes, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.text_area :notes, class: "form-control", :placeholder => "Notes" %>
+		</div>
+	</div>
+
+	<hr class="panel-wide">
+
+	<div id="stops-group" class="row form-group">
+		<div class="col-sm-3">
+			<p><%= f.label :stops, class: "control-label" %></p>
+			<p><button id="add-stops" class="btn btn-flat btn-lg" type="button">Ajouter un arrêt</button></p>
+		</div>
+		<div class="col-sm-9">
+			<div id="stops-list">
+			<% if !@course.stops.nil? %>
+				<% @course.stops.each do |o| %>
+					<div class="stop-container input-group">
+						<input type="text" class="form-control course_stops" value="<%= o %>" name="course[stops][]">
+						<span class="input-group-addon no-border close-btn bg-danger"><i class="fa fa-close"></i></span>
 					</div>
-				</div>
-			</div>
-
-			<div class="row form-group">
-				<%= f.label :to, class: "col-sm-3 control-label" %>
-				<div class="col-sm-8">
-					<%= f.text_field :to, class: "form-control", :placeholder => "(Ville), (Numéro de rue) (Nom de rue)" %>
-				</div>
-				<div class="destination-selector col-sm-1">
-					<div class="btn-group">
-						<button data-toggle="dropdown" class="btn btn-info dropdown-toggle" type="button">Destinations <i class="fa fa-caret-down"></i></button>
-						<ul class="dropdown-menu pull-right">
-							<li><a href="#">Aéroport de Lyon-Saint Exupéry</a></li>
-							<li><a href="#">Aéroport de Genève</a></li>
-							<li class="divider"></li>
-							<li><a href="#">Gare de Lyon part dieu</a></li>
-							<li><a href="#">Gare de Lyon perrache</a></li>
-							<li><a href="#">Gare TGV aéroport de Lyon</a></li>
-							<li class="divider"></li>
-							<li><a href="#">Eurexpo chassieu</a></li>
-							<li><a href="#">Place bellecour</a></li>
-						</ul>
+				<% end %>
+				<% else %>
+					<div class="stop-container input-group">
+						<input type="text" class="form-control course_stops" value="" name="course[stops][]">
+						<span class="input-group-addon no-border close-btn bg-danger"><i class="fa fa-close"></i></span>
 					</div>
-				</div>
-			</div>
-
-			<div class="row form-group">
-				<div class="col-sm-1 col-md-offset-3">
-					<button id="invert" class="btn" type="button"><i class="fa fa-refresh"></i></button>
-				</div>
-			</div>
-			
-			<div class="row form-group">
-				<%= f.label :car_type, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.select(:car_type, Car::Car_type_alias.reverse, {}, { :class => 'select2' }) %>
-				</div>
-			</div>
-			
-			<div class="row form-group">
-				<div class="col-sm-3">
-					<button id="compute-course" class="btn btn-flat btn-lg" style="margin-bottom:10px" type="button">Calculer le prix</button>
-					<div id="gcompute-error-display" class="alert alert-danger" style="display:none;margin-bottom:10px"></div>
-					<button id="refresh-cars" class="btn btn-flat btn-lg" style="margin-bottom:10px" type="button">Actualiser la position des voitures</button>
-				</div>
-				<div class="col-sm-9">
-					<div id="map-canvas" style="height:360px"></div>
-				</div>
-			</div>
-
-			<div class="row form-group">
-				<%= f.label :computed_distance, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :computed_distance, class: "form-control",:readonly => true %>
-				</div>
-			</div>
-
-			<div class="row form-group">
-				<%= f.label :computed_duration, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :computed_duration, class: "form-control", :readonly => true %>
-				</div>
-			</div>
-
-			<div class="row form-group">
-				<%= f.label :computed_price, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :computed_price, class: "form-control" %>
-				</div>
-			</div>
-
-			<div class="row form-group">
-				<%= f.label :commission, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :commission, class: "form-control", :placeholder => "(%)" %>
-				</div>
-			</div>
-
-			<div class="row form-group">
-				<%= f.label :nb_people, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :nb_people, class: "form-control" %>
-				</div>
-			</div>
-
-			<% if @course.date_when then date = @course.date_when.strftime("%d/%m/%Y") else date = '' end %>
-
-			<div class="row form-group">
-				<%= f.label :date_when, class: "col-sm-3 control-label" %>
-				<div class="col-sm-3">
-					<%= f.text_field :date_when, class: "form-control _date", :placeholder => "Date", style: "position: relative; z-index: 100;", :value => date %>
-				</div>
-				<div class="col-sm-6">
-					<%= f.text_field :time_when, class: "form-control _time", :placeholder => "Heure" %>
-				</div>
-			</div>
-
-
-			<div class="row form-group">
-				<%= f.label :flight_number, class: "col-sm-1 control-label" %>
-				<%= f.label :nb_luggage, class: "col-sm-2 control-label" %>
-				<div class="col-sm-3">
-					<%= f.text_field :flight_number, class: "form-control", :placeholder => "Numéro de vol / Provenance / Destination"  %>
-				</div>
-				<div class="col-sm-6">
-					<%= f.text_field :nb_luggage, class: "form-control", :placeholder => "Nombre"  %>
-				</div>
-			</div>
-
-			<div class="row form-group">
-				<%= f.label :notes, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_area :notes, class: "form-control", :placeholder => "Notes" %>
-				</div>
-			</div>
-
-			<hr class="panel-wide">
-
-			<div id="stops-group" class="row form-group">
-				<div class="col-sm-3">
-					<p><%= f.label :stops, class: "control-label" %></p>
-					<p><button id="add-stops" class="btn btn-flat btn-lg" type="button">Ajouter un arrêt</button></p>
-				</div>
-				<div class="col-sm-9">
-					<div id="stops-list">
-					<% if !@course.stops.nil? %>
-						<% @course.stops.each do |o| %>
-							<div class="stop-container input-group">
-								<input type="text" class="form-control course_stops" value="<%= o %>" name="course[stops][]">
-								<span class="input-group-addon no-border close-btn bg-danger"><i class="fa fa-close"></i></span>
-							</div>
-						<% end %>
-						<% else %>
-							<div class="stop-container input-group">
-								<input type="text" class="form-control course_stops" value="" name="course[stops][]">
-								<span class="input-group-addon no-border close-btn bg-danger"><i class="fa fa-close"></i></span>
-							</div>
-					<% end %>
-					</div>
-				</div>
-			</div>
-
-			<hr class="panel-wide">
-
-			<div class="row form-group">
-				<%= f.label :user_id, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<% if controller == 'admin' %>
-					<%= f.select(:user_id, users_for_select('Personne (ajouter plus tard)'), {}, { :class => 'select2' }) %>
-					<% elsif controller == 'partner_admin' %>
-					<%= f.select(:user_id, users_for_select('Personne (ajouter plus tard)', {:partner_id => current_partner.id}), {}, { :class => 'select2' }) %>
-					<% end %>
-				</div>
-			</div>
-
-			<div class="row form-group">
-				<%= f.label :company_id, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<% if controller == 'admin' %>
-					<%= f.select(:company_id, companies_for_select("Pas d'entreprise"), {}, { :class => 'select2' }) %>
-					<% elsif controller == 'partner_admin' %>
-					<%= f.select(:company_id, companies_for_select("Pas d'entreprise", {:partner_id => current_partner.id}), {}, { :class => 'select2' }) %>
-					<% end %>
-				</div>
-			</div>
-
-			<div class="row form-group">
-				<%= f.label :payment_by, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<% if controller == 'admin' %>
-					<%= f.select(:payment_by, payment_by_admin_for_select, {}, { :class => 'select2' }) %>
-					<% elsif controller == 'partner_admin' %>
-					<%= f.select(:payment_by, payment_by_partner_for_select, {}, { :class => 'select2' }) %>
-					<% end %>
-				</div>
-			</div>
-
-			<div class="row form-group">
-				<%= f.label :payment_status, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.select(:payment_status, payment_status_for_select, {}, { :class => 'select2' }) %>
-				</div>
-			</div>
-
-			<div class="row form-group">
-				<%= f.label :payment_when, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.select(:payment_when, payment_when_for_select, {}, { :class => 'select2' }) %>
-				</div>
-			</div>
-
-			<% if controller == 'admin' %>
-
-			<div class="row form-group">
-				<%= f.label :partner_id, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.select(:partner_id, partners_for_select, {}, { :class => 'select2' }) %>
-				</div>
-			</div>
-
 			<% end %>
-
-			<div class="row form-group">
-				<%= f.label :car_id, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-				<% if controller == 'admin' %>
-					<%= f.select(:car_id, cars_for_select('Aucune'), {}, { :class => 'select2' }) %>
-					<% elsif controller == 'partner_admin' %>
-					<%= f.select(:car_id, cars_for_select('Aucune', {:partner_id => current_partner.id}), {}, { :class => 'select2' }) %>
-					<% end %>
-				</div>
 			</div>
-
-			<div class="row form-group">
-				<%= f.label :promocode_id, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.select(:promocode_id, promocodes_for_select('Aucun'), {}, { :class => 'select2' }) %>
-				</div>
-			</div>
-
-			<div class="row form-group">
-				<%= f.label :status, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.select(:status, Course::Status_select, {}, { :class => 'select2' }) %>
-				</div>
-			</div>
-
-			<div class="row form-group">
-				<%= f.label :need_review, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<label class="checkbox-inline">
-						<%= f.radio_button :need_review, '0', :checked => true, :class => "px" %>
-						<span class="lbl"><%= label :contactmethod_0, 'Non' %></span>
-					</label>
-					<label class="checkbox-inline">
-						<%= f.radio_button :need_review, '1', :class => "px" %>
-						<span class="lbl"><%= label :contactmethod_1, 'Oui' %></span>
-					</label>
-				</div>
-			</div>
-
-			<%= hidden_field(:user, :created_by) %>
-
-			<hr class="panel-wide">
-
-			<div class="alert">
-				<p>- Proposer au client un trajet retour (aéroport)</p>
-				<p>- Proposer au client une affiche avec son nom (aéroport)</p>
-				<p>- Adapter le véhicule : 5 personnes avec bagages = Caravelle (aéroport)</p>
-			</div>
-
+		</div>
 	</div>
-	<div class="panel-footer text-right">
-		<a class="btn btn-flat btn-danger" href="<%= send("#{controller}_courses_path") %>">Annuler</a>
+
+	<% if type == 'extended' %>
+
+	<hr class="panel-wide">
+
+	<div class="row form-group">
+		<%= f.label :user_id, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.select(:user_id, users_for_select('Personne (ajouter plus tard)'), {}, { :class => 'select2' }) %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :company_id, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.select(:company_id, companies_for_select("Pas d'entreprise"), {}, { :class => 'select2' }) %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :payment_by, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.select(:payment_by, payment_by_admin_for_select, {}, { :class => 'select2' }) %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :payment_status, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.select(:payment_status, payment_status_for_select, {}, { :class => 'select2' }) %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :payment_when, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.select(:payment_when, payment_when_for_select, {}, { :class => 'select2' }) %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :partner_id, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.select(:partner_id, partners_for_select, {}, { :class => 'select2' }) %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :driver_id, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.select(:driver_id, drivers_for_select, {}, { :class => 'select2' }) %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :car_id, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.select(:car_id, cars_for_select('Aucune'), {}, { :class => 'select2' }) %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :promocode_id, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.select(:promocode_id, promocodes_for_select('Aucun'), {}, { :class => 'select2' }) %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :status, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.select(:status, Course::Status_select, {}, { :class => 'select2' }) %>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<%= f.label :need_review, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<label class="checkbox-inline">
+				<%= f.radio_button :need_review, '0', :checked => true, :class => "px" %>
+				<span class="lbl"><%= label :contactmethod_0, 'Non' %></span>
+			</label>
+			<label class="checkbox-inline">
+				<%= f.radio_button :need_review, '1', :class => "px" %>
+				<span class="lbl"><%= label :contactmethod_1, 'Oui' %></span>
+			</label>
+		</div>
+	</div>
+
+	<% end %>
+
+	<% if type != 'extended' %>
+
+	<hr class="panel-wide">
+
+	<div class="alert">
+		<p>- Proposer au client un trajet retour (aéroport)</p>
+		<p>- Proposer au client une affiche avec son nom (aéroport)</p>
+		<p>- Adapter le véhicule : 5 personnes avec bagages = Caravelle (aéroport)</p>
+	</div>
+
+	<% end %>
+
+	<% if type == 'extended' %>
+
+	<hr class="panel-wide">
+
+	<div class="text-right">
+		<a class="btn btn-flat btn-danger" href="<%= admin_courses_path %>">Annuler</a>
 		<%= f.submit action, class: "btn btn-primary btn-flat" %>
-		<% end %>
 	</div>
-</div>	
+
+	<% end %>
+
+<% end %>

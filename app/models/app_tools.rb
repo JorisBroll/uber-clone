@@ -29,6 +29,9 @@ class AppTools
 				:event => {
 					:name => 'Événement'
 				},
+				:log => {
+					:name => 'Entrée de journal'
+				},
 			}
 		end
 end

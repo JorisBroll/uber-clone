@@ -1,0 +1,3 @@
+<%= form_for [:admin, @user], :html => { :multipart => true } do |f| %>
+	<%= render 'forms/users', action: "Créer l'utilisateur" %>
+<% end %>

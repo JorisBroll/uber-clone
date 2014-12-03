@@ -1,0 +1,20 @@
+<div class="row">
+	<div class="col-md-12">
+		<h2>Statistiques de Naveco</h2>
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-4">
+		<div class="stat-panel">
+			<div class="stat-cell bg-success valign-middle">
+				<i class="fa fa-users bg-icon"></i>
+				<span class="text-xlg"><strong><%= @users[:all].count %></strong></span><br>
+				<span class="text-bg">Utilisateurs</span><br>
+				<span class="text-sm"><%= @users[:this_month].count %> nouveaux ce mois-ci</span>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-4">
+		<div id="sup" class="graph" style="height:200px"></div>
+	</div>
+</div>

@@ -15,7 +15,7 @@
 			<div class="navbar-header">
 
 				<!-- Logo -->
-				<%= link_to(user_home, class: "navbar-brand") do %>
+				<%= link_to(admin_home_path, class: "navbar-brand") do %>
 					<div>
 						<img alt="Pixel Admin" src="<%= image_path('pixel-admin/main-navbar-logo.png') %>"></div>
 						Naveco
@@ -138,14 +138,7 @@
 									<spa class="text-info"><%= User::Account_types[current_user.account_type.to_sym][:name] %></span>
 								</a>
 								<ul class="dropdown-menu">
-									<%
-									if is_superadmin?
-										profile_link = admin_user_path(current_user)
-									else
-										profile_link = partner_admin_user_path(current_user)
-									end
-									%>
-									<li><a href="<%= profile_link %>"><i class="dropdown-icon fa fa-user"></i>&nbsp;&nbsp;Profil</a></li>
+									<li><a href="<%= admin_user_path(current_user) %>"><i class="dropdown-icon fa fa-user"></i>&nbsp;&nbsp;Profil</a></li>
 									<li class="divider"></li>
 									<li><%= link_to '/logout', method: :delete do %><i class="dropdown-icon fa fa-power-off"></i>&nbsp;&nbsp;Se déconnecter<% end %></li>
 								</ul>
@@ -167,7 +160,15 @@
 				</div>
 			</div>
 			<ul class="navigation">
-				<% if is_superadmin? %>
+				<% if userWeight == User::Account_types[:superadmin][:weight] %>
+				<li>
+					<%= link_to(admin_global_stats_path) do %><i class="menu-icon fa fa-line-chart"></i><span class="mm-text"> Statistiques globales</span><% end %>
+				</li>
+				<li>
+					<%= link_to(admin_monthly_path) do %><i class="menu-icon fa fa-usd"></i><span class="mm-text">Récapitulatif mensuel</span><% end %>
+				</li>
+				<% end %>
+				<% if userWeight <= User::Account_types[:admin][:weight] %>
 				<li>
 					<%= link_to(admin_users_path) do %><i class="menu-icon fa fa-users"></i><span class="mm-text">Utilisateurs</span><% end %>
 				</li>
@@ -184,9 +185,6 @@
 					<%= link_to(admin_map_path) do %><i class="menu-icon fa fa-map-marker"></i><span class="mm-text">Carte des taxis</span><% end %>
 				</li>
 				<li>
-					<%= link_to(admin_monthly_path) do %><i class="menu-icon fa fa-usd"></i><span class="mm-text">Récapitulatif mensuel</span><% end %>
-				</li>
-				<li>
 					<%= link_to(admin_payments_path) do %><i class="menu-icon fa fa-paypal"></i><span class="mm-text">Paiements</span><% end %>
 				</li>
 				<li>
@@ -196,39 +194,38 @@
 					<%= link_to(admin_promocodes_path) do %><i class="menu-icon fa fa-ticket"></i><span class="mm-text">Codes promotions</span><% end %>
 				</li>
 				<% end %>
-				<% if currently_admining_partner? || current_partner %>
+				<% if currently_admining_partner? %>
 				<li class="mm-dropdown">
 					<a href="#"><i class="menu-icon fa fa-th"></i><span class="mm-text"><%= current_partner.name.to_s %></span></a>
 					<ul>
+				<% end %>
+				<% if currently_admining_partner? || current_partner %>
 						<li>
-							<%= link_to(partner_admin_home_path) do %><i class="menu-icon fa fa-info-circle"></i><span class="mm-text">Informations</span><% end %>
+							<a href="<%= admin_home_path %>?for_partner=1"><i class="menu-icon fa fa-info-circle"></i><span class="mm-text">Informations</span></a>
 						</li>
 						<li>
-							<%= link_to(partner_admin_monthly_path) do %><i class="menu-icon fa fa-usd"></i><span class="mm-text">Récapitulatif mensuel</span><% end %>
+							<a href="<%= admin_monthly_path %>?for_partner=1"><i class="menu-icon fa fa-usd"></i><span class="mm-text">Récapitulatif mensuel</span></a>
 						</li>
 						<li>
-							<%= link_to(partner_admin_users_path) do %><i class="menu-icon fa fa-users"></i><span class="mm-text">Utilisateurs</span><% end %>
+							<a href="<%= admin_users_path %>?for_partner=1"><i class="menu-icon fa fa-users"></i><span class="mm-text">Utilisateurs</span></a>
 						</li>
 						<li>
-							<%= link_to(partner_admin_companies_path) do %><i class="menu-icon fa fa-university"></i><span class="mm-text">Entreprises clientes</span><% end %>
+							<a href="<%= admin_companies_path %>?for_partner=1"><i class="menu-icon fa fa-university"></i><span class="mm-text">Entreprises clientes</span></a>
 						</li>
 						<li>
-							<%= link_to(partner_admin_cars_path) do %><i class="menu-icon fa fa-taxi"></i><span class="mm-text">Voitures</span><% end %>
+							<a href="<%= admin_cars_path %>?for_partner=1"><i class="menu-icon fa fa-taxi"></i><span class="mm-text">Voitures</span></a>
 						</li>
 						<li>
-							<%= link_to(partner_admin_courses_path) do %><i class="menu-icon fa fa-flag-checkered"></i><span class="mm-text">Courses</span><% end %>
+							<a href="<%= admin_courses_path %>?for_partner=1"><i class="menu-icon fa fa-flag-checkered"></i><span class="mm-text">Courses</span></a>
 						</li>
+				<% end %>		
+				<% if currently_admining_partner? %>
 					</ul>
 				</li>
 				<% end %>
 			</ul>
 			<div class="menu-content">
-			<% if currently_admining_partner? || current_partner %>
-				<%= link_to "Créer une course (partenaire)", new_partner_admin_course_path, class:"btn btn-primary btn-block btn-outline dark" %>
-			<% end %>			
-			<% if is_superadmin? %>
-				<%= link_to "Créer une course", new_admin_course_path, class:"btn btn-primary btn-block btn-outline dark" %>
-			<% end %>
+				<%= link_to "Créer une course", admin_operator_steps_path, class:"btn btn-primary btn-block btn-outline dark" %>
 			</div>
 		</div> <!-- / #main-menu-inner -->
 	</div> <!-- / #main-menu -->
@@ -237,7 +234,7 @@
 	<div id="content-wrapper">
 		<!--<ul class="breadcrumb breadcrumb-page">
 			<div class="breadcrumb-label text-light-gray">Vous êtes ici: </div>
-			<li><%= link_to "Accueil", user_home  %></li>
+			<li><%= link_to "Accueil", admin_home_path  %></li>
 			<li class="active"><a href="#">Tableau de bord</a></li>
 		</ul>-->
 		<%= render 'common/flashes' %>

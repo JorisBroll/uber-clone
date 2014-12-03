@@ -14,22 +14,25 @@ module SessionsHelper
 
   # Log in, log out
   def sign_in(user)
-    if ['driver', 'client'].include? user.account_type
-      return 'x1' # Not an admin or partneradim ? Byebye
+    if User::Account_types[user.account_type.to_sym][:weight] > 3
+      return 'x1' # You be too heavy for dis business ? Byebye kid
     elsif user.account_type == 'partneradmin' && user.partner.nil?
-      return 'x2' # No partner for this partneradmin => can't admin anything duh
+      return 'x2' # You gotta be the boss of something to boss anything bro
     end
      
+    # Set dem sweet cookies :)
     cookies[:user_id] = user.id
     self.current_user = user
     if !user.partner.nil?
       self.current_partner = user.partner
       cookies[:partner_id] = user.partner.id
     end
-    return true
+
+    return true # Success
   end
 
   def sign_out
+    # Bye bye cookies :(
     cookies.delete :user_id
     cookies.delete :partner_id
   end
@@ -57,12 +60,27 @@ module SessionsHelper
   end
   # Is the admin using a partner id right now ?
   def currently_admining_partner?
-    !cookies[:partner_id].nil?
+    !cookies[:partner_id].nil? && userWeight == User::Account_types[:superadmin][:weight]
   end
 
   # Check if signed in
   def signed_in?
     !current_user.nil?
+  end
+
+  # Weight Check
+  def requiredWeight(weight)
+    if !userWeight || userWeight > weight
+      flash[:error] = "Vous n'avez pas les privilèges nécessaires pour consulter cette page."
+      redirect_to(root_url)
+    end
+  end
+  def userWeight
+    if current_user.nil?
+      return false
+    else
+      return User::Account_types[current_user.account_type.to_sym][:weight]
+    end
   end
 
   # Admins or partneradmins
@@ -109,16 +127,6 @@ module SessionsHelper
         flash[:error] = "Vous n'êtes affilié à aucune entreprise. Veuillez contacter Naveco pour résoudre ce problème"
         redirect_to(root_url)
       end
-  end
-
-  def user_home
-    if is_superadmin?
-      return admin_home_path
-    elsif is_admin?
-      return admin_home_path
-    elsif is_partneradmin?
-      return partner_admin_home_path
-    end
   end
 
 end

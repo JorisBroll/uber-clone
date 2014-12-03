@@ -28,49 +28,49 @@
 		    
 			<%= render 'common/error_messages', object: f.object %>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :name, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :name, class: "form-control", :placeholder => "Nom" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :brand, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :brand, class: "form-control", :placeholder => "Marque" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :model, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :model, class: "form-control", :placeholder => "Modèle" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :color, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :color, class: "form-control", :placeholder => "Couleur" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :car_type, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.select(:car_type, Car::Car_type_alias.reverse, {}, { :class => 'select2' }) %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :slots, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :slots, class: "form-control", :placeholder => "Nombre de places" %>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="row form-group">
 				<%= f.label :plate_number, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :plate_number, class: "form-control", :placeholder => "Numéro de plaque" %>

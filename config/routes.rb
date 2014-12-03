@@ -8,10 +8,13 @@ Rails.application.routes.draw do
     get '/map', to: 'static_pages#map'
     get '/config', to: 'static_pages#config'
     get '/logs', to: 'static_pages#logs'
+    get '/operator_steps', to: 'static_pages#operator_steps'
     get '/monthly', to: 'static_pages#monthly'
     get '/monthly/pdf', to: 'static_pages#monthly_pdf'
+    get '/global_stats', to: 'static_pages#global_stats'
     resources :users
     resources :partners
+    resources :cars
     resources :promocodes
     resources :courses
     resources :companies

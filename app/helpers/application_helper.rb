@@ -10,4 +10,10 @@ module ApplicationHelper
 	def build_date(date)
 		return 'Le '+date.strftime("%d/%m/%Y")+' à '+date.strftime("%Hh%M")
 	end
+
+	def yield_content!(content_key)
+		view_flow.content.delete(content_key)
+	end
+
+
 end

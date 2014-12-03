@@ -13,23 +13,23 @@ class User < ActiveRecord::Base
 	Account_types = {
 		:superadmin => {
 			:name => "Gérant",
-			:privileges => true
+			:weight => 1
 		},
 		:admin => {
 			:name => "Administrateur",
-			:privileges => {
-				:users => ['show', 'edit', 'delete'],
-				:courses => ['show', 'edit', 'delete']
-			}
+			:weight => 2
 		},
 		:partneradmin => {
-			:name => "Administrateur d'entreprise"
+			:name => "Administrateur d'entreprise",
+			:weight => 3
 		},
 		:driver => {
-			:name => "Conducteur"
+			:name => "Conducteur",
+			:weight => 4
 		},
 		:client => {
-			:name => "Client"
+			:name => "Client",
+			:weight => 5
 		}
 	}
 
