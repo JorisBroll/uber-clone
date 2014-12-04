@@ -1,11 +1,25 @@
 <script>
+$(window).on('gmap-loaded', function() {
+	options = {
+		rendererOptions : {
+			map: 'driver-map'
+		}
+	}
+				
+	window.map2 = new window.GmapManager(options);
+	map2.init();
+});
 init.push(function () {
 	$('.steps').pixelWizard({
 		onChange: function () {
 			console.log('Current step: ' + this.currentStep());
 			if($('#map-canvas').is(":visible")) {
-				//console.log("Resize map")
-				window.GmapManager.resize();
+				//console.log("Resize map 1")
+				map1.resize();
+			}
+			if($('#driver-map').is(":visible")) {
+				//console.log("Resize map 2")
+				map2.resize();
 			}
 		},
 		onFinish: function () {
@@ -21,30 +35,69 @@ init.push(function () {
 		$(this).parents('.steps').pixelWizard('prevStep');
 	});
 
+	console.log($('#new_user').serializeArray());
+
+
+
+	$("body").on("click", "#refresh-cars2", function() {
+		Tools.fastAjax('/ajax/map_get',
+			{
+				'partners-view' : '1',
+				'partners-drivers': 'all'
+			}, function(response) {
+			//console.log response
+			for (var i=0; i<map2.markers.length; i++) {
+				map2.markers[i].setMap(null);
+			}
+
+			if (response.users && response.users.length > 0) {
+				for(var i=0; i<response.users.length; i++) {
+					var user = response.users[i];
+					var message = $('<div/>', {"class":'scrollFix'}).append($('<p/>', {text:user.name+' '+user.last_name})).append($('<p/>', {text: 'Tel : '+user.phone+' / Port : '+user.cellphone}));
+						
+					if (user.partner != null) {
+						message.append($('<p/>', {text: user.partner.name}));
+					}
+					var position = [user.pos_lat, user.pos_lon];
+					map2.printMarker(position, 'car', user.name+' '+user.last_name, message.prop('outerHTML'));
+				}
+			}
+		});
+	});
+
 	$("#course_partner_id").on('change', function() {
 		$.ajax({
-            url: '/ajax/get_objects',
+            url: '/ajax/get_drivers',
             type: "GET",
             dataType: "json",
             data: {
-            	objects : 'users',
             	options : {
-            		partner_id : $(this).val(),
-            		user_account_type : 'driver'
+            		partner_id : $(this).val()
             	}
             }
         }).done(function(response) {
-        	console.log(response)
-        	newArray = []
+        	//console.log(response)
+        	newArray = [{id: 0, text:'Aucun'}]
         	for (var i=0; i < response.length; i++) {
         		newArray.push({id: response[i].id, text: response[i].name})
         	}
-        	console.log(newArray)
-        	$("#payment_to_id").select2({
+        	//console.log(newArray)
+        	$("#course_driver_id").select2({
     			data: newArray
     		});
         });
 	}).trigger('change');
+
+	$("body").on("click", "#finish-btn", function() {
+		Tools.fastAjax('/ajax/operator_steps_save',
+			{
+				'user-data': $('#new_user').serializeArray(),
+				'partners-drivers': 'all'
+			}, function(response) {
+				console.log(response)
+			}
+		);
+	}).trigger('#refresh-cars2');
 });
 stepsManager = {
 	goNextStep: function(button) {
@@ -164,19 +217,26 @@ stepsManager = {
 								<div class="alert alert-info">
 									<p>Quel chauffeur va effectuer cette course ?</p>
 								</div>
-								<%= f.select(:driver_id, drivers_for_select, {}, { :class => 'select2' }) %>
+								<%= f.hidden_field(:driver_id) %>
 							</div>
 						</div>
 					<% end %>
 
 					<div class="row">
-						<div class="col-sm-12" id="driver-map">Google Map des chauffeurs, à venir</div>
+						<div class="col-sm-12">
+							<div id="driver-map" style="height:700px; margin-top:20px">Google Map des chauffeurs, à venir</div>
+						</div>
+					</div>
+					<div class="row" style="margin-top:20px">
+						<div class="col-sm-2">
+							<button id="refresh-cars2" class="btn btn-flat" type="button">Actualiser la position des chauffeurs</button>
+						</div>
 					</div>
 
 					<hr class="panel-wide">
 					<div class="text-right">
 						<button class="btn btn-flat wizard-prev-step-btn">Retour</button>
-						<button class="btn btn-flat btn-success wizard-next-step-btn">Terminer (non fonctionnel)</button>
+						<button id="finish-btn" class="btn btn-flat btn-success wizard-next-step-btn">Terminer (non fonctionnel)</button>
 					</div>
 				</div>
 			</div>

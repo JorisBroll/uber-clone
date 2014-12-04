@@ -23,7 +23,11 @@
 	            type: "GET",
 	            dataType: "json",
 	            data: {
-	            	objects : $(this).val()
+	            	objects: $(this).val(),
+	            	options: {
+	            		why: 'for_select',
+	            		select: ['id', 'name']
+	            	}
 	            }
 	        }).done(function(response) {
 	        	console.log(response)
@@ -60,7 +64,6 @@
 				<%= f.label :to_id, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.hidden_field(:to_id) %>
-					<%#= f.select(:to_type, {}, {}, { :class => 'select2 to-id_select' }) %>
 				</div>
 			</div>
 

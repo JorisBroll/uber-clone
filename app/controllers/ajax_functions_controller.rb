@@ -3,7 +3,7 @@ class AjaxFunctionsController < ApplicationController
 
 	include NotificationsHelper
 	layout 'ajax'
-	def get
+	def map_get
 		rData = {}
 
 		if !params['courses-view'].nil? && to_bool(params['courses-view'])
@@ -44,8 +44,29 @@ class AjaxFunctionsController < ApplicationController
 			
 		end
 		
+		rendering(rData)
+	end
+
+	def get_drivers
+		if !params['options'].nil?
+			options = params['options']
+			if !options['partner_id'].nil?
+				users = Partner.find_by(id: options['partner_id']).users
+			else
+				users = User.all
+			end
+		else
+			users = User.all
+		end
+		
+		rData = users.where('account_type = ? OR account_type = ?', User.account_types[:driver], User.account_types[:partneradmin]).select([:id, :name])
+
+		rendering(rData)
+	end
+
+	def rendering(rData)
 		respond_to do |format|
-			format.json { render :json => rData.to_json }
+			format.json { render :json => rData }
 		end
 	end
 
@@ -73,8 +94,6 @@ class AjaxFunctionsController < ApplicationController
 			@response = '0'
 		end
 
-		respond_to do |format|
-			format.json { render :json => @response }
-		end
+		rendering(@response)
 	end
 end

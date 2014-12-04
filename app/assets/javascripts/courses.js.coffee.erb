@@ -1,7 +1,7 @@
 # Classes
 class window.GmapManager
+	constructor: (customOptions) ->
 
-	@init: (customOptions) ->
 		# Set defaults options
 		@defaultOptions =
 			mapOptions:
@@ -10,6 +10,7 @@ class window.GmapManager
 				zoom: 12
 			rendererOptions: 
 				map: 'map-canvas'
+				polylineOptions: {strokeColor:'#01b3aa'}
 			iconsOptions :
 				car:
 					url: '<%= image_path("map-car.png") %>'
@@ -19,7 +20,8 @@ class window.GmapManager
 
 		# Merge options objects to override defaults ones with passed ones
 		@options = $.extend(true, {}, @defaultOptions, customOptions);
-
+	
+	init: () ->
 		@directionsDisplays = []
 		@directionsService = new google.maps.DirectionsService();
 
@@ -281,10 +283,10 @@ class window.GmapManager
 
 		@options.rendererOptions.map = @map
 
-	@resize: ()->
+	resize: ()->
 		google.maps.event.trigger(@map, 'resize')
 
-	@computeCourse: (list, customOptions, callback_print) ->
+	computeCourse: (list, customOptions, callback_print) ->
 		defaultOptions =
 			distanceCap: false
 			index: 0
@@ -318,14 +320,14 @@ class window.GmapManager
 			)
 			
 
-	@makeRequest: (from, to) ->
+	makeRequest: (from, to) ->
 		return request =
 			origin: from
 			destination: to
 			travelMode: google.maps.TravelMode.DRIVING
 
 
-	@printRoutes: (response, status, i) =>
+	printRoutes: (response, status, i) =>
 		console.log response
 
 		if status == google.maps.DirectionsStatus.OK
@@ -349,7 +351,7 @@ class window.GmapManager
 				message: "Erreur : trajet impossible à générer, une ou les adresses n'ont pas pû être interpretées."
 			)
 
-	@distanceCheck: (route) ->
+	distanceCheck: (route) ->
 		_start_type = @getType_point(route.start_location, route.start_address)
 		_end_type = @getType_point(route.end_location, route.end_address)
 
@@ -467,7 +469,7 @@ class window.GmapManager
 			
 		
 
-	@getType_point: (point, address) ->
+	getType_point: (point, address) ->
 		type = 'outdoors'
 		start_inLyon = false;
 		if address == "Aéroport de Lyon-Saint Exupéry (LYS), 69125 Colombier-Saugnieu, France" || address == 'Lyon-St Exupery(TGV), Aéroport de Lyon-Saint Exupéry (LYS), 69125 Colombier-Saugnieu, France'
@@ -485,7 +487,7 @@ class window.GmapManager
 		return [type, start_inLyon]
 	
 
-	@printMarker: (options, icon, title, infoWindowContents) ->
+	printMarker: (options, icon, title, infoWindowContents) ->
 		markerOptions =
 			map: @map
 			icon: @options.iconsOptions[icon]
@@ -542,6 +544,9 @@ $(".static_pages.map").ready ->
 						$('#status-ko-counter').hide();
 
 	class pointsManager
+		@init: (map) ->
+			@map = map
+
 		@infosbulles = []
 
 		@buildOptions: (form) ->
@@ -560,7 +565,7 @@ $(".static_pages.map").ready ->
 			options = $.extend(true, {}, defaultOptions, customOptions);
 
 			$.ajax({
-	            url: '/ajax/get',
+	            url: '/ajax/map_get',
 	            type: "GET",
 	            dataType: "json",
 	            data: options
@@ -573,7 +578,8 @@ $(".static_pages.map").ready ->
 			for infosbulle in @infosbulles
 				infosbulle.close();
 
-			for marker in GmapManager.markers
+			console.log(@map)
+			for marker in @map.markers
 				marker.setMap(null);
 			
 			if list.courses && list.courses.length > 0
@@ -589,7 +595,7 @@ $(".static_pages.map").ready ->
 				getterStatus.status_counter.ko = 0
 				getterStatus.status_counter.total = 0
 
-				GmapManager.computeCourse(startEndsList, {}, getterStatus.print)
+				@map.computeCourse(startEndsList, {}, getterStatus.print)
 
 			else getterStatus.print("NOT_FOUND")
 
@@ -601,7 +607,7 @@ $(".static_pages.map").ready ->
 						message.append($('<p/>', {text: user.partner.name}))
 
 					position = [user.pos_lat, user.pos_lon]
-					window.GmapManager.printMarker(position, 'car', user.name+' '+user.last_name, message.prop('outerHTML'))
+					@map.printMarker(position, 'car', user.name+' '+user.last_name, message.prop('outerHTML'))
 
 	$(window).on 'gmap-loaded', ->
 		options =
@@ -613,16 +619,11 @@ $(".static_pages.map").ready ->
 						size: new google.maps.Size(30, 25)
 						origin: new google.maps.Point(0,0)
 						anchor: new google.maps.Point(9, 25)
-			iconsOptions :
-				car:
-					url: '<%= image_path("map-car.png") %>'
-					size: new google.maps.Size(26, 22)
-					origin: new google.maps.Point(0,0)
-					anchor: new google.maps.Point(13, 11)
 
 					
-		window.GmapManager.init(options)
-
+		map = new GmapManager(options)
+		map.init()
+		pointsManager.init(map)
 		pointsManager.get(pointsManager.buildOptions($('#map-filters')))
 
 	$('#map-filters #get').on 'click', ->

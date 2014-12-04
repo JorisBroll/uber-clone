@@ -2,7 +2,7 @@ Tools = {
 	fastAjax: function(path, args, done) {
         $.ajax({
             url: path,
-            type: "GET",
+            type: 'GET',
             dataType: "json",
             data: args
         }).done(done);
