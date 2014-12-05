@@ -24,8 +24,9 @@ init.push(function () {
 		},
 		onFinish: function () {
 			// Disable changing step. To enable changing step just call this.unfreeze()
-			this.freeze();
+			//this.freeze();
 			console.log('Finished!');
+
 		}
 	});
 	$('.wizard-next-step-btn').click(function () {
@@ -35,9 +36,34 @@ init.push(function () {
 		$(this).parents('.steps').pixelWizard('prevStep');
 	});
 
-	console.log($('#new_user').serializeArray());
+	function extractDataFromPage() {
+		rData = {};
 
+		// User part
+		var is_new_user = false
+		if($('input[name="is_new_user"]:checked').val() == '1')
+			is_new_user = true
 
+		rData['user'] = {
+			is_new_user: is_new_user
+		}
+
+		if(is_new_user) {
+			rData['user']['new_user_params'] = $('#new_user').serializeArray()
+		}
+
+		// Course part
+		rData['course'] = {
+			new_course_params: $('#step2 #new_course').serializeArray()
+		}
+
+		// Attributions
+		rData['attributions'] = $('#step3 #new_course').serializeArray();
+
+		// End
+		console.log(rData);
+		return(rData);
+	}
 
 	$("body").on("click", "#refresh-cars2", function() {
 		Tools.fastAjax('/ajax/map_get',
@@ -66,16 +92,11 @@ init.push(function () {
 	});
 
 	$("#course_partner_id").on('change', function() {
-		$.ajax({
-            url: '/ajax/get_drivers',
-            type: "GET",
-            dataType: "json",
-            data: {
+		Tools.fastAjax('/ajax/get_drivers', {
             	options : {
             		partner_id : $(this).val()
             	}
-            }
-        }).done(function(response) {
+            }, function(response) {
         	//console.log(response)
         	newArray = [{id: 0, text:'Aucun'}]
         	for (var i=0; i < response.length; i++) {
@@ -89,13 +110,9 @@ init.push(function () {
 	}).trigger('change');
 
 	$("body").on("click", "#finish-btn", function() {
-		Tools.fastAjax('/ajax/operator_steps_save',
-			{
-				'user-data': $('#new_user').serializeArray(),
-				'partners-drivers': 'all'
-			}, function(response) {
+		Tools.fastAjax('/ajax/operator_steps_save', extractDataFromPage(), function(response) {
 				console.log(response)
-			}
+			}, 'POST'
 		);
 	}).trigger('#refresh-cars2');
 });
@@ -149,7 +166,37 @@ stepsManager = {
 			</div>
 
 			<div class="wizard-content panel">
-				<div id="step1" class="wizard-pane" style="display: block;">
+				<div id="step1" class="wizard-pane" style="display:block;">
+					<div class="row">
+						<div class="col-sm-12">
+							<h3 style="display:inline">Déjà client ?</h3>
+							<label class="checkbox-inline">
+								<input type="radio" name="is_new_user" id="is_new_user_0" value="0" checked="checked" class="px"/>
+								<span class="lbl"><label for="is_new_user_0">Non</label></span>
+							</label>
+							<label class="checkbox-inline">
+								<input type="radio" name="is_new_user" id="is_new_user_1" value="1" class="px"/>
+								<span class="lbl"><label for="is_new_user_1">Oui</label></span>
+							</label>
+						</div>
+					</div>
+					<div class="row form-group" style="margin-top:25px">
+						<label class="col-sm-3 control-label">Nom du client</label>
+						<div class="col-sm-9">
+							
+							<select class="form-control select2">
+							<% users_for_select.each do |i, o| %>
+								<option value="<%= o %>"><%= i %></option>
+							<% end %>
+							</select>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-sm-12">
+							<h3>Sinon, remplir le formulaire suivant</h2>
+						</div>
+					</div>
 					<%= render "forms/users", type: "basic" %>
 
 					<hr class="panel-wide">
@@ -175,14 +222,6 @@ stepsManager = {
 						</div>
 						<div class="row">
 							<div class="col-sm-4">
-								<%= f.label :company_id, class: "control-label"  %>
-								<div class="alert alert-info">
-									<p>L'utilisateur fait-il une réservation au nom de son entreprise ?</p>
-								</div>
-								<%= f.select(:company_id, companies_for_select("Pas d'entreprise"), {}, { :class => 'select2' }) %>
-							</div>
-
-							<div class="col-sm-4">
 								<%= f.label :payment_by, class: "control-label" %>
 								<div class="alert alert-info">
 									<p>Qui paie cette course et à qui ?</p>
@@ -196,6 +235,14 @@ stepsManager = {
 									<p>Quand sera payée cette course ?</p>
 								</div>
 								<%= f.select(:payment_when, payment_when_for_select, {}, { :class => 'select2' }) %>
+							</div>
+
+							<div class="col-sm-4">
+								<%= f.label :company_id, class: "control-label"  %>
+								<div class="alert alert-info">
+									<p>L'utilisateur fait-il une réservation au nom de son entreprise ?</p>
+								</div>
+								<%= f.select(:company_id, companies_for_select("Pas d'entreprise"), {}, { :class => 'select2' }) %>
 							</div>
 						</div>
 
@@ -224,7 +271,7 @@ stepsManager = {
 
 					<div class="row">
 						<div class="col-sm-12">
-							<div id="driver-map" style="height:700px; margin-top:20px">Google Map des chauffeurs, à venir</div>
+							<div id="driver-map" style="height:400px; margin-top:20px">Google Map des chauffeurs, à venir</div>
 						</div>
 					</div>
 					<div class="row" style="margin-top:20px">

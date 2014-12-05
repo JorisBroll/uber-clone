@@ -64,12 +64,6 @@ class AjaxFunctionsController < ApplicationController
 		rendering(rData)
 	end
 
-	def rendering(rData)
-		respond_to do |format|
-			format.json { render :json => rData }
-		end
-	end
-
 	def notifications
 		case params['notif_action']
 		when 'set_seen'
@@ -96,4 +90,31 @@ class AjaxFunctionsController < ApplicationController
 
 		rendering(@response)
 	end
+
+	def operator_steps_save
+		rData = {}
+
+		params['password'] = params[':password_confirmation'] = nil
+		params['enabled'] = false
+
+		if params['user']['is_new_user']
+			user = User.new(user_params)
+			rData['spect'] = user.inspect
+			#if user.save!
+			#	rData['jack'] = "yo"
+			#end
+		end
+
+
+		rendering(rData)
+	end
+		def user_params
+	    	params['user'].require(:new_user_params).permit(:name, :last_name, :email, :phone, :cellphone, :photo, :address, :postcode, :city, :password, :password_confirmation, :enabled)
+	    end
+
+		def rendering(rData)
+			respond_to do |format|
+				format.json { render :json => rData }
+			end
+		end
 end

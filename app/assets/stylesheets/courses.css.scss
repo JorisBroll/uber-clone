@@ -10,3 +10,6 @@
     padding:4px 2px;
     margin:0
 }
+body.operator_steps .photoRow, body.operator_steps .passRow, body.operator_steps .enableRow, body.operator_steps .accountTypeRow {
+	display:none;
+}
