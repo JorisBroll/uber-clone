@@ -93,23 +93,61 @@ class AjaxFunctionsController < ApplicationController
 
 	def operator_steps_save
 		rData = {}
+		rData['status'] = true
 
-		params['password'] = params[':password_confirmation'] = nil
-		params['enabled'] = false
+		if params['user']['is_new_user'] == true
+			#params['password_confirmation'] = params[':password_confirmation'] = nil
+			#params['enabled'] = false
 
-		if params['user']['is_new_user']
 			user = User.new(user_params)
-			rData['spect'] = user.inspect
-			#if user.save!
-			#	rData['jack'] = "yo"
-			#end
+			user.enabled = false
+			user.password = 'default'
+			user.account_type = 'client'
+			if user.valid?
+				user.save
+				rData['user_created'] = {:id => user.id, :status => true }
+			else
+				rData['user_created'] = {:status => false, :errors => user.errors.full_messages}
+				rData['status'] = false
+			end
+		end
+
+		course = Course.new(course_params)
+		course.stops = params['new_course_params']['stops'].to_json
+		course.status = 'inactive'
+		course.payment_by = params['attributions']['course']['payment_by']
+		course.payment_when = params['attributions']['course']['payment_when']
+
+		course.company_id = params['attributions']['course']['company_id']
+		course.partner_id = params['attributions']['course']['partner_id']
+		course.driver_id = params['attributions']['course']['driver_id']
+		
+		if course.valid?
+			if course.company_id != '0'
+				# MAIL + NOTIFICATION A L'ENTREPRISE
+			end
+			if course.partner_id != '0'
+				# MAIL + NOTIFICATION A L'ENTREPRISE
+			end
+			if course.driver_id != '0'
+				# MAIL + NOTIFICATION AU CHAUFFEUR
+			end
+			course.save
+			rData['course_created'] = {:id => course.id, :status => true }
+		else
+			rData['course_created'] = {:status => false, :errors => user.errors.full_messages}
+			rData['status'] = false
 		end
 
 
 		rendering(rData)
 	end
 		def user_params
-	    	params['user'].require(:new_user_params).permit(:name, :last_name, :email, :phone, :cellphone, :photo, :address, :postcode, :city, :password, :password_confirmation, :enabled)
+	    	params['user']['new_user_params'].require(:user).permit(:name, :last_name, :email, :phone, :cellphone, :address, :postcode, :city, :enabled)
+	    end
+
+	    def course_params
+	    	params['new_course_params'].require(:course).permit(:from, :to, :date_when, :time_when, :computed_distance, :computed_duration, :computed_price, :commission, :stops, :nb_people, :nb_luggage, :status, :notes, :created_by, :payment_when, :payment_by, :payment_status, :payment_type, :flight_number, :need_review)
 	    end
 
 		def rendering(rData)

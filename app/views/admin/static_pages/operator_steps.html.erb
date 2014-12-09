@@ -2,7 +2,8 @@
 $(window).on('gmap-loaded', function() {
 	options = {
 		rendererOptions : {
-			map: 'driver-map'
+			map: 'driver-map',
+			preserveViewport: true
 		}
 	}
 				
@@ -11,7 +12,7 @@ $(window).on('gmap-loaded', function() {
 });
 init.push(function () {
 	$('.steps').pixelWizard({
-		onChange: function () {
+		onChange: function() {
 			console.log('Current step: ' + this.currentStep());
 			if($('#map-canvas').is(":visible")) {
 				//console.log("Resize map 1")
@@ -22,7 +23,7 @@ init.push(function () {
 				map2.resize();
 			}
 		},
-		onFinish: function () {
+		onFinish: function() {
 			// Disable changing step. To enable changing step just call this.unfreeze()
 			//this.freeze();
 			console.log('Finished!');
@@ -41,7 +42,7 @@ init.push(function () {
 
 		// User part
 		var is_new_user = false
-		if($('input[name="is_new_user"]:checked').val() == '1')
+		if($('input[name="is_new_user"]:checked').val() == '0')
 			is_new_user = true
 
 		rData['user'] = {
@@ -49,21 +50,40 @@ init.push(function () {
 		}
 
 		if(is_new_user) {
-			rData['user']['new_user_params'] = $('#new_user').serializeArray()
+			var user_params = $('#new_user').serializeArray();
+			rData['user']['new_user_params'] = {}
+			for(var i=0; i < user_params.length; i++) {
+				rData['user']['new_user_params'][user_params[i].name] = user_params[i].value
+			}
 		}
 
 		// Course part
-		rData['course'] = {
-			new_course_params: $('#step2 #new_course').serializeArray()
+		var course_params = $('#step2 #new_course').serializeArray()
+		rData['new_course_params'] = {}
+		for(var i=0; i < course_params.length; i++) {
+			rData['new_course_params'][course_params[i].name] = course_params[i].value
 		}
+		
 
 		// Attributions
-		rData['attributions'] = $('#step3 #new_course').serializeArray();
+		var attributions = $('#step3 #new_course').serializeArray();
+		rData['attributions'] = {}
+		for(var i=0; i < attributions.length; i++) {
+			rData['attributions'][attributions[i].name] = attributions[i].value
+		}
 
 		// End
 		console.log(rData);
 		return(rData);
 	}
+
+	$("body").on("click", "#compute-course", function() {
+		map2.computeCourse(
+			{start: $('#course_from'), end: $('#course_to')}, 
+			{distanceCap: false}
+		);
+	});
+
 
 	$("body").on("click", "#refresh-cars2", function() {
 		Tools.fastAjax('/ajax/map_get',
@@ -109,12 +129,40 @@ init.push(function () {
         });
 	}).trigger('change');
 
+	var callbackSubmit = function(data) {
+		console.log(data)
+		var display_div = $('#callback-display');
+		display_div.empty();
+		if(data.status == true) {
+			display_div.removeClass('alert-danger').addClass('alert-success');
+			display_div.append($('<p/>', {text: 'La réservation a bien été enregistrée.'})).append($('<a/>', {class:'btn btn-flat btn-success', style:'margin-right:10px', text: 'Aller à la course', href: '<%= admin_courses_path %>/'+data.course_created.id})).append($('<a/>', {class:'btn btn-flat btn-success', text: 'Enregistrer une nouvelle réservation', href: '<%= request.original_url %>'}));
+		} else {
+			display_div.removeClass('alert-success').addClass('alert-danger');
+			display_div.append($('<p/>', {text: 'La réservation a échouée :'}));
+
+			if(data.user_created && data.user_created.status == false) {
+				display_div.append($('<p/>', {text: 'Nouvel utilisateur :'}));
+				for(var i=0; i<data.user_created.errors.length; i++) {
+					display_div.append($('<p/>', {text: data.user_created.errors[i]}));
+				}
+			}
+
+			if(data.course_created.status == false) {
+				display_div.append($('<p/>', {text: 'Nouvelle course :'}));
+				for(var i=0; i<data.course_created.errors.length; i++) {
+					display_div.append($('<p/>', {text: data.course_created.errors[i]}));
+				}
+			}
+		}
+	}
+
 	$("body").on("click", "#finish-btn", function() {
-		Tools.fastAjax('/ajax/operator_steps_save', extractDataFromPage(), function(response) {
-				console.log(response)
-			}, 'POST'
+		var callback = callbackSubmit
+		Tools.fastAjax('/ajax/operator_steps_save', extractDataFromPage(), callback, 'POST'
 		);
-	}).trigger('#refresh-cars2');
+	});
+
+	$("#refresh-cars2").trigger('click')
 });
 stepsManager = {
 	goNextStep: function(button) {
@@ -255,9 +303,9 @@ stepsManager = {
 							<div class="col-sm-6">
 								<%= f.label :partner_id, class: "control-label" %>
 								<div class="alert alert-info">
-									<p>Quel partenaire va effectuer cette course ?</p>
+									<p>Quelle entreprise partenaire va effectuer cette course ?</p>
 								</div>
-								<%= f.select(:partner_id, partners_for_select, {}, { :class => 'select2' }) %>
+								<%= f.select(:partner_id, partners_for_select('Aucune'), {}, { :class => 'select2' }) %>
 							</div>
 							<div class="col-sm-6">
 								<%= f.label :driver_id, class: "control-label" %>
@@ -284,6 +332,11 @@ stepsManager = {
 					<div class="text-right">
 						<button class="btn btn-flat wizard-prev-step-btn">Retour</button>
 						<button id="finish-btn" class="btn btn-flat btn-success wizard-next-step-btn">Terminer (non fonctionnel)</button>
+					</div>
+
+					<hr class="panel-wide">
+
+					<div id="callback-display" class="alert">
 					</div>
 				</div>
 			</div>

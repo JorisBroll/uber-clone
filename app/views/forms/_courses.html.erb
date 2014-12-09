@@ -43,7 +43,7 @@ init.push(function () {
 					$('#course_computed_price').val('#Erreur#');
 				}
 			}
-		)
+		);
 	});
 
 	$("body").on("click", "#refresh-cars", function() {
@@ -104,10 +104,12 @@ init.push(function () {
 
 	$('._date').datepicker({
 		daysOfWeekDisabled: "6",
-		todayHighlight: true,
 		format: 'mm/dd/yyyy',
 		defaultDate: new Date()
 	});
+	var myDate = new Date();
+	var prettyDate = myDate.getDate() + '/' + (myDate.getMonth()+1) + '/' + myDate.getFullYear();
+	$('._date').val(prettyDate);
 
 	$('._time').timepicker({
 		minuteStep: 5,

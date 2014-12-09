@@ -295,6 +295,7 @@ class window.GmapManager
 
 		if callback_print
 			@callback_print = callback_print
+		else @callback_print = ()-> {}
 		
 
 		for directionDisplay in @directionsDisplays
