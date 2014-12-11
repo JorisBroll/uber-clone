@@ -24,7 +24,7 @@ init.push(function () {
 	$("body").on("click", "#compute-course", function() {
 		map1.computeCourse(
 			{start: $('#course_from'), end: $('#course_to')}, 
-			{distanceCap: true},
+			{distanceCap: true, carType: $('#course_car_type').val()},
 			function(results) {
 				//console.log results
 				if (results.status == 'OK') {

@@ -286,10 +286,15 @@ class window.GmapManager
 	resize: ()->
 		google.maps.event.trigger(@map, 'resize')
 
+	zoomOnMarkers: ()->
+		#console.log @directionsDisplays[0].directions.routes[0].legs[0].start_location
+		@map.setCenter(@directionsDisplays[0].directions.routes[0].legs[0].start_location)
+
 	computeCourse: (list, customOptions, callback_print) ->
 		defaultOptions =
 			distanceCap: false
 			index: 0
+			carType: 'berline'
 
 		@options.computeOptions = $.extend(true, {}, defaultOptions, customOptions);
 
@@ -363,7 +368,7 @@ class window.GmapManager
 		#console.log end_type
 
 		if start_type == 'airport' && end_type == 'airport'
-			return result = 
+			result = 
 				status: 'KO'
 				message: "Trajet non valide."
 
@@ -378,7 +383,7 @@ class window.GmapManager
 
 			#console.log "Arrondissement : "+(zone+1)
 
-			return result = 
+			result = 
 				status: 'OK'
 				route:
 					duration: route.duration
@@ -399,7 +404,7 @@ class window.GmapManager
 			else
 				totalPrice = Math.round( ( timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000) )*100)/100
 
-			return result = 
+			result = 
 				status: 'OK'
 				route:
 					duration: route.duration
@@ -418,7 +423,7 @@ class window.GmapManager
 			else
 				totalPrice = Math.round( ( timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000) )*100)/100
 
-			return result = 
+			result = 
 				status: 'OK'
 				route:
 					duration: route.duration
@@ -429,7 +434,7 @@ class window.GmapManager
 
 		else if (start_type == 'outdoors' && end_type == 'outdoors')
 			if route.distance.value < 10000
-				return result = 
+				result = 
 					status: 'KO'
 					message: "Il faut que le trajet soit d'au moins 10Km (actuellement "+route.distance.value/1000+")" 
 			else
@@ -457,7 +462,7 @@ class window.GmapManager
 					else
 						totalPrice = Math.round( ( timePrice*(route.duration.value/60) + kmPrice*(route.distance.value/1000) )*100)/100
 
-					return result = 
+					result = 
 						status: 'OK'
 						route:
 							duration: route.duration
@@ -466,6 +471,14 @@ class window.GmapManager
 							kmPrice: kmPrice
 							totalPrice: totalPrice
 
+		console.log @options
+		
+		if result.status == 'OK'
+			if @options.computeOptions.carType == 'berline' && result.route.totalPrice < 8
+				result.route.totalPrice = 8
+			if @options.computeOptions.carType == 'van' && result.route.totalPrice < 10
+				result.route.totalPrice = 10
+		return result
 
 			
 		

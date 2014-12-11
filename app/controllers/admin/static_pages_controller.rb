@@ -58,8 +58,6 @@ class Admin::StaticPagesController < ApplicationController
 	end
 
 	def global_stats
-		Log.create(user_id: 1, target_type: 1, target_id: 1, action: 'create', extra: 'KIKOO')
-
 		@date = Time.zone.now
 		@users = {}
 		@users[:all] = User.all

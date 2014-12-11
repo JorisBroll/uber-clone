@@ -29,4 +29,23 @@ class Notification < ActiveRecord::Base
 			'background' => "info"
 		}
 	}
+
+	def self.make(type, title, content, to, link)
+		admins = partneradmins = []
+    	if to.include?('admins')
+		    admins = User.where('account_type = ?', 0)
+	    end
+	    if to.include?('partneradmins')
+		    partneradmins = User.where('account_type = ?', 2)
+	    end
+
+	    recipients = admins.concat(partneradmins)
+
+		recipients.each do |u|
+		    @notification = u.notifications.build(notif_type: 1, title: title, content: content, link: link)
+		    if @notification.valid? then @notification.save end
+		end
+
+		return recipients
+    end
 end

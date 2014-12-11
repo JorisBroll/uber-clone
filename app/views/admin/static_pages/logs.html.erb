@@ -12,11 +12,13 @@
 			</div>
 			<div class="panel-body">
 				<% @logs[:users].each do |l| %>
+				<p>
 					<%= l.user_id %>
 					<%= l.target_type %>
 					<%= l.target_id %>
 					<%= l.action %>
 					<%= l.created_at %>
+				</p>
 				<% end %>
 			</div>
 		</div>
@@ -28,11 +30,13 @@
 			</div>
 			<div class="panel-body">
 				<% @logs[:courses].each do |l| %>
+				<p>
 					<%= l.user_id %>
 					<%= l.target_type %>
 					<%= l.target_id %>
 					<%= l.action %>
 					<%= l.created_at %>
+				</p>
 				<% end %>
 			</div>
 		</div>
@@ -44,11 +48,13 @@
 			</div>
 			<div class="panel-body">
 				<% @logs[:partners].each do |l| %>
+				<p>
 					<%= l.user_id %>
 					<%= l.target_type %>
 					<%= l.target_id %>
 					<%= l.action %>
 					<%= l.created_at %>
+				</p>
 				<% end %>
 			</div>
 		</div>

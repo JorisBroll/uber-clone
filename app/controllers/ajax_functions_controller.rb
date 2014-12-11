@@ -95,9 +95,7 @@ class AjaxFunctionsController < ApplicationController
 		rData = {}
 		rData['status'] = true
 
-		if params['user']['is_new_user'] == true
-			#params['password_confirmation'] = params[':password_confirmation'] = nil
-			#params['enabled'] = false
+		if params['user']['is_new_user'] == 'true'
 
 			user = User.new(user_params)
 			user.enabled = false
@@ -110,6 +108,8 @@ class AjaxFunctionsController < ApplicationController
 				rData['user_created'] = {:status => false, :errors => user.errors.full_messages}
 				rData['status'] = false
 			end
+		else
+			user_id = params['user']['user_id']
 		end
 
 		course = Course.new(course_params)
@@ -121,6 +121,12 @@ class AjaxFunctionsController < ApplicationController
 		course.company_id = params['attributions']['course']['company_id']
 		course.partner_id = params['attributions']['course']['partner_id']
 		course.driver_id = params['attributions']['course']['driver_id']
+
+		if user.nil?
+			course.user_id = user_id
+		else
+			course.user_id = user.id
+		end
 		
 		if course.valid?
 			if course.company_id != '0'

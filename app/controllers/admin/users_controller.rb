@@ -24,6 +24,55 @@ class Admin::UsersController < ApplicationController
 		@user = User.find(params[:id])
 		@companies = @user.companies
 		@promocodes = @user.promocodes
+
+		if !params['recap'].nil?
+			@select_date = Date.new(params['recap']['date(1i)'].to_i, params['recap']['date(2i)'].to_i, 1)
+			@date = {
+				:start => @select_date.beginning_of_month,
+				:end => @select_date.end_of_month
+			}
+			@dates = {
+				:start => @select_date.prev_month.beginning_of_month,
+				:end => @select_date.prev_month.end_of_month
+			}
+			@datess = {
+				:start => @select_date.prev_month(2).beginning_of_month,
+				:end => @select_date.prev_month(2).end_of_month
+			}
+
+			@courses = []
+
+			(1..5).each do |i|
+				
+				@date[i] = {
+					:start => @select_date.prev_month(i).beginning_of_month,
+					:end => @select_date.prev_month(i).end_of_month
+				}
+
+				@courses[i] = @user.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @date[i][:start], @date[i][:end], Course.statuses[:done])
+
+			end
+
+
+			#(1..5).each do |i|
+
+			#@chartData = [
+				
+			#	{:geekbench => @courses.map {|s| price_afterPromo(s)}.reduce(0, :+).round(2) },
+				
+			#]
+
+			#end
+
+			
+
+		else	
+			@date = {
+				:start => Time.zone.now.beginning_of_month,
+				:end => Time.zone.now.end_of_month
+			}
+		end
+
 	end
 	def new
 		@user = User.new()
@@ -35,6 +84,7 @@ class Admin::UsersController < ApplicationController
 		if @user.save
 			update_photo(@user)
 			flash[:success] = "L'utilisateur "+build_name(@user, true)+" a été crée."
+			Log.create(user_id: current_user.id, target_type: 0, target_id: @user.id, action: 'create')
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'user', 'id' => @user.id.to_s} })
 			redirect_to admin_users_path
 		else
@@ -54,6 +104,7 @@ class Admin::UsersController < ApplicationController
 		if @user.update_attributes(user_params)
 			update_photo(@user)
 			flash[:success] = "L'utilisateur "+build_name(@user, true)+" a été modifié avec succès."
+			Log.create(user_id: current_user.id, target_type: 0, target_id: @user.id, action: 'update')
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'user', 'id' => @user.id.to_s} })
 			redirect_to admin_users_path
 		else
@@ -65,10 +116,12 @@ class Admin::UsersController < ApplicationController
 	def destroy
 		if ['1', '2', '3'].include? params[:id]
 			flash[:notice] = "Utilisateur protégé. Il ne peut être supprimé."
+			Log.create(user_id: current_user.id, target_type: 0, target_id: @user.id, action: 'destroy_fail', extra: '(Utilisateur protégé)')
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'fail_deleted', 'target_object' => {'type' => 'user', 'id' => params[:id].to_s} })
 		else
 		    User.find(params[:id]).destroy
 		    flash[:success] = "Utilisateur supprimé."
+		    Log.create(user_id: current_user.id, target_type: 0, target_id: params[:id], action: 'destroy')
 		    AppLogger.log ({'user_id' => @current_user, 'action' => 'deleted', 'target_object' => {'type' => 'user', 'id' => params[:id].to_s} })
 		end
 	    redirect_to admin_users_path

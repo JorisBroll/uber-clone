@@ -16,6 +16,10 @@
 				'company[name]': {
 				  required: true
 				},
+				'company[email]': {
+				  required: true,
+				  email: true
+				},
 				'company[address]': {
 					required: true
 				},
@@ -43,6 +47,13 @@
 				<%= f.label :name, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.text_field :name, class: "form-control", :placeholder => "Nom de l'entreprise" %>
+				</div>
+			</div>
+
+			<div class="row form-group">
+				<%= f.label :email, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :email, class: "form-control", :placeholder => "Email" %>
 				</div>
 			</div>
 

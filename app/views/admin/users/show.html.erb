@@ -1,5 +1,93 @@
 <h2>Informations de l'utilisateur</h2>
 
+<!-- / AJOUT  -->
+<div class="row">
+	<div class="col-md-12">
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">Sélectionner une période</span>
+			</div>
+			<div class="panel-body">
+				<form id="select-date" class="form-inline col-xs-6" action="<%= admin_user_path %>">
+					<span>Par mois : </span><%= date_select("recap", "date", {:start_year => 2014, :end_year => Time.new.year, :discard_day => true }, {:class => "form-control"} ) %>
+					<button type="submit" class="btn btn-info">Voir</button>
+				</form>
+				<form id="select-date" class="form-inline col-xs-6" action="<%= admin_user_path %>">
+					<span>Ou par dates précises : </span>Du <input class="form-control date" name="date_start"/> au <input class="form-control date" name="date_end"/> 
+					<button type="submit" class="btn btn-info">Voir</button>
+				</form>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+ <!-- 7. $MORRISJS_BARS =============================================================================
+
+				Morris.js Bars
+-->
+				<!-- Javascript -->
+
+
+				<script>
+
+				var tax_data = <%= raw @chartData.to_json %>
+
+				Morris.Line({
+					element: 'sup',
+					data: tax_data,
+					xkey: 'period',
+					ykeys: ['ca', 'course_count'],
+					labels: ["Chiffre d'affaire", 'Nombre de courses'],
+					lineColors: ['#666', '#888'],
+					lineWidth: 2,
+					pointSize: 4,
+					gridLineColor: '#cfcfcf',
+					resize: true
+				});
+
+
+					init.push(function () {
+						Morris.Bar({
+							element: 'hero-bar',
+							data: [
+									<% (1..5).each do |i| %>
+										{ 
+											geekbench:<%= @courses[i].map {|s| price_afterPromo(s)}.reduce(0, :+).round(2) %>
+
+										},
+									<% end %>
+							],
+							xkey: 'months',
+							ykeys: ['money'],
+							labels: ['Chiffre'],
+							barRatio: 0.4,
+							xLabelAngle: 35,
+							hideHover: 'auto',
+							barColors: PixelAdmin.settings.consts.COLORS,
+							gridLineColor: '#cfcfcf',
+							resize: true
+						});
+					});
+				</script>
+				<!-- / Javascript -->
+				
+				<div class="panel">
+					<div class="panel-heading">
+						<span class="panel-title">Morris.js Bars</span>
+					</div>
+					<div class="panel-body">
+						<div class="note note-info">More info and examples at <a href="http://www.oesmith.co.uk/morris.js/" target="_blank">http://www.oesmith.co.uk/morris.js/</a></div>
+
+						<div class="graph-container">
+							<div id="hero-bar" class="graph"></div>
+						</div>
+					</div>
+				</div>
+<!-- /7. $MORRISJS_BARS -->
+
+<!-- / FIN AJOUT   -->
+
 <div class="row">
 	<div class="col-md-6">
 		<div class="panel panel-info panel-dark widget-profile">
@@ -20,6 +108,7 @@
 				<%= link_to edit_admin_user_path(@user), class: "list-group-item" do %><button class="btn btn-labeled btn-block">Editer les informations</button><% end %>
 			</div>
 		</div>
+		
 		<div class="panel widget-support-tickets panel-warning">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses de l'utilisateur</span>
@@ -87,5 +176,40 @@
 			</div>
 		</div>
 		<% end %>
+	
+
+	<% if @user.companies.count > 0 %>
+		<div class="panel panel-dark panel-light-green">
+				<div class="panel-heading">
+					<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Entreprise cliente rattachée</span>
+				</div>
+				<div class="panel-body">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Nom</th>
+								<th>Téléphone</th>
+								<th>E-mail</th>
+								<th>Détacher</th>
+							</tr>
+						</thead>
+						<tbody class="valign-middle">
+							<% @companies.each do |company| %>
+							<tr>
+								<td><%= company.id %></td>
+								<td><%= link_to admin_company_path(company), { :title => "Voir" } do %><%= company.name %><% end %></td>
+								<td><%= company.phone %></td>
+								<td><%= company.email %></td>								
+								<td>A faire</td>
+							</tr>
+							<% end %>
+						</tbody>
+					</table>
+				</div>
+				
+			</div>
+		<% end %>
 	</div>
+
 </div>

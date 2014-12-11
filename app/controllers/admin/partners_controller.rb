@@ -22,9 +22,12 @@ class Admin::PartnersController < ApplicationController
 		if @partner.save
 			update_logo(@partner)
 			flash[:success] = "L'entreprise "+@partner.name+" a été créée."
+			Log.create(user_id: current_user.id, target_type: 2, target_id: @partner.id, action: 'create')
+			AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'partner', 'id' => @partner.id.to_s} })
 			redirect_to admin_partners_path
 	    else
 	    	flash[:error] = "L'entreprise n'a pas pu être créée."
+	    	AppLogger.log ({'user_id' => @current_user, 'action' => 'created_fail', 'target_object' => {'type' => 'partner', 'id' => @partner.id.to_s} })
 	    	render 'new'
 	    end
 	end
@@ -38,18 +41,20 @@ class Admin::PartnersController < ApplicationController
 		if @partner.update_attributes(partner_params)
 			update_logo(@partner)
 			flash[:success] = "L'entreprise "+@partner.name+" a été modifiée avec succès."
-			if is_partneradmin?
-				redirect_to partner_admin_home_path
-			else
-				redirect_to admin_partners_path
-			end
+			Log.create(user_id: current_user.id, target_type: 2, target_id: @partner.id, action: 'update')
+			AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'partner', 'id' => @partner.id.to_s} })
+			redirect_to admin_partners_path
 		else
+			flash[:error] = "L'entreprise n'a pas pu être modifiée."
+			AppLogger.log ({'user_id' => @current_user, 'action' => 'updated_fail', 'target_object' => {'type' => 'partner', 'id' => @partner.id.to_s} })
 			render 'edit'
 		end
 	end
 	def destroy
 	    Partner.find(params[:id]).destroy
 	    flash[:success] = "Entreprise partenaire supprimée."
+	    Log.create(user_id: params[:id], target_type: 2, target_id: @partner.id, action: 'destroy')
+		AppLogger.log ({'user_id' => params[:id], 'action' => 'destroyed', 'target_object' => {'type' => 'partner', 'id' => @partner.id.to_s} })
 	    redirect_to admin_partners_path
 	end
 

@@ -4,16 +4,14 @@
 		this.element = $(element);
 		this.notifications = this.element.find('.notification')
 		this.label = this.element.closest('.dropdown-menu').siblings('.dropdown-toggle').find('.label')
-		this.default_notification_layout = $('<div/>', {'class': 'notification'}).append($('<div/>', {'class': 'notification-title'})).append($('<div/>', {'class': 'notification-description'})).append($('<div/>', {'class': 'notification-ago'})).append($('<div/>', {'class': 'notification-icon fa'}))
+		this.default_notification_layout = $('<div/>', {'class': 'notification'}).append($('<div/>', {'class': 'notification-title'}).append($('<a/>'))).append($('<div/>', {'class': 'notification-description'})).append($('<div/>', {'class': 'notification-ago'})).append($('<div/>', {'class': 'notification-icon fa'}))
 
-
-
-			/*<div class="notification">
-											<div class="notification-title"></div>
-											<div class="notification-description"></div>
-											<div class="notification-ago"></div>
-											<div class="notification-icon fa" ></div>
-										</div>*/
+		/*<div class="notification">
+			<div class="notification-title"><a></a></div>
+			<div class="notification-description"></div>
+			<div class="notification-ago"></div>
+			<div class="notification-icon fa" ></div>
+		</div>*/
 
 		this.init();
 	};
@@ -99,10 +97,10 @@
 			var buildList = []
 			for (var i=0; i<this.list.length; i++) {
 				newNotificationDiv = this.default_notification_layout.clone();
-				newNotificationDiv.find('.notification-title').text(this.list[i].title)
-				newNotificationDiv.find('.notification-description').text(this.list[i].content)
-				newNotificationDiv.find('.notification-ago').text(this.list[i].created_at)
-				newNotificationDiv.find('.notification-icon').addClass('fa-'+this.list[i].icon).addClass('bg-'+this.list[i].background)
+				newNotificationDiv.find('.notification-title a').text(this.list[i].title).attr('href', this.list[i].link);
+				newNotificationDiv.find('.notification-description').text(this.list[i].content);
+				newNotificationDiv.find('.notification-ago').text(this.list[i].created_at);
+				newNotificationDiv.find('.notification-icon').addClass('fa-'+this.list[i].icon).addClass('bg-'+this.list[i].background);
 				buildList.push(newNotificationDiv);
 			}
 			return buildList;

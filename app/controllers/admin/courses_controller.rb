@@ -20,6 +20,7 @@ class Admin::CoursesController < ApplicationController
 		@course = Course.new(course_params)
 		if @course.save
 			flash[:success] = "La course n°"+@course.id.to_s+" a été créée."
+			Log.create(user_id: current_user.id, target_type: 1, target_id: @course.id, action: 'create')
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'course', 'id' => @course.id.to_s} })
 			redirect_to admin_courses_path
 	    else
@@ -38,9 +39,10 @@ class Admin::CoursesController < ApplicationController
 
 		if @course.update_attributes(course_params)
 			flash[:success] = "La course n°"+@course.id.to_s+" a été modifiée avec succès."
+			Log.create(user_id: current_user.id, target_type: 1, target_id: @course.id, action: 'update')
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'course', 'id' => @course.id.to_s} })
+			Notification::make('warning', 'Course modifiée', "La course n°"+ @course.id.to_s+" du "+@course.date_when.to_s+" a été modifiée.", ['admins', 'partneradmins'], admin_course_path(@course))
 			redirect_to admin_courses_path
-			make_notif('warning', 'Course modifiée', "La course n°"+ @course.id.to_s+" du "+@course.date_when.to_s+" a été modifiée.")
 		else
 			flash[:error] = "La course n'a pas pu être modifiée, veuillez réessayer :"
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'fail_updated', 'target_object' => {'type' => 'course', 'id' => @course.id.to_s} })
@@ -50,6 +52,7 @@ class Admin::CoursesController < ApplicationController
 	def destroy
 		@course = Course.find(params[:id]).destroy
 	    flash[:success] = "Course supprimée."
+	    Log.create(user_id: current_user.id, target_type: 1, target_id: @course.id, action: 'destroy')
 	    AppLogger.log ({'user_id' => @current_user, 'action' => 'deleted', 'target_object' => {'type' => 'course', 'id' => params[:id].to_s} })
 	    redirect_to admin_courses_path
 	end
@@ -59,20 +62,6 @@ class Admin::CoursesController < ApplicationController
 		    def course_params
 		    	params['course']['stops'] = params['course']['stops'].to_json
 		    	params.require(:course).permit(:from, :to, :date_when, :time_when, :computed_distance, :computed_duration, :computed_price, :commission, :stops, :nb_people, :nb_luggage, :user_id, :partner_id, :car_id, :company_id, :status, :notes, :created_by, :company_id, :promocode_id, :driver_id, :payment_when, :payment_by, :payment_status, :payment_type, :flight_number, :need_review)
-		    end
-
-		    def make_notif(type, title, content)
-		    	if !@current_partner.nil?
-		    		@colleagues = @current_partner.users
-		    		@colleagues.each do |u|
-				    	@notification = u.notifications.build(notif_type: 1, title: title, content: content)
-						if @notification.save
-							AppLogger.log ({'user_id' => current_user, 'action' => 'created', 'target_object' => {'type' => 'notification', 'id' => @course.id.to_s} })
-						else
-							AppLogger.log ({'user_id' => current_user, 'action' => 'fails_create', 'target_object' => {'type' => 'notification'} })
-						end
-					end
-				end
 		    end
 
 end

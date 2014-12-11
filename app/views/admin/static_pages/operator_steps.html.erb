@@ -21,6 +21,7 @@ init.push(function () {
 			if($('#driver-map').is(":visible")) {
 				//console.log("Resize map 2")
 				map2.resize();
+				map2.zoomOnMarkers();
 			}
 		},
 		onFinish: function() {
@@ -41,13 +42,15 @@ init.push(function () {
 		rData = {};
 
 		// User part
-		var is_new_user = false
-		if($('input[name="is_new_user"]:checked').val() == '0')
-			is_new_user = true
+		rData['user'] = {}
 
-		rData['user'] = {
-			is_new_user: is_new_user
+		if($('input[name="is_new_user"]:checked').val() == '0')
+			var is_new_user = true
+		else {
+			var is_new_user = false
 		}
+
+		rData['user']['is_new_user'] = is_new_user
 
 		if(is_new_user) {
 			var user_params = $('#new_user').serializeArray();
@@ -55,6 +58,8 @@ init.push(function () {
 			for(var i=0; i < user_params.length; i++) {
 				rData['user']['new_user_params'][user_params[i].name] = user_params[i].value
 			}
+		} else {
+			rData['user']['user_id'] = $('#existing_user_id').val();
 		}
 
 		// Course part
@@ -132,7 +137,7 @@ init.push(function () {
 	var callbackSubmit = function(data) {
 		console.log(data)
 		var display_div = $('#callback-display');
-		display_div.empty();
+		display_div.empty().fadeIn();
 		if(data.status == true) {
 			display_div.removeClass('alert-danger').addClass('alert-success');
 			display_div.append($('<p/>', {text: 'La réservation a bien été enregistrée.'})).append($('<a/>', {class:'btn btn-flat btn-success', style:'margin-right:10px', text: 'Aller à la course', href: '<%= admin_courses_path %>/'+data.course_created.id})).append($('<a/>', {class:'btn btn-flat btn-success', text: 'Enregistrer une nouvelle réservation', href: '<%= request.original_url %>'}));
@@ -231,8 +236,7 @@ stepsManager = {
 					<div class="row form-group" style="margin-top:25px">
 						<label class="col-sm-3 control-label">Nom du client</label>
 						<div class="col-sm-9">
-							
-							<select class="form-control select2">
+							<select id="existing_user_id" class="form-control select2">
 							<% users_for_select.each do |i, o| %>
 								<option value="<%= o %>"><%= i %></option>
 							<% end %>
@@ -336,7 +340,7 @@ stepsManager = {
 
 					<hr class="panel-wide">
 
-					<div id="callback-display" class="alert">
+					<div id="callback-display" class="alert" style="display:none">
 					</div>
 				</div>
 			</div>

@@ -80,7 +80,7 @@
 										<% @notifications = get_user_notifs %>
 										<% @notifications.each do |n| %>
 										<div class="notification" data-id="<%= n.id %>">
-											<div class="notification-title"><%= n.title %></div>
+											<div class="notification-title"><a href="<%= n.link %>"><%= n.title %></a></div>
 											<div class="notification-description"><%= n.content %></div>
 											<div class="notification-ago"><%= n.created_at.to_s %></div>
 											<div class="notification-icon fa fa-<%= Notification::Notif_types[n.notif_type]['icon'] %> bg-<%= Notification::Notif_types[n.notif_type]['background'] %>"></div>
