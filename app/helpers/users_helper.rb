@@ -14,8 +14,11 @@ module UsersHelper
 		return @table
 	end
 
-	def drivers_for_select
-	  User.where("account_type = ?", User.account_types[:driver]).collect { |o| [o.name, o.id] }
+	def drivers_for_select(add_blank = false)
+	  	@table = User.where("account_type = ? OR account_type = ?", User.account_types[:partneradmin], User.account_types[:driver]).collect { |o| [o.name, o.id] }
+	  	if add_blank
+			@table.unshift([add_blank, 0])
+		end
 	end
 
 	def build_name(user, with_id = false)

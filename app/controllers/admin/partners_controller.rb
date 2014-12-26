@@ -10,7 +10,7 @@ class Admin::PartnersController < ApplicationController
 	def show
 		@partner = Partner.find(params[:id])
 		admin_this_partner @partner
-		redirect_to partner_admin_home_path
+		redirect_to [:admin, 'partner_home']
 	end
 	def new
 		@partner = Partner.new
@@ -24,7 +24,7 @@ class Admin::PartnersController < ApplicationController
 			flash[:success] = "L'entreprise "+@partner.name+" a été créée."
 			Log.create(user_id: current_user.id, target_type: 2, target_id: @partner.id, action: 'create')
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'partner', 'id' => @partner.id.to_s} })
-			redirect_to admin_partners_path
+			redirect_to admin_partner_path(@partner)
 	    else
 	    	flash[:error] = "L'entreprise n'a pas pu être créée."
 	    	AppLogger.log ({'user_id' => @current_user, 'action' => 'created_fail', 'target_object' => {'type' => 'partner', 'id' => @partner.id.to_s} })
@@ -43,7 +43,7 @@ class Admin::PartnersController < ApplicationController
 			flash[:success] = "L'entreprise "+@partner.name+" a été modifiée avec succès."
 			Log.create(user_id: current_user.id, target_type: 2, target_id: @partner.id, action: 'update')
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'partner', 'id' => @partner.id.to_s} })
-			redirect_to admin_partners_path
+			redirect_to admin_partner_path(@partner)
 		else
 			flash[:error] = "L'entreprise n'a pas pu être modifiée."
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'updated_fail', 'target_object' => {'type' => 'partner', 'id' => @partner.id.to_s} })

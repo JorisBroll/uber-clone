@@ -16,7 +16,7 @@ class Admin::PromocodesController < ApplicationController
 		if @promocode.save
 			flash[:success] = "Le code promotion \""+@promocode.name+"\" a été crée."
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'promocode', 'id' => @promocode.id.to_s} })
-			redirect_to admin_promocodes_path
+			redirect_to admin_promocode_path(@promocode)
 		else
 			flash[:error] = "Le code promotion n'a pas pu être crée."
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'fail_created', 'target_object' => {'type' => 'promocode'} })
@@ -29,9 +29,9 @@ class Admin::PromocodesController < ApplicationController
 	def update
 		@promocode = Promocode.find(params[:id])
 		if @promocode.update_attributes(promocode_params)
-			flash[:success] = "L'utilisateur "+@promocode.name+" a été modifié avec succès."
+			flash[:success] = "Le code promotion "+@promocode.name+" a été modifié avec succès."
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'promocode', 'id' => @promocode.id.to_s} })
-			redirect_to admin_promocodes_path
+			redirect_to admin_promocode_path(@promocode)
 		else
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'fail_updated', 'target_object' => {'type' => 'promocode', 'id' => @promocode.id.to_s} })
 			render 'edit'
@@ -47,7 +47,7 @@ class Admin::PromocodesController < ApplicationController
 		private
 
 		    def promocode_params
-		    	params.require(:promocode).permit(:name, :code, :effect_type, :effect_type_value, :effect_length, :effect_length_value)
+		    	params.require(:promocode).permit(:name, :code, :effect_type, :effect_type_value, :effect_length, :effect_length_value, :created_at)
 		    end
 
 		    def set_partner

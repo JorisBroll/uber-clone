@@ -15,5 +15,4 @@ module ApplicationHelper
 		view_flow.content.delete(content_key)
 	end
 
-
 end

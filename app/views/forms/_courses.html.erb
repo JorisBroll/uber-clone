@@ -107,9 +107,6 @@ init.push(function () {
 		format: 'mm/dd/yyyy',
 		defaultDate: new Date()
 	});
-	var myDate = new Date();
-	var prettyDate = myDate.getDate() + '/' + (myDate.getMonth()+1) + '/' + myDate.getFullYear();
-	$('._date').val(prettyDate);
 
 	$('._time').timepicker({
 		minuteStep: 5,
@@ -239,7 +236,7 @@ init.push(function () {
 		</div>
 	</div>
 
-	<% if @course.date_when then date = @course.date_when.strftime("%d/%m/%Y") else date = '' end %>
+	<% if @course.date_when then date = @course.date_when.strftime("%d/%m/%Y") else date = Time.now.strftime("%d/%m/%Y") end %>
 
 	<div class="row form-group">
 		<%= f.label :date_when, class: "col-sm-3 control-label" %>
@@ -345,7 +342,7 @@ init.push(function () {
 	<div class="row form-group">
 		<%= f.label :driver_id, class: "col-sm-3 control-label" %>
 		<div class="col-sm-9">
-			<%= f.select(:driver_id, drivers_for_select, {}, { :class => 'select2' }) %>
+			<%= f.select(:driver_id, drivers_for_select('Aucun'), {}, { :class => 'select2' }) %>
 		</div>
 	</div>
 
@@ -356,12 +353,14 @@ init.push(function () {
 		</div>
 	</div>
 
+	<% if true %>
 	<div class="row form-group">
 		<%= f.label :promocode_id, class: "col-sm-3 control-label" %>
 		<div class="col-sm-9">
 			<%= f.select(:promocode_id, promocodes_for_select('Aucun'), {}, { :class => 'select2' }) %>
 		</div>
 	</div>
+	<% end %>
 
 	<div class="row form-group">
 		<%= f.label :status, class: "col-sm-3 control-label" %>

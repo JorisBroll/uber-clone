@@ -3,6 +3,7 @@ class Admin::UsersController < ApplicationController
 
   	include UsersHelper
   	include UploadsHelper
+  	include CoursesHelper
 
 	def index
 		@clients = User.where("account_type = ?", User.account_types[:client])
@@ -24,53 +25,38 @@ class Admin::UsersController < ApplicationController
 		@user = User.find(params[:id])
 		@companies = @user.companies
 		@promocodes = @user.promocodes
+		@date = []
+		@chartData = []
+		@userEarnTotal = []
+		@courses = []
 
 		if !params['recap'].nil?
 			@select_date = Date.new(params['recap']['date(1i)'].to_i, params['recap']['date(2i)'].to_i, 1)
-			@date = {
-				:start => @select_date.beginning_of_month,
-				:end => @select_date.end_of_month
-			}
-			@dates = {
-				:start => @select_date.prev_month.beginning_of_month,
-				:end => @select_date.prev_month.end_of_month
-			}
-			@datess = {
-				:start => @select_date.prev_month(2).beginning_of_month,
-				:end => @select_date.prev_month(2).end_of_month
-			}
-
-			@courses = []
-
-			(1..5).each do |i|
-				
+			(1..12).each do |i|				
 				@date[i] = {
-					:start => @select_date.prev_month(i).beginning_of_month,
-					:end => @select_date.prev_month(i).end_of_month
+					:start => @select_date.prev_month(i-1).beginning_of_month,
+					:end => @select_date.prev_month(i-1).end_of_month
 				}
-
 				@courses[i] = @user.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @date[i][:start], @date[i][:end], Course.statuses[:done])
-
 			end
 
-
-			#(1..5).each do |i|
-
-			#@chartData = [
-				
-			#	{:geekbench => @courses.map {|s| price_afterPromo(s)}.reduce(0, :+).round(2) },
-				
-			#]
-
-			#end
-
-			
-
+			(0..11).each do |i|
+				@chartData[i] = {:money => (@courses[i+1].map {|s| price_afterPromo(s)}.reduce(0, :+).round(2)), :months => @date[i+1][:start].strftime("%m/%Y"), :id => i+1}
+			end
+			@chartData = @chartData.sort_by{|e| -e[:id]}
 		else	
-			@date = {
-				:start => Time.zone.now.beginning_of_month,
-				:end => Time.zone.now.end_of_month
-			}
+			(0..12).each do |i|
+				@date[i] = {
+					:start => Date.today.prev_month(i-1).beginning_of_month,
+					:end => Date.today.prev_month(i-1).end_of_month
+				}
+				@courses[i] = @user.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @date[i][:start], @date[i][:end], Course.statuses[:done])
+			end
+			(0..11).each do |i|
+				@chartData[i] = {:money => (@courses[i+1].map {|s| price_afterPromo(s)}.reduce(0, :+).round(2)), :months => @date[i+1][:start].strftime("%m/%Y"), :id => i}
+				@userEarnTotal[i] = @courses[i+1].map {|s| price_afterPromo(s)}.reduce(0, :+).round(2)
+			end	
+			@chartData = @chartData.sort_by{|e| -e[:id]}
 		end
 
 	end

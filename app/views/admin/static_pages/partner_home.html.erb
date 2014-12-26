@@ -1,6 +1,62 @@
 <script>
 init.push(function () {
-	$('#panel-courses .panel-body').slimScroll({ height: 400, alwaysVisible: true, color: '#888',allowPageScroll: true });
+	$('#panel-courses .tab-content').slimScroll({ height: 400, alwaysVisible: true, color: '#888',allowPageScroll: true });
+
+	Morris.Line({
+		element: 'hero-bar',
+		data: <%= raw @chartData.to_json %>,
+		xkey: 'months',
+		xLabels: 'month',
+		parseTime: false,
+		ykeys: ['money'],
+		labels: ['Chiffre en € '],
+		lineColors: PixelAdmin.settings.consts.COLORS,
+		lineWidth: 2,
+		pointSize: 4,
+		gridLineColor: '#cfcfcf',
+		resize: true
+	});
+
+	$("#stats-sparklines-1").pixelSparkline(
+		[<% (0..11).each do |i| %>
+			<%= raw @partnerEarnTotal[i].to_json %>,
+		<% end %>], {
+		type: 'line',
+		width: '100%',
+		height: '80px',
+		lineColor: 'rgba(0,0,0,0)',
+		fillColor: 'rgba(0,0,0,.18)',
+		lineWidth: 0,
+		spotColor: '',
+		minSpotColor: '',
+		maxSpotColor: '',
+		highlightSpotColor: '',
+		highlightLineColor: '#ffffff',
+		spotRadius: 1.8,
+		chartRangeMin: 150
+	});
+
+	if (! $('html').hasClass('ie8')) {
+		$('#contents').summernote({
+			height: 200,
+			tabsize: 2,
+			codemirror: {
+				theme: 'monokai'
+			},
+			toolbar: [
+			    ['style', ['style']], // no style button
+			    ['style', ['bold', 'italic', 'underline', 'clear']],
+			    ['fontsize', ['fontsize']],
+			    ['color', ['color']],
+			    ['para', ['ul', 'ol', 'paragraph']],
+			    //['height', ['height']],
+			    //['insert', ['picture', 'link']], // no insert buttons
+			    ['insert', ['link']], // no insert buttons
+			    //['table', ['table']], // no table button
+			    //['help', ['help']] //no help button
+			  ]
+		});
+	}
 });
 </script>
 <h2>Informations de l'entreprise</h2>
@@ -27,31 +83,138 @@ init.push(function () {
 			</div>
 		</div>
 
-		<div id="panel-courses" class="panel widget-support-tickets panel-warning">
+		<div class="panel widget-support-tickets panel-warning" id="panel-courses">
 			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses de l'entreprise</span>
-				<div class="panel-heading-controls">
-					<span class="label label-success"><%= @courses.count %></span>
-				</div>
+				<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses de l'entreprise <span class="label label-success"><%= @courses.count %></span></span>
+				<ul class="nav nav-tabs nav-tabs-sm">
+					<li class="active ">
+						<a href="#courses_done" data-toggle="tab">Terminées <span class="badge badge-success"><%= @courses.where("status = ?", Course.statuses[:done]).count %></span></a>
+					</li>
+					<li>
+						<a href="#courses_inactive" data-toggle="tab">À venir <span class="badge badge-primary"><%= @courses.where("status = ?", Course.statuses[:inactive]).count %></span></a>
+					</li>
+					<li>
+						<a href="#courses_in-progress" data-toggle="tab">En cours <span class="badge badge-info"><%= @courses.where("status = ?", Course.statuses[:in_progress]).count %></span></a>
+					</li>
+					<li>
+						<a href="#courses_canceled" data-toggle="tab">Annulées <span class="badge badge-danger"><%= @courses.where("status = ?", Course.statuses[:canceled]).count %></span></a>
+					</li>
+				</ul>
 			</div>
-			<div class="panel-body">
-				<% @courses.each do |course| %>
-					<div class="ticket">
-						<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
-						<%= link_to partner_admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span> - <span><%= price_afterPromo(course, 'partner').round(2) %> €</span><% end %>
-						<span class="ticket-info">
-							Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
-						</span><br />
-						<%= link_to edit_partner_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
-						<%= link_to partner_admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
-					</div>
+
+			<div class="tab-content">
+				<div class="panel-body tab-pane fade active in " id="courses_done">
+					<% if @courses.where("status = ?", Course.statuses[:done]).each do |course| %>
+						<div class="ticket">
+							<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
+							<%= link_to admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
+							<span class="ticket-info">
+								Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
+							</span><br />
+							<%= link_to edit_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
+							<%= link_to admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
+						</div> <!-- / .ticket -->
+					<% end.empty? %>
+						Aucune course
+					<% end %>
+				</div>				
+
+				<div class="panel-body tab-pane fade" id="courses_inactive">
+					<% if @courses.where("status = ?", Course.statuses[:inactive]).each do |course| %>
+						<div class="ticket">
+							<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
+							<%= link_to admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
+							<span class="ticket-info">
+								Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
+							</span><br />
+							<%= link_to edit_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
+							<%= link_to admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
+						</div> <!-- / .ticket -->
+					<% end.empty? %>
+						Aucune course
+					<% end %>
+				</div>
+
+				<div class="panel-body tab-pane fade" id="courses_in-progress">
+					<% if @courses.where("status = ?", Course.statuses[:in_progress]).each do |course| %>
+						<div class="ticket">
+							<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
+							<%= link_to admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
+							<span class="ticket-info">
+								Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
+							</span><br />
+							<%= link_to edit_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
+							<%= link_to admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
+						</div> <!-- / .ticket -->
+					<% end.empty? %>
+						Aucune course
+					<% end %>
+				</div>
+
+				<div class="panel-body tab-pane fade" id="courses_canceled">
+					<% if @courses.where("status = ?", Course.statuses[:canceled]).each do |course| %>
+						<div class="ticket">
+							<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
+							<%= link_to admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
+							<span class="ticket-info">
+								Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
+							</span><br />
+							<%= link_to edit_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
+							<%= link_to admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
+						</div> <!-- / .ticket -->
+					<% end.empty? %>
+						Aucune course
+					<% end %>
+				</div>
+
+			</div>
+
+			<div class="panel-footer clearfix">
+				<%= link_to(new_admin_course_path) do %>
+					<button class="btn btn-flat btn-labeled btn-warning btn-xs ">
+				    	<span class="btn-label icon fa fa-flag-checkered"></span>Nouvelle course
+					</button>
 				<% end %>
 			</div>
-			<div class="panel-footer clearfix">
-				<%= link_to(new_partner_admin_course_path) do %>
-					<button class="btn btn-flat btn-labeled btn-warning btn-xs ">
-				    	<span class="btn-label icon fa fa-flag-checkered"></span>Ajouter une course
-					</button>
+		</div>
+
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-envelope"></i>Envoyer un Email</span>
+			</div>
+			<div class="panel-body">
+				<%= form_tag("/admin/email") do %>
+					<%= hidden_field_tag(:object_type, "partner") %>
+					<%= hidden_field_tag(:id, @partner.id) %>
+					<div class="row form-group">
+						<label class="col-sm-2 control-label">Envoyer à :</label>
+						<div class="col-sm-10">
+							<label class="checkbox-inline">
+								<%= check_box_tag(:partner_email, "1", true, class: "px") %> <span class="lbl">Email de l'entreprise</span>
+							</label>
+							
+							<label class="checkbox-inline">
+								<%= check_box_tag(:partner_admins, "1", true, class: "px") %> <span class="lbl">Administrateurs de l'entreprise</span>
+							</label>
+							<%= hidden_field_tag(:return, request.original_url) %>
+						</div>
+					</div>
+					<div class="row form-group">
+						<label class="col-sm-2 control-label">Sujet:</label>
+						<div class="col-sm-10">
+							<%= text_field_tag(:subject, nil, class: 'form-control') %>
+						</div>
+					</div>
+					<div class="row form-group">
+						<label class="col-sm-2 control-label">Message:</label>
+						<div class="col-sm-10">
+							<%= text_area_tag(:contents) %>
+						</div>
+					</div>
+					<hr class="panel-wide">
+					<div class="text-right">
+						<%= submit_tag("Envoyer", class: "btn btn-primary btn-flat" )%>
+					</div>
 				<% end %>
 			</div>
 		</div>
@@ -59,6 +222,39 @@ init.push(function () {
 
 
 	<div class="col-md-6">
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">Chiffre d'affaire</span>
+			</div>
+			<div class="panel-body">
+				<div class="graph-container">
+					<div id="hero-bar" class="graph"></div>
+				</div>
+				<hr />
+				<div class="text-right">
+					<form id="select-date" class="form-inline col-xs-6" action="">
+						<span>Voir jusqu'à : </span><%= date_select("recap", "date", {:start_year => 2014, :end_year => Time.new.year, :discard_day => true }, {:class => "form-control"} ) %>
+						<button type="submit" class="btn btn-info">Voir</button>
+					</form>
+
+				<div class="clearfix"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- EARNINGS_GRAPH -->
+		<div class="stat-panel">
+			<div class="stat-cell col-xs-5 bordered no-border-r text-right">
+				<i class="fa fa-trophy bg-icon bg-icon-left"></i>
+				<span class="text-xs">Chiffre d'affaire Total</span><br>
+				<span class="text-xlg"><small><small>€</small></small><strong><%= (@partner.courses.where("status = ?", Course.statuses[:done]).map {|s| price_afterPromo(s)}.reduce(0, :+)).round(2) %></strong></span>
+			</div>
+			<div class="stat-cell col-xs-7 bg-success no-padding valign-bottom">
+				<div class="stats-sparklines" id="stats-sparklines-1" style="width: 100%"></div>
+			</div>
+		</div>
+		<!-- /EARNINGS_GRAPH -->
+
 		<div class="panel panel-success">
 			<div class="panel-heading">
 				<span class="panel-title">Récapitulatif rapide de l'activité</span>
@@ -68,7 +264,7 @@ init.push(function () {
 				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Somme totale des courses (avant codes promos)<span class="text-default text-sm" style="float:right;"><%= @totalPrice.round(2) %> €</span></div>
 			</div>
 			<div class="panel-footer">
-				<%= link_to partner_admin_monthly_path(@partner) do %><button class="btn btn-labeled btn-block">Voir le récapitulatif complet</button><% end %>
+				<%= link_to admin_monthly_path(@partner) do %><button class="btn btn-labeled btn-block">Voir le récapitulatif complet</button><% end %>
 			</div>
 		</div>
 		<div class="panel panel-dark panel-pa-purple">
@@ -96,10 +292,10 @@ init.push(function () {
 						</thead>
 						<% if @partneradmins.each do |user| %>
 							<tr>
-								<td><img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#" title=""><%= user.name %></a></td>
+								<td><img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="<%= admin_user_path(user) %>" title=""><%= user.name %></a></td>
 								<td><a href="mailto:<%= user.email %>"><%= user.email %></a></td>
 								<td><%= user.phone %></td>
-								<td style="font-size:16px;"><%= link_to partner_admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
+								<td style="font-size:16px;"><%= link_to admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 							</tr>
 						<% end.empty? %>
 							Aucun administrateur
@@ -122,18 +318,18 @@ init.push(function () {
 
 						<% @drivers.each do |user| %>			
 						<tr>
-							<td><img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#" title=""><%= user.name %></a></td>
+							<td><img src="<%= image_path('pixel-admin/avatar.png') %>" alt="" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="<%= admin_user_path(user) %>" title=""><%= user.name %></a></td>
 							<td><%= user.status %></td>
 							<td><a href="mailto:<%= user.email %>"><%= user.email %></a></td>
 							<td>0102030405</td>
-							<td style="font-size:16px;"><%= link_to partner_admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
+							<td style="font-size:16px;"><%= link_to admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 						</tr>
 						<% end %>
 					</table>
 				</div>
 			</div>
 			<div class="panel-footer">
-				<%= link_to new_partner_admin_user_path do %>
+				<%= link_to new_admin_user_path do %>
 					<button class="btn btn-labeled btn-block">
 				    	<span class="btn-label icon fa fa-user"></span>Ajouter un salarié
 					</button>
@@ -157,7 +353,7 @@ init.push(function () {
 					</thead>
 					<% @cars.each do |car| %>
 						<tr>
-							<td><a href="<%= partner_admin_car_path(car) %>"><%= car.name %></a></td>
+							<td><a href="<%= admin_car_path(car) %>"><%= car.name %></a></td>
 							<td><%= car.slots %></td>
 							<td><%= car.car_type %></td>
 							<td><%= car.partner.name %> | <%= car.user.name unless car.user.nil? %></td>
@@ -166,7 +362,7 @@ init.push(function () {
 				</table>
 			</div>
 			<div class="panel-footer">
-				<%= link_to(new_partner_admin_car_path) do %>
+				<%= link_to(new_admin_car_path) do %>
 					<button class="btn btn-labeled btn-block">
 				    	<span class="btn-label icon fa fa-taxi"></span>Ajouter une voiture
 					</button>

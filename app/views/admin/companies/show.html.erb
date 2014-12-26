@@ -75,6 +75,23 @@
 		</div>
 	</div>
 	<div class="col-md-6">
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">Email</span>
+			</div>
+			<div class="panel-body">
+				<%= form_tag("/admin/email") do %>
+					<%= hidden_field_tag(:object_type, "company") %>
+					<%= hidden_field_tag(:id, @company.id) %>
+					<%= hidden_field_tag(:return, request.original_url) %>
+					<%= text_field_tag(:subject) %>
+					<%= text_area_tag(:contents) %>
+					<hr class="panel-wide">
+					<%= submit_tag("Envoyer") %>
+				<% end %>
+			</div>
+		</div>
+
 		<% if @company.partner %>
 		<div class="panel">
 			<div class="panel-heading">
@@ -85,6 +102,8 @@
 			</div>
 		</div>
 		<% end %>
+
+
 	</div>
 </div>
 

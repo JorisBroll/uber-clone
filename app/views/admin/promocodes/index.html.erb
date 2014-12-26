@@ -26,9 +26,9 @@
 				<td><%= promocode.id %></td>
 				<td><%= promocode.name %></td>
 				<td><%= promocode.code %></td>
-				<td><%= Promocode::Effect_type_alias[promocode.effect_type] %></td>
+				<td><%= Promocode::Effect_types[promocode.effect_type.to_sym][:name] %></td>
 				<td><%= promocode.effect_type_value %></td>
-				<td><%= Promocode::Effect_length_alias[promocode.effect_length] %></td>
+				<td><%= Promocode::Effect_lengths[promocode.effect_length.to_sym][:name] %></td>
 				<td><%= promocode.effect_length_value %></td>
 				<td style="text-align:center; font-size:16px;"><%= link_to admin_promocode_path(promocode), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_promocode_path(promocode), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_promocode_path(promocode), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 			</tr>

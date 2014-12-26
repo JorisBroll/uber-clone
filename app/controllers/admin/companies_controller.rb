@@ -16,7 +16,7 @@ class Admin::CompaniesController < ApplicationController
 		if @company.save
 			flash[:success] = "L'entreprise "+@company.name+" a été crée."
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'partner', 'id' => @company.id.to_s} })
-			redirect_to admin_companies_path
+			redirect_to admin_company_path(@company)
 		else
 			flash[:error] = "L'entreprise n'a pas pu être crée."
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'fail_created', 'target_object' => {'type' => 'partner'} })
@@ -45,7 +45,7 @@ class Admin::CompaniesController < ApplicationController
 			if @company.update_attributes(company_params)
 				flash[:success] = "L'entreprise "+@company.name+" a été modifiée avec succès."
 				AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'partner', 'id' => @company.id.to_s} })
-				redirect_to admin_companies_path
+				redirect_to admin_company_path(@company)
 			else
 				render 'edit'
 			end

@@ -12,7 +12,7 @@ class Admin::PaymentsController < ApplicationController
 		if @payment.save
 			flash[:success] = "Le paiement numéro "+@payment.id.to_s+" a été crée."
 			#AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'promocode', 'id' => @promocode.id.to_s} })
-			redirect_to admin_payments_path
+			redirect_to admin_payment_path(@payment)
 		else
 			flash[:error] = "Le paiement n'a pas pu être crée."
 			#AppLogger.log ({'user_id' => @current_user, 'action' => 'fail_created', 'target_object' => {'type' => 'promocode'} })
@@ -27,7 +27,7 @@ class Admin::PaymentsController < ApplicationController
 		if @payment.update_attributes(payment_params)
 			flash[:success] = "Le paiement numéro "+@payment.id.to_s+" a été modifié avec succès."
 			#AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'promocode', 'id' => @promocode.id.to_s} })
-			redirect_to admin_payments_path
+			redirect_to admin_payment_path(@payment)
 		else
 			flash[:error] = "Le paiement n'a pas pu être modifié."
 			#AppLogger.log ({'user_id' => @current_user, 'action' => 'fail_updated', 'target_object' => {'type' => 'promocode', 'id' => @promocode.id.to_s} })

@@ -1,5 +1,5 @@
 <h2>Page pour voir une seule course et ses détails</h2>
-
+<%#= @promo_amount.inspect %>
 <div class="row">
 	<div class="col-md-6">
 		<div class="panel panel-info panel-dark widget-profile">
@@ -20,6 +20,37 @@
 				<div class="list-group-item"><i class="fa fa-pencil-square-o list-group-icon"></i>Numéro de vol<span class="text-default text-sm" style="float:right;"><%= @course.flight_number %></span></div>
 				<div class="list-group-item"><i class="fa fa-pencil-square-o list-group-icon"></i>Précisions<span class="text-default text-sm" style="float:right;"><%= @course.notes %></span></div>
 				<%= link_to edit_admin_course_path(@course), class: "list-group-item" do %><button class="btn btn-labeled btn-block">Editer les informations</button><% end %>
+			</div>
+		</div>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">Email</span>
+			</div>
+			<div class="panel-body">
+				<%= form_tag("/admin/email") do %>
+					<%= hidden_field_tag(:object_type, "course") %>
+					<%= hidden_field_tag(:id, @course.id) %>
+					<%= label_tag("Envoyer à :") %>
+					<% if @partner %>
+						<%= check_box_tag(:partner_email, "1", true) %>
+						<%= label_tag(:partner_email, "Email de l'entreprise partenaire rattachée") %>
+						<%= check_box_tag(:partner_admins, "1", true) %>
+						<%= label_tag(:partner_admins, "Administrateurs de l'entreprise partenaire rattachée") %>
+					<% end %>
+					<% if @client %>
+						<%= check_box_tag(:client, "1", true) %>
+						<%= label_tag(:client, "Client rattaché") %>
+					<% end %>
+					<% if @driver %>
+						<%= check_box_tag(:driver, "1", true) %>
+						<%= label_tag(:driver, "Conducteur de la course") %>
+					<% end %>
+					<%= hidden_field_tag(:return, request.original_url) %>
+					<%= text_field_tag(:subject) %>
+					<%= text_area_tag(:contents) %>
+					<hr class="panel-wide">
+					<%= submit_tag("Envoyer") %>
+				<% end %>
 			</div>
 		</div>
 	</div>
@@ -55,8 +86,57 @@
 			</div>
 		</div>
 		<% end %>
+		<% if @driver %>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-taxi"></i>Chauffeur rattaché</span>
+			</div>
+			<div class="panel-body">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Nom</th>
+							<th>Email</th>
+							<th>Téléphone</th>
+						</tr>
+					</thead>
+					<tbody class="valign-middle">
+						<tr>
+							<td><%= @driver.id %></td>
+								<td><img src="<%= image_path('pixel-admin/avatar.png') %>" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#"><%= link_to admin_user_path(@driver) do @driver.name end %></a></td>
+							<td><a href="mailto:<%= @driver.email %>"><%= @driver.email %></a></td>
+							<td><%= @driver.phone %></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<% end %>
+		<% if @car %>
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-car"></i>Voiture rattachée à cette course</span>
+			</div>
+			<div class="panel-body">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Nom</th>
+						</tr>
+					</thead>
+					<tbody class="valign-middle">
+						<tr>
+							<td><%= @car.id %></td>
+							<td><%= @car.name %></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<% end %>
 		<% if @client %>
-		<% @promocode = Promocode.find_by(id: @client.promocode_id) %>
 		<div class="panel">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-user"></i>Client rattaché à cette course</span>
@@ -84,19 +164,20 @@
 		</div>
 		<% end %>
 
-		<% if !@promocode.nil? %>
+		<% if @promocode %>
 		<div class="panel">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-user"></i>Code promo utilisé par le client</span>
 			</div>
 			<div class="panel-body">
 				<p><span>Nom : </span>#<%= @promocode.id %>/<%= @promocode.name %></p>
-				<p><span>Type de code</span><%= Promocode::Effect_type_alias[@promocode.effect_type] %></p>
-				<p><span>Durée (jours ou utilisations) : </span><%= Promocode::Effect_length_alias[@promocode.effect_length] %></p>
-				<p><span>Prix après réduction : </span><%= price_afterPromo(@course) %></p>
+				<p><span>Type de code</span><%= Promocode::Effect_types[@promocode.effect_type.to_sym][:name] %></p>
+				<p><span>Durée (jours ou utilisations) : </span><%= Promocode::Effect_lengths[@promocode.effect_length.to_sym][:name] %></p>
+				<p><span>Réduction accordée par ce code : </span><%= @course.promocode_amount %> €</p>
 			</div>
 		</div>
 		<% end %>
+
 		<% if @company %>
 		<div class="panel">
 			<div class="panel-heading">
@@ -118,29 +199,6 @@
 								<td><img src="<%= image_path('pixel-admin/avatar.png') %>" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#"><%= link_to admin_user_path(@company) do @company.name end %></a></td>
 							<td><a href="mailto:<%= @company.email %>"><%= @company.email %></a></td>
 							<td><%= @company.phone %></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<% end %>
-		<% if @car %>
-		<div class="panel">
-			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-car"></i>Voiture rattachée à cette course</span>
-			</div>
-			<div class="panel-body">
-				<table class="table">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Nom</th>
-						</tr>
-					</thead>
-					<tbody class="valign-middle">
-						<tr>
-							<td><%= @car.id %></td>
-							<td><%= @car.name %></td>
 						</tr>
 					</tbody>
 				</table>

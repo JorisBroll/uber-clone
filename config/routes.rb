@@ -12,6 +12,8 @@ Rails.application.routes.draw do
     get '/monthly', to: 'static_pages#monthly'
     get '/monthly/pdf', to: 'static_pages#monthly_pdf'
     get '/global_stats', to: 'static_pages#global_stats'
+    get '/partner_home', to: 'static_pages#partner_home'
+    post '/email', to: 'static_pages#email'
     resources :users
     resources :partners
     resources :cars

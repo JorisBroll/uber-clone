@@ -13,25 +13,62 @@ class Admin::StaticPagesController < ApplicationController
 			@users = User.all
 			render 'admin_home'
 		when userWeight == User::Account_types[:partneradmin][:weight]
-			# User is a partner administrator, he get's a whole new page
-			@partner = current_partner
-			@partneradmins = @partner.users.where("account_type = ?", User.account_types[:admin])
-			@drivers = @partner.users.where("account_type = ?", User.account_types[:driver])
-			@cars = @partner.cars
-			@courses = @partner.courses
-
-			@totalPrice = 0
-			@totalPriceAfterCodes = 0
-			@courses.where("status = ?", Course.statuses[:done]).each do |course|
-				@totalPrice += course.computed_price
-				afterCodePrice = price_afterPromo(course)
-				@totalPriceAfterCodes += afterCodePrice
-			end
-			@unpaidCourses = @courses.where("status = ? AND payment_status = ?", Course.statuses[:done], Course.payment_statuses[:not_paid]).order('payment_status ASC')
+			partner_home()
 			
 			render 'partner_home'
 		end
-	    
+	end
+
+	def partner_home
+		@partner = current_partner
+		@partneradmins = @partner.users.where("account_type = ?", User.account_types[:partneradmin])
+		@drivers = @partner.users.where("account_type = ?", User.account_types[:driver])
+		@cars = @partner.cars
+		@courses = @partner.courses
+
+		@totalPrice = 0
+		@totalPriceAfterCodes = 0
+		@courses.where("status = ?", Course.statuses[:done]).each do |course|
+			@totalPrice += course.computed_price
+			afterCodePrice = price_afterPromo(course)
+			@totalPriceAfterCodes += afterCodePrice
+		end
+		@unpaidCourses = @courses.where("status = ? AND payment_status = ?", Course.statuses[:done], Course.payment_statuses[:not_paid]).order('payment_status ASC')
+
+		@companies = @partner.companies
+		@date = []
+		@chartData = []
+		@partnerEarnTotal = []
+		@courses_partners = []
+
+		if !params['recap'].nil?
+			@select_date = Date.new(params['recap']['date(1i)'].to_i, params['recap']['date(2i)'].to_i, 1)
+			(1..12).each do |i|				
+				@date[i] = {
+					:start => @select_date.prev_month(i-1).beginning_of_month,
+					:end => @select_date.prev_month(i-1).end_of_month
+				}
+				@courses_partners[i] = @partner.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @date[i][:start], @date[i][:end], Course.statuses[:done])
+			end
+
+			(0..11).each do |i|
+				@chartData[i] = {:money => (@courses_partners[i+1].map {|s| price_afterPromo(s)}.reduce(0, :+).round(2)), :months => @date[i+1][:start].strftime("%m/%Y"), :id => i+1}
+			end
+			@chartData = @chartData.sort_by{|e| -e[:id]}
+		else	
+			(0..12).each do |i|
+				@date[i] = {
+					:start => Date.today.prev_month(i-1).beginning_of_month,
+					:end => Date.today.prev_month(i-1).end_of_month
+				}
+				@courses_partners[i] = @partner.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @date[i][:start], @date[i][:end], Course.statuses[:done])
+			end
+			(0..11).each do |i|
+				@chartData[i] = {:money => (@courses_partners[i+1].map {|s| price_afterPromo(s)}.reduce(0, :+).round(2)), :months => @date[i+1][:start].strftime("%m/%Y"), :id => i}
+				@partnerEarnTotal[i] = @courses_partners[i+1].map {|s| price_afterPromo(s)}.reduce(0, :+).round(2)
+			end	
+			@chartData = @chartData.sort_by{|e| -e[:id]}
+		end
 
 	end
 
@@ -144,5 +181,43 @@ class Admin::StaticPagesController < ApplicationController
 		else
 
 		end
+	end
+
+	def email
+		if params['object_type'] == 'user'
+			to = User.find_by(id: params['id'].to_s).email
+		elsif params['object_type'] == 'company'
+			to = Company.find_by(id: params['id'].to_s).email
+		elsif params['object_type'] == 'partner'
+			to = []
+			if !params['partner_email'].nil? && params['partner_email'] == '1'
+				to.push(Partner.find_by(id: params['id'].to_s).email)
+			end
+			if !params['partner_admins'].nil? && params['partner_admins'] == '1'
+				to += Partner.find_by(id: params['id'].to_s).users.where('account_type = ?', User.account_types[:partneradmin]).pluck(:email)
+			end
+			to = to.uniq
+		elsif params['object_type'] == 'course'
+			to = []
+			if !params['partner_email'].nil? && params['partner_email'] == '1'
+				to.push(Course.find_by(id: params['id'].to_s).partner.email)
+			end
+			if !params['partner_admins'].nil? && params['partner_admins'] == '1'
+				to += Course.find_by(id: params['id'].to_s).partner.users.where('account_type = ?', User.account_types[:partneradmin]).pluck(:email)
+			end
+			if !params['client'].nil? && params['client'] == '1'
+				to.push(Course.find_by(id: params['id'].to_s).user.email)
+			end
+			if !params['driver'].nil? && params['driver'] == '1'
+				to.push(Course.find_by(id: params['id'].to_s).driver.email)
+			end
+			to = to.uniq
+		end
+
+		UserMailer.custom_email(to, params['subject'], params['contents'].html_safe).deliver
+
+		flash[:success] = 'Votre message a bien été envoyé au(x) destinataire(s) sélectionné(s).'
+
+		redirect_to params['return']
 	end
 end

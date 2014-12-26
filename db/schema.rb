@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141210135238) do
+ActiveRecord::Schema.define(version: 20141224092950) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -88,11 +88,15 @@ ActiveRecord::Schema.define(version: 20141210135238) do
     t.datetime "trip_started"
     t.datetime "trip_finished"
     t.text     "trip_feedback"
-    t.integer  "commission",        default: 20
+    t.float    "commission",        default: 24.2
     t.boolean  "need_review",       default: false
     t.integer  "computed_price",    default: 0
     t.integer  "car_type",          default: 0
     t.integer  "driver_id"
+    t.float    "final_price"
+    t.integer  "damage_price"
+    t.integer  "stops_price"
+    t.float    "promocode_amount"
   end
 
   create_table "logs", force: true do |t|

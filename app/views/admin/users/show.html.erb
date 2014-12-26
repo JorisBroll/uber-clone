@@ -1,92 +1,69 @@
+<script>
+init.push(function () {
+	$('#panel-courses .tab-content').slimScroll({ height: 400, alwaysVisible: true, color: '#888',allowPageScroll: true });
+
+	Morris.Line({
+		element: 'hero-bar',
+		data: <%= raw @chartData.to_json %>,
+		xkey: 'months',
+		xLabels: 'month',
+		parseTime: false,
+		ykeys: ['money'],
+		labels: ['Chiffre en € '],
+		lineColors: PixelAdmin.settings.consts.COLORS,
+		lineWidth: 2,
+		pointSize: 4,
+		gridLineColor: '#cfcfcf',
+		resize: true
+	});
+
+	$("#stats-sparklines-1").pixelSparkline(
+		[<% (0..11).each do |i| %>
+			<%= raw @userEarnTotal[i].to_json %>,
+		<% end %>], {
+		type: 'line',
+		width: '100%',
+		height: '80px',
+		lineColor: 'rgba(0,0,0,0)',
+		fillColor: 'rgba(0,0,0,.18)',
+		lineWidth: 0,
+		spotColor: '',
+		minSpotColor: '',
+		maxSpotColor: '',
+		highlightSpotColor: '',
+		highlightLineColor: '#ffffff',
+		spotRadius: 1.8,
+		chartRangeMin: 150
+	});
+
+	var current_rating = 3.4;
+	$('#current-rating').text(current_rating);
+	$('#stars-rating').pixelRating({rating: current_rating});
+
+	if (! $('html').hasClass('ie8')) {
+		$('#contents').summernote({
+			height: 200,
+			tabsize: 2,
+			codemirror: {
+				theme: 'monokai'
+			},
+			toolbar: [
+			    ['style', ['style']], // no style button
+			    ['style', ['bold', 'italic', 'underline', 'clear']],
+			    ['fontsize', ['fontsize']],
+			    ['color', ['color']],
+			    ['para', ['ul', 'ol', 'paragraph']],
+			    //['height', ['height']],
+			    //['insert', ['picture', 'link']], // no insert buttons
+			    ['insert', ['link']], // no insert buttons
+			    //['table', ['table']], // no table button
+			    //['help', ['help']] //no help button
+			  ]
+		});
+	}
+});
+</script>
 <h2>Informations de l'utilisateur</h2>
-
-<!-- / AJOUT  -->
-<div class="row">
-	<div class="col-md-12">
-		<div class="panel">
-			<div class="panel-heading">
-				<span class="panel-title">Sélectionner une période</span>
-			</div>
-			<div class="panel-body">
-				<form id="select-date" class="form-inline col-xs-6" action="<%= admin_user_path %>">
-					<span>Par mois : </span><%= date_select("recap", "date", {:start_year => 2014, :end_year => Time.new.year, :discard_day => true }, {:class => "form-control"} ) %>
-					<button type="submit" class="btn btn-info">Voir</button>
-				</form>
-				<form id="select-date" class="form-inline col-xs-6" action="<%= admin_user_path %>">
-					<span>Ou par dates précises : </span>Du <input class="form-control date" name="date_start"/> au <input class="form-control date" name="date_end"/> 
-					<button type="submit" class="btn btn-info">Voir</button>
-				</form>
-				<div class="clearfix"></div>
-			</div>
-		</div>
-	</div>
-</div>
-
- <!-- 7. $MORRISJS_BARS =============================================================================
-
-				Morris.js Bars
--->
-				<!-- Javascript -->
-
-
-				<script>
-
-				var tax_data = <%= raw @chartData.to_json %>
-
-				Morris.Line({
-					element: 'sup',
-					data: tax_data,
-					xkey: 'period',
-					ykeys: ['ca', 'course_count'],
-					labels: ["Chiffre d'affaire", 'Nombre de courses'],
-					lineColors: ['#666', '#888'],
-					lineWidth: 2,
-					pointSize: 4,
-					gridLineColor: '#cfcfcf',
-					resize: true
-				});
-
-
-					init.push(function () {
-						Morris.Bar({
-							element: 'hero-bar',
-							data: [
-									<% (1..5).each do |i| %>
-										{ 
-											geekbench:<%= @courses[i].map {|s| price_afterPromo(s)}.reduce(0, :+).round(2) %>
-
-										},
-									<% end %>
-							],
-							xkey: 'months',
-							ykeys: ['money'],
-							labels: ['Chiffre'],
-							barRatio: 0.4,
-							xLabelAngle: 35,
-							hideHover: 'auto',
-							barColors: PixelAdmin.settings.consts.COLORS,
-							gridLineColor: '#cfcfcf',
-							resize: true
-						});
-					});
-				</script>
-				<!-- / Javascript -->
-				
-				<div class="panel">
-					<div class="panel-heading">
-						<span class="panel-title">Morris.js Bars</span>
-					</div>
-					<div class="panel-body">
-						<div class="note note-info">More info and examples at <a href="http://www.oesmith.co.uk/morris.js/" target="_blank">http://www.oesmith.co.uk/morris.js/</a></div>
-
-						<div class="graph-container">
-							<div id="hero-bar" class="graph"></div>
-						</div>
-					</div>
-				</div>
-<!-- /7. $MORRISJS_BARS -->
-
-<!-- / FIN AJOUT   -->
 
 <div class="row">
 	<div class="col-md-6">
@@ -109,28 +86,92 @@
 			</div>
 		</div>
 		
-		<div class="panel widget-support-tickets panel-warning">
+		<div class="panel widget-support-tickets panel-warning" id="panel-courses">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses de l'utilisateur</span>
-				<div class="panel-heading-controls">
-					<span class="label label-success"><%= (@user.courses.map {|s| price_afterPromo(s)}.reduce(0, :+)).round(2) %> €</span>
+				<ul class="nav nav-tabs nav-tabs-sm">
+					<li class="active ">
+						<a href="#courses_done" data-toggle="tab">Terminées <span class="badge badge-success"><%= @user.courses.where("status = ?", Course.statuses[:done]).count %></span></a>
+					</li>
+					<li>
+						<a href="#courses_inactive" data-toggle="tab">À venir <span class="badge badge-primary"><%= @user.courses.where("status = ?", Course.statuses[:inactive]).count %></span></a>
+					</li>
+					<li>
+						<a href="#courses_in-progress" data-toggle="tab">En cours <span class="badge badge-info"><%= @user.courses.where("status = ?", Course.statuses[:in_progress]).count %></span></a>
+					</li>
+					<li>
+						<a href="#courses_canceled" data-toggle="tab">Annulées <span class="badge badge-danger"><%= @user.courses.where("status = ?", Course.statuses[:canceled]).count %></span></a>
+					</li>
+				</ul>
+			</div>
+
+			<div class="tab-content">
+				<div class="panel-body tab-pane fade active in " id="courses_done">
+					<% if @user.courses.where("status = ?", Course.statuses[:done]).each do |course| %>
+						<div class="ticket">
+							<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
+							<%= link_to admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
+							<span class="ticket-info">
+								Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
+							</span><br />
+							<%= link_to edit_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
+							<%= link_to admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
+						</div> <!-- / .ticket -->
+					<% end.empty? %>
+						Aucune course
+					<% end %>
+				</div>				
+
+				<div class="panel-body tab-pane fade" id="courses_inactive">
+					<% if @user.courses.where("status = ?", Course.statuses[:inactive]).each do |course| %>
+						<div class="ticket">
+							<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
+							<%= link_to admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
+							<span class="ticket-info">
+								Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
+							</span><br />
+							<%= link_to edit_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
+							<%= link_to admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
+						</div> <!-- / .ticket -->
+					<% end.empty? %>
+						Aucune course
+					<% end %>
 				</div>
+
+				<div class="panel-body tab-pane fade" id="courses_in-progress">
+					<% if @user.courses.where("status = ?", Course.statuses[:in_progress]).each do |course| %>
+						<div class="ticket">
+							<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
+							<%= link_to admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
+							<span class="ticket-info">
+								Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
+							</span><br />
+							<%= link_to edit_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
+							<%= link_to admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
+						</div> <!-- / .ticket -->
+					<% end.empty? %>
+						Aucune course
+					<% end %>
+				</div>
+
+				<div class="panel-body tab-pane fade" id="courses_canceled">
+					<% if @user.courses.where("status = ?", Course.statuses[:canceled]).each do |course| %>
+						<div class="ticket">
+							<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
+							<%= link_to admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
+							<span class="ticket-info">
+								Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
+							</span><br />
+							<%= link_to edit_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
+							<%= link_to admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
+						</div> <!-- / .ticket -->
+					<% end.empty? %>
+						Aucune course
+					<% end %>
+				</div>
+
 			</div>
-			<div class="panel-body">
-				<% if @user.courses.each do |course| %>
-					<div class="ticket">
-						<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
-						<%= link_to admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
-						<span class="ticket-info">
-							Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
-						</span><br />
-						<%= link_to edit_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
-						<%= link_to admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
-					</div> <!-- / .ticket -->
-				<% end.empty? %>
-					Aucune course
-				<% end %>
-			</div>
+
 			<div class="panel-footer clearfix">
 				<%= link_to(new_admin_course_path) do %>
 					<button class="btn btn-flat btn-labeled btn-warning btn-xs ">
@@ -139,77 +180,210 @@
 				<% end %>
 			</div>
 		</div>
+
+		<div class="panel widget-support-tickets panel-light-green" id="panel-attach">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-th"></i>Éléments rattachés</span>
+				<ul class="nav nav-tabs nav-tabs-sm">
+						<li class="active ">
+							<a href="#partners_tab" data-toggle="tab">Partenaires <span class="badge badge-primary"></span></a>
+						</li>
+					<li>
+						<a href="#companies_tab" data-toggle="tab">Entreprises <span class="badge badge-primary"><%= @user.companies.count %></span></a>
+					</li>
+					<li>
+						<a href="#promocodes_tab" data-toggle="tab">Codes Promos <span class="badge badge-primary"><%= @user.promocodes.count %></span></a>
+					</li>
+				</ul>
+			</div>
+
+			<div class="tab-content">
+				<div class="panel-body tab-pane fade active in " id="partners_tab">
+					<% if @user.partner %>
+						<table class="table">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Nom</th>
+									<th>Code postal, ville</th>
+									<th>Numéro de téléphone</th>
+									<th>Email</th>
+								</tr>
+							</thead>
+							<tbody class="valign-middle">
+								<% @companies.each do |company| %>
+								<tr>
+									<td><%= @user.partner.id %></td>
+									<td><%= link_to admin_partner_path(company), { :title => "Voir" } do %><%= @user.partner.name %><% end %></td>
+									<td><%= @user.partner.postcode %>, <%= @user.partner.city %></td>
+									<td><%= @user.partner.phone %></td>
+									<td><%= @user.partner.email %></td>
+								</tr>
+								<% end %>
+							</tbody>
+						</table>
+					<% else %>
+						Aucun partenaire
+					<% end %>
+				</div>				
+
+				<div class="panel-body tab-pane fade" id="companies_tab">
+					<% if @user.companies.count > 0 %>
+						<table class="table">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Nom</th>
+									<th>Code postal, ville</th>
+									<th>Numéro de téléphone</th>
+									<th>Email</th>
+								</tr>
+							</thead>
+							<tbody class="valign-middle">
+								<% @companies.each do |company| %>
+								<tr>
+									<td><%= company.id %></td>
+									<td><%= link_to admin_company_path(company), { :title => "Voir" } do %><%= company.name %><% end %></td>
+									<td><%= company.postcode %>, <%= company.city %></td>
+									<td><%= company.phone %></td>
+									<td><%= company.email %></td>								
+								</tr>
+								<% end %>
+							</tbody>
+						</table>
+					<% else %>
+						Aucune entreprise
+					<% end %>
+				</div>
+				<div class="panel-body tab-pane fade" id="promocodes_tab">
+					<% if @promocodes.count > 0 %>
+						<table class="table">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Nom</th>
+									<th>Code</th>
+									<th>Type de réduction (% / fixe)</th>
+									<th>Réduction</th>
+									<th>Type de durée (jours / utilisations)</th>
+									<th>Durée</th>
+								</tr>
+							</thead>
+							<tbody class="valign-middle">
+								<% @promocodes.each do |promocode| %>
+								<tr>
+									<td><%= promocode.id %></td>
+									<td><%= promocode.name %></td>
+									<td><%= promocode.code %></td>
+									<td><%= Promocode::Effect_types[promocode.effect_type.to_sym][:name] %></td>
+									<td><%= promocode.effect_type_value %></td>
+									<td><%= Promocode::Effect_lengths[promocode.effect_length.to_sym][:name] %></td>
+									<td><%= promocode.effect_length_value %></td>
+								</tr>
+								<% end %>
+							</tbody>
+						</table>
+					<% else %>
+						Aucun code promo
+					<% end %>
+				</div>					
+			</div>
+		</div>
 	</div>
 
-	<div class="col-md-6">
-		<% if @user.partner %>
-		<div class="panel">
-			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Partenaire rattaché</span>
-			</div>
-			<div class="panel-body">
-				<%= @user.partner.name %>
-			</div>
-		</div>
-		<% end %>
-		<% if @user.companies.count > 0 %>
-		<div class="panel">
-			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Entreprise cliente rattachée</span>
-			</div>
-			<div class="panel-body">
-				<% @companies.each do |company| %>
-					<div><%= company.name %></div>
-				<% end %>
-			</div>
-		</div>
-		<% end %>
-		<% if @promocodes.count > 0 %>
-		<div class="panel">
-			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Codes promos rattachés</span>
-			</div>
-			<div class="panel-body">
-				<% @promocodes.each do |promocode| %>
-					<div><%= promocode.name %></div>
-				<% end %>
-			</div>
-		</div>
-		<% end %>
-	
 
-	<% if @user.companies.count > 0 %>
-		<div class="panel panel-dark panel-light-green">
-				<div class="panel-heading">
-					<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Entreprise cliente rattachée</span>
-				</div>
-				<div class="panel-body">
-					<table class="table">
-						<thead>
-							<tr>
-								<th>#</th>
-								<th>Nom</th>
-								<th>Téléphone</th>
-								<th>E-mail</th>
-								<th>Détacher</th>
-							</tr>
-						</thead>
-						<tbody class="valign-middle">
-							<% @companies.each do |company| %>
-							<tr>
-								<td><%= company.id %></td>
-								<td><%= link_to admin_company_path(company), { :title => "Voir" } do %><%= company.name %><% end %></td>
-								<td><%= company.phone %></td>
-								<td><%= company.email %></td>								
-								<td>A faire</td>
-							</tr>
-							<% end %>
-						</tbody>
-					</table>
-				</div>
-				
+	<div class="col-md-6">
+
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">Chiffre d'affaire</span>
 			</div>
-		<% end %>
+			<div class="panel-body">
+				<div class="graph-container">
+					<div id="hero-bar" class="graph"></div>
+				</div>
+				<hr />
+				<div class="text-right">
+					<form id="select-date" class="form-inline col-xs-6" action="<%= admin_user_path %>">
+						<span>Voir jusqu'à : </span><%= date_select("recap", "date", {:start_year => 2014, :end_year => Time.new.year, :discard_day => true }, {:class => "form-control"} ) %>
+						<button type="submit" class="btn btn-info">Voir</button>
+					</form>
+
+				<div class="clearfix"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- EARNINGS_GRAPH -->
+		<div class="stat-panel">
+			<div class="stat-cell col-xs-5 bordered no-border-r text-right">
+				<i class="fa fa-trophy bg-icon bg-icon-left"></i>
+				<span class="text-xs">Chiffre d'affaire Total</span><br>
+				<span class="text-xlg"><small><small>€</small></small><strong><%= (@user.courses.where("status = ?", Course.statuses[:done]).map {|s| price_afterPromo(s)}.reduce(0, :+)).round(2) %></strong></span>
+			</div>
+			<div class="stat-cell col-xs-7 bg-success no-padding valign-bottom">
+				<div class="stats-sparklines" id="stats-sparklines-1" style="width: 100%"></div>
+			</div>
+		</div>
+		<!-- /EARNINGS_GRAPH -->
+		<div class="row">	
+			<div class="col-md-6">
+					<div class="stat-panel">
+						<div class="stat-cell bg-danger valign-middle">
+							<i class="fa fa-comments bg-icon"></i>
+							<span class="text-xlg">Dernière connexion</span><br>
+							<span class="text-bg">Le 15 Décembre 2014 à 12H55 </span><br>
+						</div>
+					</div>
+			</div>
+
+
+		<!-- $RATING ===================================================================================-->
+
+			<div class="col-md-6">
+				<div class="panel widget-tasks">
+					<div class="panel-heading">
+						<span class="panel-title"><i class="panel-title-icon fa fa-star-o"></i>Note</span>
+					</div> 
+					<div class="panel-body">
+						<span id="stars-rating"></span>&nbsp;&nbsp;&nbsp;
+						Note actuelle: <strong id="current-rating">0</strong>&nbsp;&nbsp;&nbsp;
+						Nombre de notes: <strong id="your-rating">32</strong><br><br>
+					</div>
+				</div>
+		</div>
+		</div>
+<!-- /$RATING -->
+
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-envelope"></i>Envoyer un Email à cet utilisateur</span>
+			</div>
+			<div class="panel-body">
+				<%= form_tag("/admin/email") do %>
+					<%= hidden_field_tag(:object_type,"user") %>
+					<%= hidden_field_tag(:id, @user.id) %>
+					<%= hidden_field_tag(:return, request.original_url) %>
+					<div class="row form-group">
+						<label class="col-sm-2 control-label">Sujet:</label>
+						<div class="col-sm-10">
+							<%= text_field_tag(:subject, nil, class: 'form-control') %>
+						</div>
+					</div>
+					<div class="row form-group">
+						<label class="col-sm-2 control-label">Message:</label>
+						<div class="col-sm-10">
+							<%= text_area_tag(:contents) %>
+						</div>
+					</div>
+					<hr class="panel-wide">
+					<div class="text-right">
+						<%= submit_tag("Envoyer", class: "btn btn-primary btn-flat" )%>
+					</div>
+				<% end %>
+			</div>
+		</div>
+
 	</div>
 
 </div>
