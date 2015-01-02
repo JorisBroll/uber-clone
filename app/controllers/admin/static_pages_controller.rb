@@ -30,7 +30,7 @@ class Admin::StaticPagesController < ApplicationController
 		@totalPriceAfterCodes = 0
 		@courses.where("status = ?", Course.statuses[:done]).each do |course|
 			@totalPrice += course.computed_price
-			afterCodePrice = price_afterPromo(course)
+			afterCodePrice = price_afterExtras(course)
 			@totalPriceAfterCodes += afterCodePrice
 		end
 		@unpaidCourses = @courses.where("status = ? AND payment_status = ?", Course.statuses[:done], Course.payment_statuses[:not_paid]).order('payment_status ASC')
@@ -52,7 +52,7 @@ class Admin::StaticPagesController < ApplicationController
 			end
 
 			(0..11).each do |i|
-				@chartData[i] = {:money => (@courses_partners[i+1].map {|s| price_afterPromo(s)}.reduce(0, :+).round(2)), :months => @date[i+1][:start].strftime("%m/%Y"), :id => i+1}
+				@chartData[i] = {:money => (@courses_partners[i+1].map {|s| price_afterExtras(s)}.reduce(0, :+).round(2)), :months => @date[i+1][:start].strftime("%m/%Y"), :id => i+1}
 			end
 			@chartData = @chartData.sort_by{|e| -e[:id]}
 		else	
@@ -64,8 +64,8 @@ class Admin::StaticPagesController < ApplicationController
 				@courses_partners[i] = @partner.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @date[i][:start], @date[i][:end], Course.statuses[:done])
 			end
 			(0..11).each do |i|
-				@chartData[i] = {:money => (@courses_partners[i+1].map {|s| price_afterPromo(s)}.reduce(0, :+).round(2)), :months => @date[i+1][:start].strftime("%m/%Y"), :id => i}
-				@partnerEarnTotal[i] = @courses_partners[i+1].map {|s| price_afterPromo(s)}.reduce(0, :+).round(2)
+				@chartData[i] = {:money => (@courses_partners[i+1].map {|s| price_afterExtras(s)}.reduce(0, :+).round(2)), :months => @date[i+1][:start].strftime("%m/%Y"), :id => i}
+				@partnerEarnTotal[i] = @courses_partners[i+1].map {|s| price_afterExtras(s)}.reduce(0, :+).round(2)
 			end	
 			@chartData = @chartData.sort_by{|e| -e[:id]}
 		end
@@ -123,9 +123,9 @@ class Admin::StaticPagesController < ApplicationController
 		@courses = Course.where("date_when >= ? AND date_when <= ? AND status = ?", @date[:start], @date[:end], Course.statuses[:done])
 		@totals = {
 			:full_price => @courses.map {|s| s.computed_price}.reduce(0, :+),
-			:promo_price => @courses.map {|s| price_afterPromo(s)}.reduce(0, :+),
-			:naveco_share => @courses.map {|s| price_afterPromo(s, 'naveco')}.reduce(0, :+),
-			:partner_share => @courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+)
+			:promo_price => @courses.map {|s| price_afterExtras(s)}.reduce(0, :+),
+			:naveco_share => @courses.map {|s| price_afterExtras(s, 'naveco')}.reduce(0, :+),
+			:partner_share => @courses.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+)
 		}
 
 		@chartData = [
@@ -167,13 +167,13 @@ class Admin::StaticPagesController < ApplicationController
 			@courses_to_naveco = @courses.where("payment_by = ?", Course.payment_bies[:partner])
 			
 			@totals = {
-				:ttc => (@courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+)).round(2),
-				:ht => ((@courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+))*0.9).round(2),
-				:tva => ((@courses.map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+))*0.1).round(2),
-				:naveco_collected => (@courses_to_naveco.map {|s| price_afterPromo(s)}.reduce(0, :+)).round(2)
+				:ttc => (@courses.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+)).round(2),
+				:ht => ((@courses.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+))/1.10).round(2),
+				:tva => (@courses.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+))-((@courses.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+))/1.10).round(2),
+				:naveco_collected => (@courses_to_naveco.map {|s| price_afterExtras(s)}.reduce(0, :+)).round(2)
 			}
 
-			(@courses_to_naveco.map {|s| price_afterPromo(s, 'naveco')}.reduce(0, :+)).round(2)
+			(@courses_to_naveco.map {|s| price_afterExtras(s, 'naveco')}.reduce(0, :+)).round(2)
 
 			@naveco = Partner.find(1)
 
@@ -219,5 +219,24 @@ class Admin::StaticPagesController < ApplicationController
 		flash[:success] = 'Votre message a bien été envoyé au(x) destinataire(s) sélectionné(s).'
 
 		redirect_to params['return']
+	end
+
+	def sms
+		number_to_send_to = params[:number_to_send_to]
+
+		twilio_sid = "ACb53ce7275cfc3ad31537a48d81bd186a"
+		twilio_token = "e8d7523201c4b2435abe3ec44960ab09"
+
+		@twilio_client = Twilio::REST::Client.new twilio_sid, twilio_token
+
+		@twilio_client.account.sms.messages.create(
+		  :from => "+13852157506",
+		  :to => "+33676665045",
+		  :body => "HELLO WORLD, TEST OF DOOM"
+		)
+	end
+
+	def test
+		
 	end
 end

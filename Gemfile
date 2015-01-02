@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.5'
 gem 'rails-i18n'
+gem 'rack-cors', :require => 'rack/cors' # For Cross Domain JSON
 
 gem 'pg'
 gem 'sass-rails', '~> 4.0.3'
@@ -17,6 +18,7 @@ gem 'jbuilder', '~> 2.0'
 gem 'unicorn'
 gem "wicked_pdf"
 gem "wkhtmltopdf"
+gem 'twilio-ruby'
 
 group :development, :test do
   gem 'rspec-rails'

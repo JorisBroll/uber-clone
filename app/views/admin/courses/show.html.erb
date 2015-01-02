@@ -1,4 +1,35 @@
-<h2>Page pour voir une seule course et ses détails</h2>
+<script>
+	init.push(function () {
+		$("#company_users_id").select2({
+			allowClear: true,
+			placeholder: "Sélectionner..."
+		});
+
+		if (! $('html').hasClass('ie8')) {
+			$('#contents').summernote({
+				height: 200,
+				tabsize: 2,
+				codemirror: {
+					theme: 'monokai'
+				},
+				toolbar: [
+				    ['style', ['style']], // no style button
+				    ['style', ['bold', 'italic', 'underline', 'clear']],
+				    ['fontsize', ['fontsize']],
+				    ['color', ['color']],
+				    ['para', ['ul', 'ol', 'paragraph']],
+				    //['height', ['height']],
+				    //['insert', ['picture', 'link']], // no insert buttons
+				    ['insert', ['link']], // no insert buttons
+				    //['table', ['table']], // no table button
+				    //['help', ['help']] //no help button
+				  ]
+			});
+		}
+	});
+</script>
+
+<h2>Course et détails</h2>
 <%#= @promo_amount.inspect %>
 <div class="row">
 	<div class="col-md-6">
@@ -22,189 +53,251 @@
 				<%= link_to edit_admin_course_path(@course), class: "list-group-item" do %><button class="btn btn-labeled btn-block">Editer les informations</button><% end %>
 			</div>
 		</div>
+
+		<div class="panel widget-support-tickets panel-light-green" id="panel-courses">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-info-circle"></i>Informations</span>
+				<ul class="nav nav-tabs nav-tabs-sm">
+					<li class="active ">
+						<a href="#partners_tab" data-toggle="tab">Partenaires</a>
+					</li>
+					<li>
+						<a href="#driver_tab" data-toggle="tab">Chauffeur</a>
+					</li>
+					<li>
+						<a href="#car_tab" data-toggle="tab">Voiture</a>
+					</li>
+					<li>
+						<a href="#client_tab" data-toggle="tab">Client</a>
+					</li>
+					<li>
+						<a href="#promo_tab" data-toggle="tab">Code Promo</a>
+					</li>
+					<li>
+						<a href="#company_tab" data-toggle="tab">Entreprise cliente</a>
+					</li>
+				</ul>
+			</div>
+
+			<div class="tab-content">
+				<div class="panel-body tab-pane fade active in " id="partners_tab">
+					<% if @partner %>
+						<table class="table">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Nom</th>
+									<th>Email</th>
+									<th>Téléphone</th>
+									<th>Adresse</th>
+									<th>Status</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><%= @partner.id %></td>
+									<td><img src="<%= image_path('pixel-admin/avatar.png') %>" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#"><%= link_to admin_partner_path(@partner) do @partner.name end %></a></td>
+									<td><a href="mailto:<%= @partner.email %>"><%= @partner.email %></a></td>
+									<td><%= @partner.phone %></td>
+									<td><%= @partner.address %> <%= @partner.postcode %> <%= @partner.city %></td>
+									<td><%= @partner.status %></td>
+								</tr>
+							</tbody>
+						</table>
+					<% else %>
+						Aucun partenaire
+					<% end %>
+				</div>
+				<div class="panel-body tab-pane fade " id="driver_tab">
+					<% if @driver %>
+						<table class="table">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Nom</th>
+									<th>Email</th>
+									<th>Téléphone</th>
+								</tr>
+							</thead>
+							<tbody class="valign-middle">
+								<tr>
+									<td><%= @driver.id %></td>
+										<td><img src="<%= image_path('pixel-admin/avatar.png') %>" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#"><%= link_to admin_user_path(@driver) do @driver.name end %></a></td>
+									<td><a href="mailto:<%= @driver.email %>"><%= @driver.email %></a></td>
+									<td><%= @driver.phone %></td>
+								</tr>
+							</tbody>
+						</table>
+					<% else %>
+						Aucun chauffeur
+					<% end %>
+				</div>
+				<div class="panel-body tab-pane fade " id="car_tab">
+					<% if @car %>
+						<table class="table">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Nom</th>
+									<th>Places</th>
+									<th>Type de véhicules</th>
+									<th>Propriétaire</th>
+								</tr>
+							</thead>
+							<tbody class="valign-middle">
+								<tr>
+									<td><%= @car.id %></td>
+									<td><%= @car.name %></td>
+									<td><%= @car.slots %></td>
+									<td><%= @car.car_type %></td>
+									<td><%= @car.partner.name %> | <%= @car.user.name unless @car.user.nil? %></td>
+								</tr>
+							</tbody>
+						</table>
+					<% else %>
+						Aucune voiture
+					<% end %>
+				</div>
+				<div class="panel-body tab-pane fade " id="client_tab">
+					<% if @client %>
+						<table class="table">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Nom</th>
+									<th>Email</th>
+									<th>Téléphone</th>
+								</tr>
+							</thead>
+							<tbody class="valign-middle">
+								<tr>
+									<td><%= @client.id %></td>
+										<td><img src="<%= image_path('pixel-admin/avatar.png') %>" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#"><%= link_to admin_user_path(@client) do @client.name end %></a></td>
+									<td><a href="mailto:<%= @client.email %>"><%= @client.email %></a></td>
+									<td><%= @client.phone %></td>
+								</tr>
+							</tbody>
+						</table>
+					<% else %>
+						Aucun client
+					<% end %>
+				</div>
+				<div class="panel-body tab-pane fade " id="promo_tab">
+					<% if @promocode %>
+						<table class="table">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Nom</th>
+									<th>Code</th>
+									<th>Type de réduction (% / fixe)</th>
+									<th>Réduction</th>
+									<th>Type de durée (jours / utilisations)</th>
+									<th>Durée</th>
+								</tr>
+							</thead>
+							<tbody class="valign-middle">
+								<tr>
+									<td><%= @promocode.id %></td>
+									<td><%= @promocode.name %></td>
+									<td><%= @promocode.code %></td>
+									<td><%= Promocode::Effect_types[@promocode.effect_type.to_sym][:name] %></td>
+									<td><%= @promocode.effect_type_value %></td>
+									<td><%= Promocode::Effect_lengths[@promocode.effect_length.to_sym][:name] %></td>
+									<td><%= @promocode.effect_length_value %></td>
+								</tr>
+							</tbody>
+						</table>
+					<% else %>
+						Aucun code promo
+					<% end %>
+				</div>
+				<div class="panel-body tab-pane fade " id="company_tab">
+					<% if @company %>
+						<table class="table">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Nom</th>
+									<th>Email</th>
+									<th>Téléphone</th>
+								</tr>
+							</thead>
+							<tbody class="valign-middle">
+								<tr>
+									<td><%= @company.id %></td>
+									<td><img src="<%= image_path('pixel-admin/avatar.png') %>" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#"><%= link_to admin_user_path(@company) do @company.name end %></a></td>
+									<td><a href="mailto:<%= @company.email %>"><%= @company.email %></a></td>
+									<td><%= @company.phone %></td>
+								</tr>
+							</tbody>
+						</table>
+					<% else %>
+						Aucune entreprise cliente
+					<% end %>
+				</div>
+
+			</div>
+		</div>
+		
+	</div>
+	<div class="col-md-6">
 		<div class="panel">
 			<div class="panel-heading">
-				<span class="panel-title">Email</span>
+				<span class="panel-title"><i class="panel-title-icon fa fa-envelope"></i>Envoyer un Email à cet utilisateur</span>
 			</div>
 			<div class="panel-body">
 				<%= form_tag("/admin/email") do %>
 					<%= hidden_field_tag(:object_type, "course") %>
 					<%= hidden_field_tag(:id, @course.id) %>
-					<%= label_tag("Envoyer à :") %>
+					<div class="row form-group">
+						<label class="col-sm-2 control-label">Envoyer à :</label>
+						<div class="col-sm-10">
 					<% if @partner %>
-						<%= check_box_tag(:partner_email, "1", true) %>
-						<%= label_tag(:partner_email, "Email de l'entreprise partenaire rattachée") %>
-						<%= check_box_tag(:partner_admins, "1", true) %>
-						<%= label_tag(:partner_admins, "Administrateurs de l'entreprise partenaire rattachée") %>
+						<label class="checkbox-inline">
+							<%= check_box_tag(:partner_email, "1", true, class: "px") %>
+							<span class="lbl">Email de l'entreprise partenaire rattachée</span>
+						</label>
+						<label class="checkbox-inline">
+							<%= check_box_tag(:partner_admins, "1", true, class: "px") %>
+							<span class="lbl">Administrateurs de l'entreprise partenaire rattachée</span>
+						</label>
 					<% end %>
 					<% if @client %>
-						<%= check_box_tag(:client, "1", true) %>
-						<%= label_tag(:client, "Client rattaché") %>
+						<label class="checkbox-inline">
+							<%= check_box_tag(:client, "1", true, class: "px") %>
+							<span class="lbl">Client rattaché</span>
+						</label>
 					<% end %>
 					<% if @driver %>
-						<%= check_box_tag(:driver, "1", true) %>
-						<%= label_tag(:driver, "Conducteur de la course") %>
+						<label class="checkbox-inline">
+							<%= check_box_tag(:driver, "1", true, class: "px") %>
+							<span class="lbl">Conducteur de la course</span>
+						</label>
 					<% end %>
 					<%= hidden_field_tag(:return, request.original_url) %>
-					<%= text_field_tag(:subject) %>
-					<%= text_area_tag(:contents) %>
+						</div>
+					</div>
+					<div class="row form-group">
+						<label class="col-sm-2 control-label">Sujet:</label>
+						<div class="col-sm-10">
+							<%= text_field_tag(:subject, nil, class: 'form-control') %>
+						</div>
+					</div>
+					<div class="row form-group">
+						<label class="col-sm-2 control-label">Message:</label>
+						<div class="col-sm-10">
+							<%= text_area_tag(:contents) %>
+						</div>
+					</div>
 					<hr class="panel-wide">
-					<%= submit_tag("Envoyer") %>
+					<div class="text-right">
+						<%= submit_tag("Envoyer", class: "btn btn-primary btn-flat" )%>
+					</div>
 				<% end %>
 			</div>
 		</div>
-	</div>
-	<div class="col-md-6">
-		<% if @partner %>
-		<div class="panel">
-			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-star-o"></i>Partenaire rattaché à cette course</span>
-			</div>
-			<div class="panel-body">
-				<table class="table">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Nom</th>
-							<th>Email</th>
-							<th>Téléphone</th>
-							<th>Adresse</th>
-							<th>Status</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td><%= @partner.id %></td>
-							<td><img src="<%= image_path('pixel-admin/avatar.png') %>" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#"><%= link_to admin_partner_path(@partner) do @partner.name end %></a></td>
-							<td><a href="mailto:<%= @partner.email %>"><%= @partner.email %></a></td>
-							<td><%= @partner.phone %></td>
-							<td><%= @partner.address %> <%= @partner.postcode %> <%= @partner.city %></td>
-							<td><%= @partner.status %></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<% end %>
-		<% if @driver %>
-		<div class="panel">
-			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-taxi"></i>Chauffeur rattaché</span>
-			</div>
-			<div class="panel-body">
-				<table class="table">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Nom</th>
-							<th>Email</th>
-							<th>Téléphone</th>
-						</tr>
-					</thead>
-					<tbody class="valign-middle">
-						<tr>
-							<td><%= @driver.id %></td>
-								<td><img src="<%= image_path('pixel-admin/avatar.png') %>" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#"><%= link_to admin_user_path(@driver) do @driver.name end %></a></td>
-							<td><a href="mailto:<%= @driver.email %>"><%= @driver.email %></a></td>
-							<td><%= @driver.phone %></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<% end %>
-		<% if @car %>
-		<div class="panel">
-			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-car"></i>Voiture rattachée à cette course</span>
-			</div>
-			<div class="panel-body">
-				<table class="table">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Nom</th>
-						</tr>
-					</thead>
-					<tbody class="valign-middle">
-						<tr>
-							<td><%= @car.id %></td>
-							<td><%= @car.name %></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<% end %>
-		<% if @client %>
-		<div class="panel">
-			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-user"></i>Client rattaché à cette course</span>
-			</div>
-			<div class="panel-body">
-				<table class="table">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Nom</th>
-							<th>Email</th>
-							<th>Téléphone</th>
-						</tr>
-					</thead>
-					<tbody class="valign-middle">
-						<tr>
-							<td><%= @client.id %></td>
-								<td><img src="<%= image_path('pixel-admin/avatar.png') %>" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#"><%= link_to admin_user_path(@client) do @client.name end %></a></td>
-							<td><a href="mailto:<%= @client.email %>"><%= @client.email %></a></td>
-							<td><%= @client.phone %></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<% end %>
 
-		<% if @promocode %>
-		<div class="panel">
-			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-user"></i>Code promo utilisé par le client</span>
-			</div>
-			<div class="panel-body">
-				<p><span>Nom : </span>#<%= @promocode.id %>/<%= @promocode.name %></p>
-				<p><span>Type de code</span><%= Promocode::Effect_types[@promocode.effect_type.to_sym][:name] %></p>
-				<p><span>Durée (jours ou utilisations) : </span><%= Promocode::Effect_lengths[@promocode.effect_length.to_sym][:name] %></p>
-				<p><span>Réduction accordée par ce code : </span><%= @course.promocode_amount %> €</p>
-			</div>
-		</div>
-		<% end %>
-
-		<% if @company %>
-		<div class="panel">
-			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-user"></i>Entreprise cliente rattachée à cette course</span>
-			</div>
-			<div class="panel-body">
-				<table class="table">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Nom</th>
-							<th>Email</th>
-							<th>Téléphone</th>
-						</tr>
-					</thead>
-					<tbody class="valign-middle">
-						<tr>
-							<td><%= @company.id %></td>
-								<td><img src="<%= image_path('pixel-admin/avatar.png') %>" style="width:26px;height:26px;" class="rounded">&nbsp;&nbsp;<a href="#"><%= link_to admin_user_path(@company) do @company.name end %></a></td>
-							<td><a href="mailto:<%= @company.email %>"><%= @company.email %></a></td>
-							<td><%= @company.phone %></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<% end %>
 	</div>
 </div>
 <div class="row">

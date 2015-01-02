@@ -15,7 +15,7 @@ class PartnerAdmin::StaticPagesController < ApplicationController
 		@totalNavecoMargin = 0
 		@courses.where("status = ?", Course.statuses[:done]).each do |course|
 			@totalPrice += course.computed_price
-			afterCodePrice = price_afterPromo(course)
+			afterCodePrice = price_afterExtras(course)
 			@totalPriceAfterCodes += afterCodePrice
 			@totalNavecoMargin += (course.computed_price - afterCodePrice)
 		end

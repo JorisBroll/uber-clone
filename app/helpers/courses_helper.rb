@@ -21,19 +21,13 @@ module CoursesHelper
 		@table = Course::Payment_by.collect { |i, o| [o[:name_partneradmin], i] }
 	end
 
-	def price_afterPromo(course, to = false)
+	def price_afterExtras(course, to = false)
 		price = course.computed_price
 
-		if !course.promocode.nil?
+		price -= course.promocode_amount unless course.promocode_amount.nil?
 
-			case course.promocode.effect_type
-			when 'percent'
-				price = course.computed_price - course.computed_price*(course.promocode.effect_type_value.to_f/100)
-			when 'fixed'
-				price = course.computed_price - course.promocode.effect_type_value
-			end
-
-		end
+		price += course.stops_price unless course.stops_price.nil?
+		price += course.damage_price unless course.damage_price.nil?
 
 		case to
 			when 'naveco'

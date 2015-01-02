@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141224092950) do
+ActiveRecord::Schema.define(version: 20150102152550) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -171,7 +171,7 @@ ActiveRecord::Schema.define(version: 20141224092950) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "password_digest"
-    t.integer  "account_type",    default: 0
+    t.integer  "account_type",           default: 0
     t.integer  "created_by"
     t.integer  "partner_id"
     t.integer  "company_id"
@@ -186,7 +186,12 @@ ActiveRecord::Schema.define(version: 20141224092950) do
     t.string   "city"
     t.string   "cellphone"
     t.integer  "status"
-    t.boolean  "enabled",         default: true
+    t.boolean  "enabled",                default: true
+    t.string   "activation_code"
+    t.text     "login_token"
+    t.datetime "login_token_expiration"
+    t.integer  "sponsored_by"
+    t.integer  "facebookID"
   end
 
 end

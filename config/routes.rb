@@ -14,6 +14,8 @@ Rails.application.routes.draw do
     get '/global_stats', to: 'static_pages#global_stats'
     get '/partner_home', to: 'static_pages#partner_home'
     post '/email', to: 'static_pages#email'
+    get '/sms', to: 'static_pages#sms'
+    get '/test', to: 'static_pages#test'
     resources :users
     resources :partners
     resources :cars
@@ -40,6 +42,7 @@ Rails.application.routes.draw do
   match '/logout', to: 'sessions#destroy', via: 'delete'
 
   match '/ajax/:action', controller: 'ajax_functions', via: [:get, :post]
+  match '/apps/:action', controller: 'app_calls', via: [:get, :post]
   match '/ajax/notifications', to: 'ajax_functions#notifications', via: 'get'
 
 end

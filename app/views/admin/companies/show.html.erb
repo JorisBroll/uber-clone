@@ -4,6 +4,28 @@
 			allowClear: true,
 			placeholder: "Sélectionner..."
 		});
+
+		if (! $('html').hasClass('ie8')) {
+			$('#contents').summernote({
+				height: 200,
+				tabsize: 2,
+				codemirror: {
+					theme: 'monokai'
+				},
+				toolbar: [
+				    ['style', ['style']], // no style button
+				    ['style', ['bold', 'italic', 'underline', 'clear']],
+				    ['fontsize', ['fontsize']],
+				    ['color', ['color']],
+				    ['para', ['ul', 'ol', 'paragraph']],
+				    //['height', ['height']],
+				    //['insert', ['picture', 'link']], // no insert buttons
+				    ['insert', ['link']], // no insert buttons
+				    //['table', ['table']], // no table button
+				    //['help', ['help']] //no help button
+				  ]
+			});
+		}
 	});
 </script>
 <div class="row">
@@ -77,17 +99,29 @@
 	<div class="col-md-6">
 		<div class="panel">
 			<div class="panel-heading">
-				<span class="panel-title">Email</span>
+				<span class="panel-title"><i class="panel-title-icon fa fa-envelope"></i>Envoyer un Email à cette entreprise</span>
 			</div>
 			<div class="panel-body">
 				<%= form_tag("/admin/email") do %>
 					<%= hidden_field_tag(:object_type, "company") %>
 					<%= hidden_field_tag(:id, @company.id) %>
 					<%= hidden_field_tag(:return, request.original_url) %>
-					<%= text_field_tag(:subject) %>
-					<%= text_area_tag(:contents) %>
+					<div class="row form-group">
+						<label class="col-sm-2 control-label">Sujet:</label>
+						<div class="col-sm-10">
+							<%= text_field_tag(:subject, nil, class: 'form-control') %>
+						</div>
+					</div>
+					<div class="row form-group">
+						<label class="col-sm-2 control-label">Message:</label>
+						<div class="col-sm-10">
+							<%= text_area_tag(:contents) %>
+						</div>
+					</div>
 					<hr class="panel-wide">
-					<%= submit_tag("Envoyer") %>
+					<div class="text-right">
+						<%= submit_tag("Envoyer", class: "btn btn-primary btn-flat" )%>
+					</div>
 				<% end %>
 			</div>
 		</div>
@@ -98,7 +132,26 @@
 				<span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Partenaire rattaché</span>
 			</div>
 			<div class="panel-body">
-				<%= @company.partner.name %>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Nom</th>
+							<th>Code postal, ville</th>
+							<th>Numéro de téléphone</th>
+							<th>Email</th>
+						</tr>
+					</thead>
+					<tbody class="valign-middle">
+						<tr>
+							<td><%= @company.partner.id %></td>
+							<td><%= link_to admin_partner_path(), { :title => "Voir" } do %><%= @company.partner.name %><% end %></td>
+							<td><%= @company.partner.postcode %>, <%= @company.partner.city %></td>
+							<td><%= @company.partner.phone %></td>
+							<td><%= @company.partner.email %></td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 		</div>
 		<% end %>

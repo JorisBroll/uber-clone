@@ -2,7 +2,7 @@ class Admin::PaymentsController < ApplicationController
 	before_action :admins_only
 
 	def index
-		@payments = Payment.all
+		@payments = Payment.all.order('created_at DESC')
 	end
 	def new
 		@payment = Payment.new()
@@ -44,6 +44,6 @@ class Admin::PaymentsController < ApplicationController
 		private
 
 		    def payment_params
-		    	params.require(:payment).permit(:to_type, :to_id, :amount, :notes, :method)
+		    	params.require(:payment).permit(:to_type, :to_id, :amount, :notes, :method, :created_at)
 		    end
 end

@@ -15,11 +15,16 @@ module PartnersHelper
 		end
 	end
 
-	def getBalance(partner)
+	def getBalance(partner, before_date)
 		courses = partner.courses
-		naveco_collected = courses.where("status = ? AND payment_by = ?", Course.statuses[:done], Course.payment_bies[:partner]).map {|s| price_afterPromo(s)}.reduce(0, :+)
-		ttc = courses.where("status = ?", Course.statuses[:done]).map {|s| price_afterPromo(s, 'partner')}.reduce(0, :+)
-		balance = ttc - naveco_collected
+		collected_by_partner = courses.where("status = ? AND payment_by = ? AND date_when < ?", Course.statuses[:done], Course.payment_bies[:partner], before_date).map {|s| price_afterExtras(s)}.reduce(0, :+)
+		ttc = courses.where("status = ? AND date_when < ?", Course.statuses[:done], before_date).map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+)
+		balance = ttc - collected_by_partner
+
+		payments = Payment.where("to_type = 'partner' AND to_id = ? AND created_at < ?", partner.id, before_date).map {|p| p.amount}.reduce(0, :+)
+
+		balance -= payments
+
 		return balance
 	end
 end

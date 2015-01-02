@@ -91,27 +91,28 @@ class AjaxFunctionsController < ApplicationController
 		rendering(@response)
 	end
 
-	def operator_steps_save
+	def operator_steps_save_user
 		rData = {}
 		rData['status'] = true
 
-		if params['user']['is_new_user'] == 'true'
-
-			user = User.new(user_params)
-			user.enabled = false
-			user.password = 'default'
-			user.account_type = 'client'
-			if user.valid?
-				user.save
-				rData['user_created'] = {:id => user.id, :status => true }
-			else
-				rData['user_created'] = {:status => false, :errors => user.errors.full_messages}
-				rData['status'] = false
-			end
+		user = User.new(user_params)
+		user.enabled = false
+		user.password = 'default'
+		user.account_type = 'client'
+		if user.valid?
+			user.save
+			rData['user_created'] = {:id => user.id, :status => true }
 		else
-			user_id = params['user']['user_id']
+			rData['user_created'] = {:status => false, :errors => user.errors.full_messages}
+			rData['status'] = false
 		end
 
+		rendering(rData)
+	end
+	def operator_steps_save_course
+		rData = {}
+		rData['status'] = true
+		
 		course = Course.new(course_params)
 		course.stops = params['new_course_params']['stops'].to_json
 		course.status = 'inactive'
@@ -122,11 +123,7 @@ class AjaxFunctionsController < ApplicationController
 		course.partner_id = params['attributions']['course']['partner_id']
 		course.driver_id = params['attributions']['course']['driver_id']
 
-		if user.nil?
-			course.user_id = user_id
-		else
-			course.user_id = user.id
-		end
+		course.user_id = params['user_id']
 		
 		if course.valid?
 			if course.company_id != '0'
@@ -144,7 +141,6 @@ class AjaxFunctionsController < ApplicationController
 			rData['course_created'] = {:status => false, :errors => user.errors.full_messages}
 			rData['status'] = false
 		end
-
 
 		rendering(rData)
 	end

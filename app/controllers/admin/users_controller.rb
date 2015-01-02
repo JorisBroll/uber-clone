@@ -21,7 +21,6 @@ class Admin::UsersController < ApplicationController
 		@admins = User.where("account_type in (?)", [ User.account_types[:superadmin], User.account_types[:admin] ])
 	end
 	def show
-		#current_partner
 		@user = User.find(params[:id])
 		@companies = @user.companies
 		@promocodes = @user.promocodes
@@ -41,7 +40,7 @@ class Admin::UsersController < ApplicationController
 			end
 
 			(0..11).each do |i|
-				@chartData[i] = {:money => (@courses[i+1].map {|s| price_afterPromo(s)}.reduce(0, :+).round(2)), :months => @date[i+1][:start].strftime("%m/%Y"), :id => i+1}
+				@chartData[i] = {:money => (@courses[i+1].map {|s| price_afterExtras(s)}.reduce(0, :+).round(2)), :months => @date[i+1][:start].strftime("%m/%Y"), :id => i+1}
 			end
 			@chartData = @chartData.sort_by{|e| -e[:id]}
 		else	
@@ -53,8 +52,8 @@ class Admin::UsersController < ApplicationController
 				@courses[i] = @user.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @date[i][:start], @date[i][:end], Course.statuses[:done])
 			end
 			(0..11).each do |i|
-				@chartData[i] = {:money => (@courses[i+1].map {|s| price_afterPromo(s)}.reduce(0, :+).round(2)), :months => @date[i+1][:start].strftime("%m/%Y"), :id => i}
-				@userEarnTotal[i] = @courses[i+1].map {|s| price_afterPromo(s)}.reduce(0, :+).round(2)
+				@chartData[i] = {:money => (@courses[i+1].map {|s| price_afterExtras(s)}.reduce(0, :+).round(2)), :months => @date[i+1][:start].strftime("%m/%Y"), :id => i}
+				@userEarnTotal[i] = @courses[i+1].map {|s| price_afterExtras(s)}.reduce(0, :+).round(2)
 			end	
 			@chartData = @chartData.sort_by{|e| -e[:id]}
 		end

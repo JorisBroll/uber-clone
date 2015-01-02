@@ -41,6 +41,12 @@
         		});
 	        });
 		}).trigger('change');
+
+		$('._date').datepicker({
+			daysOfWeekDisabled: "6",
+			format: 'mm/dd/yyyy',
+			defaultDate: new Date()
+		});
 	});
 </script>
 
@@ -87,6 +93,19 @@
 					<%= f.text_area :notes, class: "form-control", :placeholder => "Description, notes, ..." %>
 				</div>
 			</div>
+
+			<% if params["action"] == 'edit' %> 
+			
+				<% if @payment.created_at then date = @payment.created_at.strftime("%d/%m/%Y") else date = Time.now.strftime("%d/%m/%Y") end %>
+
+				<div class="row form-group">
+					<%= f.label :created_at, class: "col-sm-3 control-label" %>
+					<div class="col-sm-9">
+						<%= f.text_field :created_at, class: "form-control _date", :placeholder => "Date", style: "position: relative; z-index: 100;", :value => date %>
+					</div>
+				</div>
+
+			<% end %>
 	</div>
 	<div class="panel-footer text-right">
 		<a class="btn btn-flat btn-danger" href="<%= send("#{controller}_payments_path") %>">Annuler</a>

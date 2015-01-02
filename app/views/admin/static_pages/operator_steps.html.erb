@@ -38,28 +38,35 @@ init.push(function () {
 		$(this).parents('.steps').pixelWizard('prevStep');
 	});
 
-	function extractDataFromPage() {
+	function extractUserDataFromPage() {
+		rData = {};
+
+		rData['user'] = {}
+
+		var user_params = $('#new_user').serializeArray();
+		rData['user']['new_user_params'] = {}
+		for(var i=0; i < user_params.length; i++) {
+			rData['user']['new_user_params'][user_params[i].name] = user_params[i].value
+		}
+
+		console.log(rData);
+		return(rData);
+	}
+
+	function extractCourseDataFromPage() {
 		rData = {};
 
 		// User part
-		rData['user'] = {}
-
 		if($('input[name="is_new_user"]:checked').val() == '0')
 			var is_new_user = true
 		else {
 			var is_new_user = false
 		}
 
-		rData['user']['is_new_user'] = is_new_user
-
 		if(is_new_user) {
-			var user_params = $('#new_user').serializeArray();
-			rData['user']['new_user_params'] = {}
-			for(var i=0; i < user_params.length; i++) {
-				rData['user']['new_user_params'][user_params[i].name] = user_params[i].value
-			}
+			rData['user_id'] = $('#course_user_id').val();
 		} else {
-			rData['user']['user_id'] = $('#existing_user_id').val();
+			rData['user_id'] = $('#existing_user_id').val();
 		}
 
 		// Course part
@@ -69,7 +76,6 @@ init.push(function () {
 			rData['new_course_params'][course_params[i].name] = course_params[i].value
 		}
 		
-
 		// Attributions
 		var attributions = $('#step3 #new_course').serializeArray();
 		rData['attributions'] = {}
@@ -134,37 +140,56 @@ init.push(function () {
         });
 	}).trigger('change');
 
-	var callbackSubmit = function(data) {
+	var callbackUserSubmit = function(data) {
+		console.log(data)
+		var display_div = $('#callback-display-user');
+		display_div.empty().fadeIn();
+		if(data.status == true) {
+			display_div.removeClass('alert-danger').addClass('alert-success');
+			display_div.append($('<p/>', {text: 'L\'utilisateur a bien été enregistré.'}));
+			$('#course_user_id').val(data.user_created.id);
+		} else {
+			display_div.removeClass('alert-success').addClass('alert-danger');
+			display_div.append($('<p/>', {class:'text-semibold', text: 'L\'enregistrement a échoué :'}));
+
+			if(data.user_created && data.user_created.status == false) {
+				for(var i=0; i<data.user_created.errors.length; i++) {
+					display_div.append($('<p/>', {text: '-'+data.user_created.errors[i]}));
+				}
+			}
+		}
+	}
+
+	var callbackCourseSubmit = function(data) {
 		console.log(data)
 		var display_div = $('#callback-display');
+		display_div.prev('hr').fadeIn();
 		display_div.empty().fadeIn();
 		if(data.status == true) {
 			display_div.removeClass('alert-danger').addClass('alert-success');
 			display_div.append($('<p/>', {text: 'La réservation a bien été enregistrée.'})).append($('<a/>', {class:'btn btn-flat btn-success', style:'margin-right:10px', text: 'Aller à la course', href: '<%= admin_courses_path %>/'+data.course_created.id})).append($('<a/>', {class:'btn btn-flat btn-success', text: 'Enregistrer une nouvelle réservation', href: '<%= request.original_url %>'}));
 		} else {
 			display_div.removeClass('alert-success').addClass('alert-danger');
-			display_div.append($('<p/>', {text: 'La réservation a échouée :'}));
-
-			if(data.user_created && data.user_created.status == false) {
-				display_div.append($('<p/>', {text: 'Nouvel utilisateur :'}));
-				for(var i=0; i<data.user_created.errors.length; i++) {
-					display_div.append($('<p/>', {text: data.user_created.errors[i]}));
-				}
-			}
+			display_div.append($('<p/>', {class:'text-semibold', text: 'La réservation a échouée :'}));
 
 			if(data.course_created.status == false) {
-				display_div.append($('<p/>', {text: 'Nouvelle course :'}));
 				for(var i=0; i<data.course_created.errors.length; i++) {
-					display_div.append($('<p/>', {text: data.course_created.errors[i]}));
+					display_div.append($('<p/>', {text: '-'+data.course_created.errors[i]}));
 				}
 			}
 		}
 	}
 
+	$("body").on("click", "#validate-user", function() {
+		if($('input[name="is_new_user"]:checked').val() == '0') {
+			var callback = callbackUserSubmit;
+			Tools.fastAjax('/ajax/operator_steps_save_user', extractUserDataFromPage(true), callback, 'POST');
+		}
+	});
+
 	$("body").on("click", "#finish-btn", function() {
-		var callback = callbackSubmit
-		Tools.fastAjax('/ajax/operator_steps_save', extractDataFromPage(), callback, 'POST'
-		);
+		var callback = callbackCourseSubmit
+		Tools.fastAjax('/ajax/operator_steps_save_course', extractCourseDataFromPage(), callback, 'POST');
 	});
 
 	$("#refresh-cars2").trigger('click')
@@ -176,7 +201,7 @@ stepsManager = {
 			//valid = $(".new_user").validate().form()
 		}
 		if($(button).attr('id') == 'validate-course') {
-			//valid = $(".new_course").validate().form()
+			valid = $(".new_course").validate().form()
 		}
 
 		if(valid)
@@ -184,11 +209,8 @@ stepsManager = {
 	}
 }
 </script>
-<div class="row">
-	<div class="col-md-12">
-		<h2>Création d'une course</h2>
-	</div>
-</div>
+
+<div id="callback-display-user" class="alert" style="display:none"></div>
 <div class="row">
 	<div class="col-md-12">
 		<div class="wizard steps">
@@ -267,6 +289,7 @@ stepsManager = {
 				</div>
 				<div style="display: none;" id="step3" class="wizard-pane">
 					<%= form_for [:admin, @course] do |f| %>
+						<%= f.hidden_field(:user_id) %>
 						<div class="row">
 							<div class="col-sm-12">
 								<h2>Paiement</h2>
@@ -323,7 +346,7 @@ stepsManager = {
 
 					<div class="row">
 						<div class="col-sm-12">
-							<div id="driver-map" style="height:400px; margin-top:20px">Google Map des chauffeurs, à venir</div>
+							<div id="driver-map" style="height:400px; margin-top:20px"></div>
 						</div>
 					</div>
 					<div class="row" style="margin-top:20px">
@@ -335,11 +358,10 @@ stepsManager = {
 					<hr class="panel-wide">
 					<div class="text-right">
 						<button class="btn btn-flat wizard-prev-step-btn">Retour</button>
-						<button id="finish-btn" class="btn btn-flat btn-success wizard-next-step-btn">Terminer (non fonctionnel)</button>
+						<button id="finish-btn" class="btn btn-flat btn-success wizard-next-step-btn">Terminer</button>
 					</div>
 
-					<hr class="panel-wide">
-
+					<hr class="panel-wide" style="display:none">
 					<div id="callback-display" class="alert" style="display:none">
 					</div>
 				</div>

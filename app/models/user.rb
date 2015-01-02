@@ -1,8 +1,10 @@
 class User < ActiveRecord::Base
-	belongs_to :partner, inverse_of: :users                          
+	belongs_to :partner, inverse_of: :users
   	belongs_to :created_by_user, class_name: 'User', foreign_key: "created_by"
+  	belongs_to :sponsored_by, class_name: 'User', foreign_key: "sponsored_by"
 	has_many :courses, inverse_of: :user
 	has_many :person, :foreign_key => "created_by"
+	has_many :sponsors, class_name: 'User', :foreign_key => "sponsored_by", inverse_of: :sponsored_by
 	has_many :cars, inverse_of: :user
 	has_many :notifications, inverse_of: :user
 	has_and_belongs_to_many :promocodes

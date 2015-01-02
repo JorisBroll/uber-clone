@@ -2,29 +2,154 @@
 <html>
 	<head>
 		<meta charset='utf-8' />
-		<link href="http://fonts.googleapis.com/css?family=Roboto:400,300,400italic" rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,300,600,700' rel='stylesheet' type='text/css'>
 		<style>
 			body {
-				font-family: 'Roboto';
-				font-size:11px;
+				font-family: 'Open Sans', sans-serif;
+				color: #555555;
+				font-size: 12px;
 			}
-			p {
-				margin:0;
+			.invoice{
+				border:0.5mm solid #E2E2E2;
 			}
-			table {
-				border-collapse:collapse;
-				border:0.5mm solid #00B2A9;
+			.invoice-header{
+				background-color:#f6f6f6;
+				padding: 5mm 5mm;
+				border-bottom: 3mm solid #f1f1f1;
 			}
-			table th {
-				background:#00B2A9;
-				padding:1.5mm 2mm;
-				text-align:center;
-				color:white;
+				#head-logo{
+					padding-right: 2mm;
+				}
+				#head-adress{
+					border-left: 2mm solid #E8E8E8;
+					color: #959595;
+					display: block;
+					font-size: 3.2mm;
+					line-height: 15px;
+					padding-left: 2mm;
+					font-weight: 300;
+				}
+					#head-adress p{
+						margin: 0;
+					}
+				#head-date{
+					text-align: right;
+					font-size: 11px;
+					font-weight: 600;
+				}
+					#head-date strong{
+						color: #A0A0A0;
+						font-size: 10px;
+					}
+					#invoice-number{
+						background-color: #FFF;
+						padding: 0.5mm 1mm;
+					}
+			.invoice-info{
+				padding: 5mm 5mm;
+				font-size: 12px;
+				border-bottom: 1mm solid #f1f1f1;
 			}
-			table td {
-				border:0.5mm solid #00B2A9;
-				padding:2mm;
+				#destinataire{
+					background: none repeat scroll 0% 0% #F7F7F7;
+					border-radius: 999px;
+					color: #888;
+					display: block;
+					font-size: 14px;
+					font-weight: 600;
+					height: 52px;
+					line-height: 52px;
+					text-align: center;
+					width: 52px;
+					margin: 0mm 3mm 0mm 0mm;
+				}
+			.invoice-recap{
+				padding: 5mm 5mm;
+				font-size: 12px;
 			}
+				.invoice-recap table{
+					border-collapse: collapse;
+					border-spacing: 0px;
+					border-bottom: 3px solid #F1F1F1;
+				}
+					.invoice-recap table thead{
+						background: none repeat scroll 0% 0% #F7F7F7;
+						color: #888;
+					}
+						.invoice-recap table thead th{
+							border-left: 1px solid #FFF;
+							font-weight: 600;
+							padding: 7px 0px 7px 15px;
+							text-align: left;
+							vertical-align: top;
+							font-size: 10px;
+						}
+					.invoice-recap table tbody{
+						font-size: 11px;
+					}
+						.invoice-recap table tbody tr + tr{
+							border-top: 1px solid #F1F1F1;
+						}
+							.invoice-recap table tr:nth-child(even){
+								background-color: #FDFDFD;
+							}
+						.invoice-recap table tbody td{
+							border-left: 1px solid #FFF;
+							font-weight: 600;
+							padding: 20px 0px 20px 15px;
+							text-align: left;
+							vertical-align: top;
+							font-size: 12px;
+						}
+							.invoice-recap table tbody #details_course, .invoice-recap table tbody #date_heure{
+								font-weight: 300;
+							}
+								.invoice-recap table tbody #details_course{
+									font-size: 9px;
+								}
+			.invoice-total{
+				padding: 0mm 5mm;
+			}
+				#total_table{
+					width: 100%;
+				}
+				.invoice-total #total_table table{
+					border-collapse: collapse;
+					border-spacing: 0px;
+					width: 100%;
+				}
+					.invoice-total #total_table table tr{
+						background: none repeat scroll 0% 0% #F7F7F7;
+						color: #888;
+						font-weight: 600;
+						padding: 2mm 0mm;
+						margin-top: 20px;
+						border-top:1.5mm solid #FFFFFF;
+						border-bottom: 1.5mm solid #FFFFFF;
+					}
+
+						.invoice-total #total_table table tr td:first-child{
+							padding: 1mm 1mm 1mm 3mm;
+						}
+							.invoice-total #total_table table tr td:last-child{
+								padding: 1mm 3mm 1mm 1mm;
+								text-align: right;
+							}
+						.invoice-total #total_table table tr td strong{
+							color:#555;
+						}
+			.invoice-footer{
+				padding: 5mm 5mm;
+				text-align: center;
+				font-size: 9px;
+			}
+				.invoice-footer hr{
+					width:80%;
+					border:none;
+					border-top: 0.5mm solid #E2E2E2;
+					background-color: none;
+				}
+
 			.column {
 				width:50%;
 			}
@@ -96,91 +221,115 @@
 		</style>
 	</head>
 	<body onload='number_pages'>
-		<div id="header">
-			<div class="columns">
-				<div class="column left">
-					<p><%= @partner.name %></p>
-					<p><%= build_address(@partner) %></p>
-					<p>Numéro TVA : <%= @partner.tva_number.to_s %></p>
-				</div>
-				<div class="column right">
-					<p class="right" style="margin-left:5mm"><%= wicked_pdf_image_tag 'pixel-admin/main-navbar-logo.png',:width => "68",  :height=>"68" %></p>
-					<p><%= @naveco.name %></p>
-					<p><%= build_address(@naveco) %></p>
-					<p><%= @naveco.email %></p>
-				</div>
-				<div class="clear"></div>
-			</div>
-		</div>
-		<div id="date">
-			<p><%= I18n.localize(@date[:end], :format => "Le %d %B %Y") %></p>
-			<p>Facture n° : <%= @partner.name[0,3].upcase %>-<%= @date[:end].strftime("%m/%Y") %>-1</p>
-		</div>
-		<div id="content">
-			<div class="category">
-				<h1>Récapitulatif des prestations</h1>
-				<table id="overview_courses">
-					<tr>
-						<th>Numéro de course</td>
-						<th>Départ</td>
-						<th>Arrivée</td>
-						<th>Date/Heure</td>
-						<th>Prix client</td>
-						<th>Prix affilié</td>
-					</tr>
-					<% @courses.where("status = ?", Course.statuses[:done]).order('payment_status ASC').each do |course| %>
-					<tr>
-						<td><%= course.id.to_s %></td>
-						<td><%= course.from %></td>
-						<td><%= course.to %></td>
-						<td><%= getDateTime(course) %></td>
-						<td><%= price_afterPromo(course).round(2) %> €</td>
-						<td><%= price_afterPromo(course, 'partner').round(2) %> €</td>
-					</tr>
-					<% end %>
-				</table>
-
-				<div>
-					<table id="courses_totals" class="right">
+		<div class="panel invoice">
+			<div class="invoice-header">
+					<table>
 						<tr>
-							<td>TOTAL HT</td>
-							<td><%= @totals[:ht] %> €</td>
-						</tr>
-						<tr>
-							<td>TOTAL TVA (10%)</td>
-							<td><%= @totals[:tva] %> €</td>
-						</tr>
-						<tr>
-							<td>TOTAL TTC</td>
-							<td><%= @totals[:ttc] %> €</td>
-						</tr>
-					</table>
-					<div class="clear"></div>
-				</div>
-
-				<div>
-					<table id="partner_total_collected" class="right">
-						<tr>
-							<td style="padding:3mm">
-								<p>Total des sommes encaissées auprès des clients</p>
-								<p style="margin-top:5mm;font-size:9px; font-style:italic">de Naveco au nom et pour le compte de Naveco</p>
+							<td id="head-logo"><%= wicked_pdf_image_tag 'pixel-admin/main-navbar-logo.png',:width => "40",  :height=>"40" %></td>
+							<td id="head-adress" width="250mm" valign="top">
+									<%= @naveco.name %><br />
+									<%= build_address(@naveco) %><br />
+									<%= @naveco.email %><br />
+									<%= @naveco.phone %>
 							</td>
-							<td><%= @totals[:naveco_collected] %> €</td>
-						</tr>
-					</table>
-					<div class="clear"></div>
-				</div>
-
-				<div>
-					<table id="partner_total_collected" class="right">
-						<tr>
-							<td>
-								SOLDE TTC restant dû ce mois ci
+							<td id="head-date" width="100%" valign="top">
+								<%= I18n.localize(@date[:end], :format => "%d %B %Y") %><br /><br />
+								<strong>Facture n°</strong><br />
+								<span id="invoice-number"><%= @partner.name[0,3].upcase %>-<%= @date[:end].strftime("%m/%Y") %>-1</span>
 							</td>
-							<td><%= (@totals[:ttc] - @totals[:naveco_collected]).round(2) %> €</td>
 						</tr>
 					</table>
-					<div class="clear"></div>
+				</div>
+				<div class="invoice-info">
+					<table>
+						<tr>
+							<td><span id="destinataire">À</span></td>
+							<td><strong><%= @partner.name %></strong> [<small><%= Partner::Statuses[@partner.status.to_sym][:name] %></small>]<br />
+								<%= build_address(@partner) %><br />
+								N° TVA : <% if @partner.status == "company" %><%= @partner.tva_number.to_s %><% end %><% if @partner.status == "self_employed" %><small><i> TVA non applicable, art. 293 B du CGI</i></small><% end %><br />
+								<% if @partner.status == "company" %>SIRET : <%= @partner.company_code %><% end %><% if @partner.status == "self_employed" %>SIREN : <%= @partner.company_code %> | <small><i>dispensé d'immatriculation en application de l'article L.123-1-1 du Code du Commerce</i></small><% end %>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div class="invoice-recap">
+					<h1>Récapitulatif des prestations</h1>
+
+					<table>
+						<thead>
+							<tr>
+								<th>N° de course</th>
+								<th>Détails de la course</th>
+								<th>Date/Heure</th>
+								<th>Code Promo</th>
+								<th>Extras divers</th>
+								<th>Prix client H.T</th>
+								<th>Prix affilié H.T</th>
+							</tr>
+						</thead>
+						<tbody>
+						<% @courses.where("status = ?", Course.statuses[:done]).order('payment_status ASC').each do |course| %>
+							<tr>
+								<td><%= course.id.to_s %></td>
+								<td width="220mm" id="details_course">
+									De <strong><%= course.from %></strong> à <strong><%= course.to %><br />
+									Véhicule : <%= course.car.name unless course.car.nil? %><br />
+									<%= course.nb_people %> personne(s) | <%= course.computed_distance %> Km	
+								</td>
+								<td id="date_heure"><%= getDateTime(course) %></td>
+								<td>
+									<% if course.promocode_amount %>
+										- <%= number_with_precision(course.promocode_amount, :precision => 2) %> €
+									<% else %>
+										0,00 €
+									<% end %>
+								</td>
+								<td><%= course.stops_price %></td>
+								<td><%= number_with_precision(price_afterExtras(course)/1.10, :precision => 2) %> €</td>
+								<td><%= number_with_precision(price_afterExtras(course, 'partner')/1.10, :precision => 2) %> €</td>
+							</tr>
+						<% end %>
+						</tbody>
+					</table>
+				</div>
+				<div class="invoice-total">
+					<table id="total_table">
+						<tr>
+							<td width="50%">
+								<table>
+									<tr>
+										<td>Echéance de paiement</td>
+										<td>31 décembre 2014</td>
+									</tr>
+								</table>
+							</td>
+							<td width="50%">
+								<table>
+									<tr>
+										<td>Total HT</td>
+										<td><strong><%= @totals[:ht] %> €</strong></td>
+									</tr>
+									<tr>
+										<td>Total TVA (10%)</td>
+										<td><strong><% if @partner.status == "company" %><%= number_with_precision(@totals[:tva], :precision => 2) %> €<% end %><% if @partner.status == "self_employed" %>N/A<% end %></strong></td>
+									</tr>
+									<tr>
+										<td>Total TTC</td>
+										<td><strong><% if @partner.status == "company" %><%= @totals[:ttc] %> €<% end %><% if @partner.status == "self_employed" %>N/A<% end %></strong></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div class="invoice-footer">
+				<small><i>En cas de retard de paiement, application d’une indemnité forfaitaire pour frais de recouvrement de 40€ selon l'article D. 441-5 du code du commerce</i></small>
+				<hr />
+					Tél. <%= @naveco.phone %> -  <%= @naveco.email %><br />
+					N° SIRET : <%= @naveco.company_code %> - N° TVA Intracommunautaire : <%= @partner.tva_number.to_s %> - NAF : 4939B - RCS : Lyon B 539 056 051<br />
+					<%= @naveco.name %> <%= Partner::Statuses[@naveco.status.to_sym][:name] %> au capital social de 6 000,00 € - <%= build_address(@partner) %><br />
+					www.nav-eco.fr
+					
 				</div>
 			</div>
 		</div>

@@ -247,7 +247,7 @@ init.push(function () {
 			<div class="stat-cell col-xs-5 bordered no-border-r text-right">
 				<i class="fa fa-trophy bg-icon bg-icon-left"></i>
 				<span class="text-xs">Chiffre d'affaire Total</span><br>
-				<span class="text-xlg"><small><small>€</small></small><strong><%= (@partner.courses.where("status = ?", Course.statuses[:done]).map {|s| price_afterPromo(s)}.reduce(0, :+)).round(2) %></strong></span>
+				<span class="text-xlg"><small><small>€</small></small><strong><%= (@partner.courses.where("status = ?", Course.statuses[:done]).map {|s| price_afterExtras(s)}.reduce(0, :+)).round(2) %></strong></span>
 			</div>
 			<div class="stat-cell col-xs-7 bg-success no-padding valign-bottom">
 				<div class="stats-sparklines" id="stats-sparklines-1" style="width: 100%"></div>
