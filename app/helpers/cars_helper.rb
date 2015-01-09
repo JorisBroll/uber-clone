@@ -1,10 +1,9 @@
 module CarsHelper
-	def cars_for_select(add_blank = false, options = false)
-		@cars = Car.all
-		if options
-			if options[:partner_id]
-				@cars = Partner.find_by(id: options[:partner_id]).cars
-			end
+	def cars_for_select(add_blank = false)
+		if current_partner.nil?
+			@cars = Car.all
+		else
+			@cars = current_partner.cars
 		end
 
 		@table = @cars.collect { |o| [o.name, o.id] }

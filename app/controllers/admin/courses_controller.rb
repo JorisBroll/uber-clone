@@ -1,13 +1,18 @@
 class Admin::CoursesController < ApplicationController
-	before_action :admins_only
+	before_action -> { requiredWeight User::Account_types[:partneradmin][:weight] }
+	before_action -> { check_privileges }, only: [:show, :edit, :update, :destroy]
+	before_action -> { protect_destroy }, only: [:destroy]
 
 	include CoursesHelper
 
 	def index
-		@courses = Course.all
+		if userWeight <= User::Account_types[:admin][:weight]
+			@courses = Course.all
+		else
+			@courses = current_partner.courses
+		end
 	end
 	def show
-		@course = Course.find(params[:id])
 		@partner = @course.partner
 		@client = @course.user
 		@driver = @course.driver
@@ -15,7 +20,7 @@ class Admin::CoursesController < ApplicationController
 		@car = @course.car
 		@promocode = @course.promocode
 
-		# Check if promo is taken into account
+		# (debug) Check if promo is taken into account
 		#@promo_amount = checkPromo(@course) 
 	end
 	def new
@@ -39,12 +44,9 @@ class Admin::CoursesController < ApplicationController
 
 	end
 	def edit
-		@course = Course.find(params[:id])
-		@users = User.all
+
 	end
 	def update
-		@course = Course.find(params[:id])
-
 		@course.promocode_amount = checkPromo(@course)
 
 		if @course.update_attributes(course_params)
@@ -60,11 +62,12 @@ class Admin::CoursesController < ApplicationController
 		end
 	end
 	def destroy
-		@course = Course.find(params[:id]).destroy
-	    flash[:success] = "Course supprimée."
-	    Log.create(user_id: current_user.id, target_type: 1, target_id: @course.id, action: 'destroy')
-	    AppLogger.log ({'user_id' => @current_user, 'action' => 'deleted', 'target_object' => {'type' => 'course', 'id' => params[:id].to_s} })
-	    redirect_to admin_courses_path
+		if @course.destroy
+		    flash[:success] = "Course supprimée."
+		    Log.create(user_id: current_user.id, target_type: 1, target_id: @course.id, action: 'destroy')
+		    AppLogger.log ({'user_id' => @current_user, 'action' => 'deleted', 'target_object' => {'type' => 'course', 'id' => params[:id].to_s} })
+		    redirect_to admin_courses_path
+		end
 	end
 
 		private
@@ -73,5 +76,25 @@ class Admin::CoursesController < ApplicationController
 		    	params['course']['stops'] = params['course']['stops'].to_json
 		    	params.require(:course).permit(:from, :to, :date_when, :time_when, :computed_distance, :computed_duration, :computed_price, :stops_price, :promocode_amount, :commission, :stops, :nb_people, :nb_luggage, :user_id, :partner_id, :car_id, :company_id, :status, :notes, :created_by, :company_id, :promocode_id, :driver_id, :payment_when, :payment_by, :payment_status, :payment_type, :flight_number, :need_review)
 		    end
+
+			def check_privileges
+				if userWeight <= User::Account_types[:admin][:weight]
+					@course = Course.find_by(id: params[:id])
+				else
+					@course = current_partner.courses.find_by(id: params[:id])
+				end
+
+				if @course.nil?
+					flash[:error] = "Page inaccessible."
+					redirect_to [:admin, 'home'] 
+				end
+			end
+
+			def protect_destroy
+				if userWeight < User::Account_types[:superadmin][:weight]
+					flash[:error] = "Page inaccessible."
+					redirect_to [:admin, 'home'] 
+				end
+			end
 
 end

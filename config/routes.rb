@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     get '/global_stats', to: 'static_pages#global_stats'
     get '/partner_home', to: 'static_pages#partner_home'
     post '/email', to: 'static_pages#email'
+    post '/invoice_email', to: 'static_pages#invoice_email'
     get '/sms', to: 'static_pages#sms'
     get '/test', to: 'static_pages#test'
     resources :users

@@ -1,5 +1,5 @@
 class UpdUsers5FbId < ActiveRecord::Migration
   def change
-  	add_column :users, :facebookID, :integer
+  	add_column :users, :facebookID, :string
   end
 end

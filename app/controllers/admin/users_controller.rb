@@ -1,27 +1,33 @@
 class Admin::UsersController < ApplicationController
-  	before_action :admins_only
+	before_action -> { requiredWeight User::Account_types[:partneradmin][:weight] }
+	before_action -> { check_privileges }, only: [:show, :edit, :update, :destroy]
+	before_action -> { protect_destroy }, only: [:destroy]
 
   	include UsersHelper
   	include UploadsHelper
   	include CoursesHelper
 
 	def index
-		@clients = User.where("account_type = ?", User.account_types[:client])
+		if userWeight <= User::Account_types[:admin][:weight]
+			@clients = User.where("account_type = ?", User.account_types[:client])
 
-		@users_selfemployed_admins = []
-		@partners_selfemployed = Partner.where("status = ?", Partner.statuses[:self_employed]).each do |partner|
-			partner.users.where("account_type = ?", User.account_types[:partneradmin]).each do |user| @users_selfemployed_admins.push(user) end
+			@users_selfemployed_admins = []
+			@partners_selfemployed = Partner.where("status = ?", Partner.statuses[:self_employed]).each do |partner|
+				partner.users.where("account_type = ?", User.account_types[:partneradmin]).each do |user| @users_selfemployed_admins.push(user) end
+			end
+
+			@users_sarl_admins = []
+			@partners_selfemployed = Partner.where("status = ?", Partner.statuses[:company]).each do |partner|
+				partner.users.where("account_type = ?", User.account_types[:partneradmin]).each do |user| @users_sarl_admins.push(user) end
+			end
+
+			@admins = User.where("account_type in (?)", [ User.account_types[:superadmin], User.account_types[:admin] ])
+		else
+			@clients = current_partner.users
+			render 'partner_index'
 		end
-
-		@users_sarl_admins = []
-		@partners_selfemployed = Partner.where("status = ?", Partner.statuses[:company]).each do |partner|
-			partner.users.where("account_type = ?", User.account_types[:partneradmin]).each do |user| @users_sarl_admins.push(user) end
-		end
-
-		@admins = User.where("account_type in (?)", [ User.account_types[:superadmin], User.account_types[:admin] ])
 	end
 	def show
-		@user = User.find(params[:id])
 		@companies = @user.companies
 		@promocodes = @user.promocodes
 		@date = []
@@ -79,13 +85,11 @@ class Admin::UsersController < ApplicationController
 	    end
 	end
 	def edit
-		@user = User.find(params[:id])
-		@partners = Partner.all
+
 	end
 	def update
 		store_photo
 
-		@user = User.find(params[:id])
 		if @user.update_attributes(user_params)
 			update_photo(@user)
 			flash[:success] = "L'utilisateur "+build_name(@user, true)+" a été modifié avec succès."
@@ -104,7 +108,7 @@ class Admin::UsersController < ApplicationController
 			Log.create(user_id: current_user.id, target_type: 0, target_id: @user.id, action: 'destroy_fail', extra: '(Utilisateur protégé)')
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'fail_deleted', 'target_object' => {'type' => 'user', 'id' => params[:id].to_s} })
 		else
-		    User.find(params[:id]).destroy
+		    @user.destroy
 		    flash[:success] = "Utilisateur supprimé."
 		    Log.create(user_id: current_user.id, target_type: 0, target_id: params[:id], action: 'destroy')
 		    AppLogger.log ({'user_id' => @current_user, 'action' => 'deleted', 'target_object' => {'type' => 'user', 'id' => params[:id].to_s} })
@@ -122,11 +126,6 @@ class Admin::UsersController < ApplicationController
 		    	@partner = Partner.find(params[:partner_id])
 		    end
 
-		    def correct_user # Make a user unable to edit anyone but himself
-				@user = User.find(params[:id])
-				redirect_to(root_url) unless current_user?(@user)
-	        end
-
 	        def update_photo(user)
 	        	if photo_name = save_photo(@photo, 'user'+user.id.to_s)
 	        		@user.update_attributes(photo: photo_name)
@@ -137,4 +136,24 @@ class Admin::UsersController < ApplicationController
 				@photo = params[:user][:photo]
 				params[:user][:photo] = ""
 	        end
+
+	        def check_privileges
+				if userWeight <= User::Account_types[:admin][:weight]
+					@user = User.find_by(id: params[:id])
+				else
+					@user = current_partner.users.find_by(id: params[:id])
+				end
+
+				if @user.nil?
+					flash[:error] = "Page inaccessible."
+					redirect_to [:admin, 'home'] 
+				end
+			end
+
+			def protect_destroy
+				if userWeight < User::Account_types[:superadmin][:weight]
+					flash[:error] = "Page inaccessible."
+					redirect_to [:admin, 'home'] 
+				end
+			end
 end

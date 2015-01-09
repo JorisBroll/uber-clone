@@ -1,15 +1,19 @@
 class Admin::CompaniesController < ApplicationController
-  	before_action :admins_only
+  	before_action -> { requiredWeight User::Account_types[:partneradmin][:weight] }
+	before_action -> { check_privileges }, only: [:show, :edit, :update, :destroy]
 
 	def index
-		@companies = Company.all
+		if userWeight <= User::Account_types[:admin][:weight]
+			@companies = Company.all
+		else
+			@companies = current_partner.companies
+		end
 	end
 	def show
-		@company = Company.find_by(id: params[:id])
 		@users = @company.users
 	end
 	def new
-		@company = Company.new()
+		@company = Company.new
 	end
 	def create
 		@company = Company.new(company_params)
@@ -24,10 +28,9 @@ class Admin::CompaniesController < ApplicationController
 	    end
 	end
 	def edit
-		@company = Company.find_by(id: params[:id])
+
 	end
 	def update
-		@company = Company.find_by(id: params[:id])
 		if params[:company][:users]
 			@user = User.find_by(id: params[:company][:users][:id])
 
@@ -53,7 +56,6 @@ class Admin::CompaniesController < ApplicationController
 	end
 	def destroy
 		if params[:user_id]
-			@company = Company.find_by(id: params[:company_id])
 			@user = User.find_by(id: params[:user_id])
 
 			@keep = []
@@ -81,5 +83,16 @@ class Admin::CompaniesController < ApplicationController
 		    	params.require(:company).permit(:name, :email, :notes, :phone, :address, :postcode, :city, :company_code, :tva_number, :bookmanager, :partner_id, { :user_ids => [] })
 		    end
 
-		   
+		    def check_privileges
+		    	if userWeight <= User::Account_types[:admin][:weight]
+		    		@company = Company.find_by(id: params[:id])
+		    	else
+		    		@company = current_partner.companies.find_by(id: params[:id])
+		    	end
+
+		    	if @company.nil?
+	    			flash[:error] = "Page inaccessible."
+	    			redirect_to [:admin, 'home'] 
+	    		end
+		    end
 end

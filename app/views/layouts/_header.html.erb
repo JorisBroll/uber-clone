@@ -29,11 +29,11 @@
 			<div id="main-navbar-collapse" class="collapse navbar-collapse main-navbar-collapse">
 				<div>
 					<ul class="nav navbar-nav">
-						<% if currently_admining_partner? %>
+						<% if currently_admining_partner? || current_partner %>
 							<li>
-								<a href="#">Administration en tant que l'entreprise <span class="text-bold"><%= current_partner.name.to_s %></span></a>
+								<a href="#">Administration de l'entreprise <span class="text-bold"><%= current_partner.name.to_s %></span></a>
 							</li>
-							<% if is_superadmin? %>
+							<% if userWeight <= User::Account_types[:admin][:weight] %>
 							<li>
 								<%= link_to admin_logout_partner_path, title: "Se déconnecter" do %><i class="menu-icon fa fa-times-circle"></i><% end %>
 							</li>

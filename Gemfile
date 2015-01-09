@@ -8,17 +8,19 @@ gem 'rack-cors', :require => 'rack/cors' # For Cross Domain JSON
 gem 'pg'
 gem 'sass-rails', '~> 4.0.3'
 gem 'bootstrap-sass', '3.2.0.2'
-gem 'bcrypt'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.0.0'
 gem 'jquery-rails'
 gem 'turbolinks'
 gem 'jquery-turbolinks'
 gem 'jbuilder', '~> 2.0'
-gem 'unicorn'
-gem "wicked_pdf"
-gem "wkhtmltopdf"
-gem 'twilio-ruby'
+gem 'bcrypt' #Supersecure passwords
+gem 'unicorn' #Server
+gem 'wkhtmltopdf' #PDF library
+gem 'wicked_pdf' #PDF library+
+gem 'twilio-ruby' #SMS
+gem 'paypal-sdk-rest' #Paypal receive money
+gem 'paypal-sdk-adaptivepayments' #Paypal send money
 
 group :development, :test do
   gem 'rspec-rails'

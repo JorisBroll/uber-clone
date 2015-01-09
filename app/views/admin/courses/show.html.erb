@@ -44,7 +44,8 @@
 			</div>
 			<div class="list-group">
 				<div class="list-group-item"><i class="fa fa-user list-group-icon"></i>Nombre de personnes<span class="text-default text-sm" style="float:right;"><%= @course.nb_people %></span></div>
-				<div class="list-group-item"><i class="fa fa-barcode list-group-icon"></i>Prix total<span class="text-default text-sm" style="float:right;"><%= @course.computed_price.to_s+' €' %></span></div>
+				<div class="list-group-item"><i class="fa fa-barcode list-group-icon"></i>Prix total<span class="text-default text-sm" style="float:right;"><%= price_afterExtras(@course).to_s+' €' %></span></div>
+				<div class="list-group-item"><i class="fa fa-barcode list-group-icon"></i>Réduction par code promotion<span class="text-default text-sm" style="float:right;"><%= @course.promocode_amount.to_s+' €' unless @course.promocode_amount.nil? %></span></div>
 				<div class="list-group-item"><i class="fa fa-taxi list-group-icon"></i>Distance<span class="text-default text-sm" style="float:right;"><%= @course.computed_distance %></span></div>
 				<div class="list-group-item"><i class="fa fa-flag-checkered list-group-icon"></i>Durée<span class="text-default text-sm" style="float:right;"><%= @course.computed_duration %></span></div>
 				<div class="list-group-item"><i class="fa fa-pencil-square-o list-group-icon"></i>Nombre de bagages<span class="text-default text-sm" style="float:right;"><%= @course.nb_luggage %></span></div>
@@ -288,6 +289,36 @@
 						<label class="col-sm-2 control-label">Message:</label>
 						<div class="col-sm-10">
 							<%= text_area_tag(:contents) %>
+						</div>
+					</div>
+					<hr class="panel-wide">
+					<div class="text-right">
+						<%= submit_tag("Envoyer", class: "btn btn-primary btn-flat" )%>
+					</div>
+				<% end %>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><i class="panel-title-icon fa fa-envelope"></i>Réenvoyer la facture mail</span>
+			</div>
+			<div class="panel-body">
+				<%= form_tag("/admin/invoice_email") do %>
+					<%= hidden_field_tag(:object_type, "course") %>
+					<%= hidden_field_tag(:id, @course.id) %>
+					<div class="row form-group">
+						<label class="col-sm-2 control-label">Envoyer à :</label>
+						<div class="col-sm-10">
+						<label class="checkbox-inline">
+							<%= check_box_tag(:client, "1", true, class: "px") %>
+							<span class="lbl">Client</span>
+						</label>
+						<label class="checkbox-inline">
+							<%= check_box_tag(:navadmin, "1", true, class: "px") %>
+							<span class="lbl">Naveco</span>
+						</label>
+					<%= hidden_field_tag(:return, request.original_url) %>
 						</div>
 					</div>
 					<hr class="panel-wide">

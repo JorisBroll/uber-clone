@@ -4,7 +4,7 @@ class Course < ActiveRecord::Base
 	belongs_to :partner, inverse_of: :courses
 	belongs_to :company, inverse_of: :courses
 	belongs_to :created_by_user, class_name: 'User', foreign_key: "created_by"
-	belongs_to :driver, class_name: 'User', foreign_key: "driver_id"
+	belongs_to :driver, class_name: 'User', foreign_key: "driver_id", inverse_of: :drives_courses
 	belongs_to :promocode, inverse_of: :courses
 
 	enum status: [ :inactive, :canceled, :in_progress, :done ]

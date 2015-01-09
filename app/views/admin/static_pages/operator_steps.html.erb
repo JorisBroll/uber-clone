@@ -327,6 +327,7 @@ stepsManager = {
 							</div>
 						</div>
 						<div class="row">
+							<% if current_partner.nil? %>
 							<div class="col-sm-6">
 								<%= f.label :partner_id, class: "control-label" %>
 								<div class="alert alert-info">
@@ -334,6 +335,9 @@ stepsManager = {
 								</div>
 								<%= f.select(:partner_id, partners_for_select('Aucune'), {}, { :class => 'select2' }) %>
 							</div>
+							<% else %>
+								<%= f.hidden_field(:partner_id, :value => current_partner.id) %>
+							<% end %>
 							<div class="col-sm-6">
 								<%= f.label :driver_id, class: "control-label" %>
 								<div class="alert alert-info">

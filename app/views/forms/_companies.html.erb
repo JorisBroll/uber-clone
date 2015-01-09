@@ -113,12 +113,16 @@
 				</div>
 			</div>
 
+			<% if current_partner.nil? %>
 			<div class="row form-group">
 				<%= f.label :partner_id, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.select(:partner_id, partners_for_select('Aucune'), {}, { :class => 'select2' }) %>
+					<%= f.select(:partner_id, partners_for_select, {}, { :class => 'select2' }) %>
 				</div>
 			</div>
+			<% else %>
+				<%= f.hidden_field(:partner_id, :value => current_partner.id) %>
+			<% end %>
 
 			<%#= hidden_field(:user, :created_by) %>
 

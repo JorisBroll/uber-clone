@@ -6,13 +6,13 @@ class Admin::StaticPagesController < ApplicationController
 	include CoursesHelper
 	
 	def home
-		case
-		when userWeight == User::Account_types[:superadmin][:weight]
+		case userWeight
+		when User::Account_types[:superadmin][:weight]
 			redirect_to [:admin, 'global_stats']
-		when userWeight == User::Account_types[:admin][:weight]
+		when User::Account_types[:admin][:weight]
 			@users = User.all
 			render 'admin_home'
-		when userWeight == User::Account_types[:partneradmin][:weight]
+		when User::Account_types[:partneradmin][:weight]
 			partner_home()
 			
 			render 'partner_home'
@@ -27,11 +27,8 @@ class Admin::StaticPagesController < ApplicationController
 		@courses = @partner.courses
 
 		@totalPrice = 0
-		@totalPriceAfterCodes = 0
 		@courses.where("status = ?", Course.statuses[:done]).each do |course|
-			@totalPrice += course.computed_price
-			afterCodePrice = price_afterExtras(course)
-			@totalPriceAfterCodes += afterCodePrice
+			@totalPrice += price_afterExtras(course)
 		end
 		@unpaidCourses = @courses.where("status = ? AND payment_status = ?", Course.statuses[:done], Course.payment_statuses[:not_paid]).order('payment_status ASC')
 
@@ -215,6 +212,32 @@ class Admin::StaticPagesController < ApplicationController
 		end
 
 		UserMailer.custom_email(to, params['subject'], params['contents'].html_safe).deliver
+
+		flash[:success] = 'Votre message a bien été envoyé au(x) destinataire(s) sélectionné(s).'
+
+		redirect_to params['return']
+	end
+
+	def invoice_email
+		if params['object_type'] == 'user'
+			to = User.find_by(id: params['id'].to_s).email
+		elsif params['object_type'] == 'course'
+			to = []
+			if !params['client'].nil? && params['client'] == '1'
+				to.push(Course.find_by(id: params['id'].to_s).user.email)
+			end
+			if !params['navadmin'].nil? && params['navadmin'] == '1'
+				to.push(Partner.find(1).email)
+			end
+			to = to.uniq
+			course_object = Course.find_by(id: params['id'].to_i)
+			course_prix = price_afterExtras(course_object).round(2)
+			course_duration = getTripDuration(course_object)
+			client_object = Course.find_by(id: params['id'].to_i).user
+			subject = "Naveco - Votre facture pour la course [##{Course.find_by(id: params['id'].to_i).id}]"
+		end
+
+		UserMailer.invoice_email(to, subject, params['contents'], course_object, client_object, course_prix, course_duration).deliver
 
 		flash[:success] = 'Votre message a bien été envoyé au(x) destinataire(s) sélectionné(s).'
 

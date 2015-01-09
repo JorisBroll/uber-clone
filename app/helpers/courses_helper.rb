@@ -5,6 +5,11 @@ module CoursesHelper
 		end
 	end
 
+	def getTripDuration(course)
+		duration = ((course.trip_finished - course.trip_started).to_i)/60
+		return duration
+	end
+
 	def payment_status_for_select
 		@table = Course::Payment_status.collect { |i, o| [o[:name], i] }
 	end
@@ -84,7 +89,7 @@ module CoursesHelper
 
 			return price
 		else
-			return false
+			return 0
 		end
 	end
 end

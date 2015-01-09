@@ -1,14 +1,15 @@
 class Admin::PartnersController < ApplicationController
-	before_action :partneradmins_only, :only => [:edit, :update]
-	before_action :admins_only, :except => [:edit, :update]
+	before_action -> { requiredWeight User::Account_types[:partneradmin][:weight] }
+	before_action -> { check_privileges }, only: [:show, :edit, :update, :destroy]
+	before_action -> { protect_destroy }, only: [:destroy]
 
 	include UploadsHelper
 
 	def index
+		sign_out_partner
 		@partners = Partner.all
 	end
 	def show
-		@partner = Partner.find(params[:id])
 		admin_this_partner @partner
 		redirect_to [:admin, 'partner_home']
 	end
@@ -32,12 +33,11 @@ class Admin::PartnersController < ApplicationController
 	    end
 	end
 	def edit
-		@partner = Partner.find(params[:id])
+
 	end
 	def update
 		store_logo
 
-		@partner = Partner.find(params[:id])
 		if @partner.update_attributes(partner_params)
 			update_logo(@partner)
 			flash[:success] = "L'entreprise "+@partner.name+" a été modifiée avec succès."
@@ -51,11 +51,12 @@ class Admin::PartnersController < ApplicationController
 		end
 	end
 	def destroy
-	    Partner.find(params[:id]).destroy
-	    flash[:success] = "Entreprise partenaire supprimée."
-	    Log.create(user_id: params[:id], target_type: 2, target_id: @partner.id, action: 'destroy')
-		AppLogger.log ({'user_id' => params[:id], 'action' => 'destroyed', 'target_object' => {'type' => 'partner', 'id' => @partner.id.to_s} })
-	    redirect_to admin_partners_path
+	    if @partner.destroy
+		    flash[:success] = "Entreprise partenaire supprimée."
+		    Log.create(user_id: current_user.id, target_type: 2, target_id: @partner.id, action: 'destroy')
+			AppLogger.log ({'user_id' => @current_user, 'action' => 'destroyed', 'target_object' => {'type' => 'partner', 'id' => @partner.id.to_s} })
+		    redirect_to admin_partners_path
+		end
 	end
 
 		private
@@ -74,5 +75,25 @@ class Admin::PartnersController < ApplicationController
 				@logo = params[:partner][:logo]
 				params[:partner][:logo] = ""
 	        end
+
+	        def check_privileges
+		    	if userWeight <= User::Account_types[:admin][:weight]
+		    		@partner = Partner.find_by(id: params[:id])
+		    	else
+		    		@partner = current_partner
+		    	end
+		    	
+		    	if @partner.nil?
+	    			flash[:error] = "Page inaccessible."
+	    			redirect_to [:admin, 'home'] 
+	    		end
+		    end
+
+		    def protect_destroy
+		    	if userWeight < User::Account_types[:superadmin][:weight]
+	    			flash[:error] = "Page inaccessible."
+	    			redirect_to [:admin, 'home'] 
+	    		end
+		    end
 
 end

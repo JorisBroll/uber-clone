@@ -1,10 +1,9 @@
 module CompaniesHelper
-	def companies_for_select(add_blank = false, options = false)
-		@companies = Company.all
-		if options
-			if options[:partner_id]
-				@companies = Partner.find_by(id: options[:partner_id]).companies
-			end
+	def companies_for_select(add_blank = false)
+		if current_partner.nil?
+			@companies = Company.all
+		else
+			@companies = current_partner.companies
 		end
 
 		@table = @companies.collect { |o| [o.name, o.id] }

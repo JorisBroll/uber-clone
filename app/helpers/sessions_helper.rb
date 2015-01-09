@@ -55,7 +55,7 @@ module SessionsHelper
     elsif !cookies[:partner_id].nil?
       @current_partner = Partner.find_by(id: cookies[:partner_id])
     else
-      return false
+      return nil
     end
   end
   # Is the admin using a partner id right now ?
@@ -72,7 +72,7 @@ module SessionsHelper
   def requiredWeight(weight)
     if !userWeight || userWeight > weight
       flash[:error] = "Vous n'avez pas les privilèges nécessaires pour consulter cette page."
-      redirect_to(root_url)
+      redirect_to root_url
     end
   end
   def userWeight

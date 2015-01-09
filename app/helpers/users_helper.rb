@@ -1,10 +1,9 @@
 module UsersHelper
-	def users_for_select(add_blank = false, options = false)
-		@users = User.all
-		if options
-			if options[:partner_id]
-				@users = Partner.find_by(id: options[:partner_id]).users
-			end
+	def users_for_select(add_blank = false)
+		if current_partner.nil?
+			@users = User.all
+		else
+			@users = current_partner.users
 		end
 
 	  	@table = @users.collect { |o| [build_name(o), o.id] }
@@ -15,7 +14,12 @@ module UsersHelper
 	end
 
 	def drivers_for_select(add_blank = false)
-	  	@table = User.where("account_type = ? OR account_type = ?", User.account_types[:partneradmin], User.account_types[:driver]).collect { |o| [o.name, o.id] }
+		if current_partner.nil?
+	  		@table = User.where("account_type = ? OR account_type = ?", User.account_types[:partneradmin], User.account_types[:driver]).collect { |o| [build_name(o), o.id] }
+	  	else
+			@table = current_partner.users.where("account_type = ? OR account_type = ?", User.account_types[:partneradmin], User.account_types[:driver]).collect { |o| [build_name(o), o.id] }
+	  	end
+
 	  	if add_blank
 			@table.unshift([add_blank, 0])
 		end

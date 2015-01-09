@@ -1,8 +1,41 @@
 class Admin::PromocodesController < ApplicationController
-	before_action :admins_only
+	before_action -> { requiredWeight User::Account_types[:admin][:weight] }
+
+	include PayPal::SDK::AdaptivePayments
+	#include PayPal::SDK::Core::Logging
+	
 
 	def index
 		@promocodes = Promocode.all
+
+		@api = PayPal::SDK::AdaptivePayments.new
+
+		# Build request object
+		@pay = @api.build_pay({
+			:actionType => "PAY",
+			:cancelUrl => "http://localhost:3000/samples/adaptive_payments/pay",
+			:currencyCode => "CAD",
+			:feesPayer => "SENDER",
+			:receiverList => {
+				:receiver => [{
+					:amount => 2500,
+					:email => "contact-buyer@nav-eco.fr" }] },
+			:returnUrl => "http://localhost:3000/samples/adaptive_payments/pay",
+			:sender => {
+				:useCredentials => true } })
+
+		# Make API call & get response
+		@response = @api.pay(@pay)
+
+		# Access response
+		if @response.success? && @response.payment_exec_status != "ERROR"
+		  @response.payKey
+		  @api.payment_url(@response)  # Url to complete payment
+		else
+		  @response.error[0].message
+		end
+
+		
 	end
 	def show
 		#current_partner

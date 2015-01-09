@@ -1,5 +1,5 @@
 class Admin::PaymentsController < ApplicationController
-	before_action :admins_only
+	before_action -> { requiredWeight User::Account_types[:superadmin][:weight] }
 
 	def index
 		@payments = Payment.all.order('created_at DESC')

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150102152550) do
+ActiveRecord::Schema.define(version: 20150106082817) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -137,6 +137,18 @@ ActiveRecord::Schema.define(version: 20150102152550) do
     t.string   "tva_number"
   end
 
+  create_table "payment_infos", force: true do |t|
+    t.integer "infos_type"
+    t.integer "user_id"
+    t.string  "card_number"
+    t.string  "card_expiration_month"
+    t.string  "card_expiration_year"
+    t.string  "card_verification"
+    t.string  "card_ending_code"
+    t.string  "paypal_email"
+    t.string  "paypal_token"
+  end
+
   create_table "payments", force: true do |t|
     t.string   "to_type"
     t.integer  "to_id"
@@ -191,7 +203,7 @@ ActiveRecord::Schema.define(version: 20150102152550) do
     t.text     "login_token"
     t.datetime "login_token_expiration"
     t.integer  "sponsored_by"
-    t.integer  "facebookID"
+    t.string   "facebookID"
   end
 
 end

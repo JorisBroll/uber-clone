@@ -145,7 +145,7 @@ class AjaxFunctionsController < ApplicationController
 		rendering(rData)
 	end
 		def user_params
-	    	params['user']['new_user_params'].require(:user).permit(:name, :last_name, :email, :phone, :cellphone, :address, :postcode, :city, :enabled)
+	    	params['user']['new_user_params'].require(:user).permit(:name, :last_name, :email, :phone, :cellphone, :address, :postcode, :city, :enabled, :partner_id)
 	    end
 
 	    def course_params

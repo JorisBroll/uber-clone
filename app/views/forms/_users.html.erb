@@ -77,7 +77,7 @@
 			}
 		});*/
 
-		$("#user_account_type").select2({
+		$("#user_account_type, #user_partner_id").select2({
 			allowClear: true,
 			placeholder: "Sélectionner..."
 		});
@@ -86,7 +86,7 @@
 		<% if type == 'extended' %>
 		$("#user_companies").attr('multiple', 'multiple').attr('name', $("#user_companies").attr('name')+'[]');
 		$("#user_companies option:selected").removeAttr("selected");
-		$("#user_partner_id, #user_promocode_ids, #user_company_ids").select2({
+		$("#user_promocode_ids, #user_company_ids").select2({
 			allowClear: true,
 			placeholder: "Sélectionner..."
 		});
@@ -193,14 +193,18 @@
 		</div>
 	</div>
 
-	<% if type == 'extended' %>
-		<div class="row form-group">
-			<%= f.label :partner_id, class: "col-sm-3 control-label" %>
-			<div class="col-sm-9">
-				<%= f.select(:partner_id, partners_for_select('Aucune'), class: "form-control select") %>
-			</div>
+	<% if current_partner.nil? %>
+	<div class="row form-group partnerIdRow">
+		<%= f.label :partner_id, class: "col-sm-3 control-label" %>
+		<div class="col-sm-9">
+			<%= f.select(:partner_id, partners_for_select('Aucune'), class: "form-control select") %>
 		</div>
+	</div>
+	<% else %>
+		<%= f.hidden_field(:partner_id, :value => current_partner.id) %>
+	<% end %>
 
+	<% if type == 'extended' %>
 		<div class="row form-group">
 			<%= f.label :companies, class: "col-sm-3 control-label" %>
 			<div class="col-sm-9">
