@@ -8,10 +8,23 @@
 </style>
 <script>
 	init.push(function () {
-		$("#partner-select, #status-select").select2({
+		$("#courses-status, #partners-driver-status").select2({
 			allowClear: true,
 			placeholder: "Sélectionner..."
 		});
+
+		if($("#courses-partner")[0].tagName == "SELECT") {
+			$("#courses-partner").select2({
+				allowClear: true,
+				placeholder: "Sélectionner..."
+			});
+		}
+		if($("#partners-drivers")[0].tagName == "SELECT") {
+			$("#partners-drivers").select2({
+				allowClear: true,
+				placeholder: "Sélectionner..."
+			});
+		}
 		$('.popsover').popover();
 	});
 
@@ -40,12 +53,12 @@
 					</div>
 				</div>
 				<div>
-					<label for="courses-partner">Courses appartenant à :</label>
-					<select id="courses-partner">
-						<% @partners.each do |partner| %>
-							<option value="<%= partner.id %>"><%= partner.name %></option>
-						<% end %>
-					</select>
+					<% if current_partner.nil? %>
+						<%= label_tag("courses-partner", "Courses appartenant à :") %>
+						<%= select_tag("courses-partner", options_for_select(partners_for_select)) %>
+					<% else %>
+						<%= hidden_field_tag("courses-partner", current_partner.id) %>
+					<% end %>
 				</div>
 				<div>
 					<label for="courses-status">Status des courses :</label>
@@ -67,13 +80,12 @@
 					</label>
 				</div>
 				<div>
-					<label for="partners-drivers">Chauffeurs de l'entreprise :</label>
-					<select id="partners-drivers">
-						<option value="all">Tous</option>
-						<% @partners.each do |partner| %>
-							<option value="<%= partner.id %>"><%= partner.name %></option>
-						<% end %>
-					</select>
+					<% if current_partner.nil? %>
+						<%= label_tag("partners-drivers", "Chauffeurs de l'entreprise :") %>
+						<%= select_tag("partners-drivers", options_for_select(partners_for_select)) %>
+					<% else %>
+						<%= hidden_field_tag("partners-drivers", current_partner.id) %>
+					<% end %>
 				</div>
 				<div>
 					<label for="partners-driver-status">Status des chauffeurs :</label>

@@ -307,6 +307,7 @@
 				<%= form_tag("/admin/invoice_email") do %>
 					<%= hidden_field_tag(:object_type, "course") %>
 					<%= hidden_field_tag(:id, @course.id) %>
+					<%= hidden_field_tag(:partner_id, @partner.id) %>
 					<div class="row form-group">
 						<label class="col-sm-2 control-label">Envoyer à :</label>
 						<div class="col-sm-10">

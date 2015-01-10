@@ -50,6 +50,7 @@ class User < ActiveRecord::Base
 	}
 	
 	enum account_type: Account_types.collect { |key, o| key }
+	enum status: Status.collect { |key, o| key }
 	Account_types_select = Account_types.collect { |key, o| [o[:name], key] }
 	Account_types_select_partneradmin = Account_types.collect { |key, o|
 		if ![:superadmin, :admin].include? key

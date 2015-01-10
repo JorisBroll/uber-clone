@@ -357,6 +357,10 @@ class window.GmapManager
 				message: "Erreur : trajet impossible à générer, une ou les adresses n'ont pas pû être interpretées."
 			)
 
+	deleteRoutes: () =>
+		for display in @directionsDisplays
+			display.setDirections({routes: []});
+
 	distanceCheck: (route) ->
 		_start_type = @getType_point(route.start_location, route.start_address)
 		_end_type = @getType_point(route.end_location, route.end_address)
@@ -592,9 +596,13 @@ $(".static_pages.map").ready ->
 			for infosbulle in @infosbulles
 				infosbulle.close();
 
-			console.log(@map)
+			console.log(list)
 			for marker in @map.markers
 				marker.setMap(null);
+			console.log(@map.markers)
+			@map.markers = []
+
+			@map.deleteRoutes()
 			
 			if list.courses && list.courses.length > 0
 				startEndsList = []
@@ -611,7 +619,9 @@ $(".static_pages.map").ready ->
 
 				@map.computeCourse(startEndsList, {}, getterStatus.print)
 
-			else getterStatus.print("NOT_FOUND")
+			else
+				getterStatus.print("NOT_FOUND")
+
 
 			if list.users && list.users.length > 0
 				for user in list.users

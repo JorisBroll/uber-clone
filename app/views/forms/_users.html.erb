@@ -77,10 +77,17 @@
 			}
 		});*/
 
-		$("#user_account_type, #user_partner_id").select2({
+		$("#user_account_type").select2({
 			allowClear: true,
 			placeholder: "Sélectionner..."
 		});
+
+		if($("#user_partner_id")[0].tagName == "SELECT") {
+			$("#user_partner_id").select2({
+				allowClear: true,
+				placeholder: "Sélectionner..."
+			});
+		}
 
 
 		<% if type == 'extended' %>
@@ -177,21 +184,22 @@
 		</div>
 	</div>
 
-
-	<% if params["action"] == 'new' then checked = true else checked = false end %>
-	<div class="row form-group enableRow">
-		<%= f.label :enabled, class: "col-sm-3 control-label" %>
-		<div class="col-sm-9">
-			<label class="checkbox-inline">
-				<%= f.radio_button :enabled, '0', :checked => checked, :class => "px" %>
-				<span class="lbl"><%= label :contactmethod_0, 'Non' %></span>
-			</label>
-			<label class="checkbox-inline">
-				<%= f.radio_button :enabled, '1', :checked => !checked, :class => "px" %>
-				<span class="lbl"><%= label :contactmethod_1, 'Oui' %></span>
-			</label>
+	<% if current_partner.nil? %>
+		<% if params["action"] == 'new' then checked = true else checked = !@user.enabled end %>
+		<div class="row form-group enableRow">
+			<%= f.label :enabled, class: "col-sm-3 control-label" %>
+			<div class="col-sm-9">
+				<label class="checkbox-inline">
+					<%= f.radio_button :enabled, '0', :checked => checked, :class => "px" %>
+					<span class="lbl"><%= label :contactmethod_0, 'Non' %></span>
+				</label>
+				<label class="checkbox-inline">
+					<%= f.radio_button :enabled, '1', :checked => !checked, :class => "px" %>
+					<span class="lbl"><%= label :contactmethod_1, 'Oui' %></span>
+				</label>
+			</div>
 		</div>
-	</div>
+	<% end %>
 
 	<% if current_partner.nil? %>
 	<div class="row form-group partnerIdRow">

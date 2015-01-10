@@ -21,7 +21,7 @@ class AjaxFunctionsController < ApplicationController
 			if params['partners-drivers'] == 'all'
 				users = User.where('account_type = ? AND status = ?', User::account_types[:driver], 0) # All online drivers
 			elsif !params['partners-drivers'].nil? && params['courses-partner'] != 'all'
-				users = Partner.find_by(id: params['partners-drivers']).users.where('account_type = ? AND status = ?', User::account_types[:driver], params['partners-driver-status'].to_i)
+				users = Partner.find_by(id: params['partners-drivers']).users.where('account_type = ? AND status = ?', User::account_types[:driver], User::statuses[params['partners-driver-status'].to_sym])
 			end
 				#users = users.to_json(:include => :partner)
 				rData[:users] = users

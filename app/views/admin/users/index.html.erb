@@ -1,6 +1,9 @@
 <script>
 	init.push(function () {
-		$('#table-clients, #table-self-employed, #table-sarl-admins, #table-partneradmins, #table-admins, #table-all').dataTable();
+		$('#table-to-enable, #table-clients, #table-self-employed, #table-sarl-admins, #table-partneradmins, #table-admins, #table-all').dataTable();
+
+		$('#table-to-enable_wrapper .table-caption').text('Conducteurs à valider');
+		$('#table-to-enable_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
 
 		$('#table-clients_wrapper .table-caption').text('Liste complète des clients');
 		$('#table-clients_wrapper .dataTables_filter input').attr('placeholder', 'Recherche...');
@@ -24,6 +27,9 @@
 <div class="panel-body">
 	<ul id="users-tabs" class="nav nav-tabs nav-tabs-simple">
 		<li class="">
+			<a href="#to-enable" data-toggle="tab">Conducteurs à valider</a>
+		</li>
+		<li class="">
 			<a href="#clients" data-toggle="tab">Clients</a>
 		</li>
 		<li class="">
@@ -41,6 +47,34 @@
 	</ul>
 
 	<div class="tab-content">
+		<div class="tab-pane fade" id="to-enable">
+			<div class="table-info">
+				<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="table-clients">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Nom Prénom</th>
+							<th>Email</th>
+							<th>Téléphone / Portable</th>
+							<th>Ville</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+					<% @driversToEnable.each do |user| %>
+						<tr>
+							<td><%= user.id %></td>
+							<td><%= build_name(user) %></td>
+							<td><%= user.email %></td>
+							<td><%= user.phone %> / <%= user.cellphone %></td>
+							<td><%= build_address(user) %></td>
+							<td style="text-align:center; font-size:16px;"><%= link_to admin_user_path(user), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_user_path(user), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_user_path(user), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
+						</tr>
+					<% end %>
+					</tbody>
+				</table>
+			</div>
+		</div>
 		<div class="tab-pane fade" id="clients">
 			<div class="table-info">
 				<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="table-clients">

@@ -142,13 +142,13 @@
 						</tr>
 						
 						<tr>
-							<td width="200" style="padding: 3px 0px;">Hors taxe :</td><td> <%= number_with_precision(@course.computed_price/1.20, :precision => 2) %> €</td>
+							<td width="200" style="padding: 3px 0px;">Hors taxe :</td><td><% if @partner.status == "company" %><%= number_with_precision(@course.computed_price/1.10, :precision => 2) %> €<% end %><% if @partner.status == "self_employed" %><%= number_with_precision(@course.computed_price, :precision => 2) %><% end %></td>
 						</tr>
 						<tr>
-							<td width="200" style="padding: 3px 0px;">TVA :</td><td> <%= number_with_precision(@course.computed_price-(@course.computed_price/1.20), :precision => 2) %> €</td>
+							<td width="200" style="padding: 3px 0px;"><% if @partner.status == "company" %>TVA (10%)<% end %><% if @partner.status == "self_employed" %>TVA<% end %> :</td><td><% if @partner.status == "company" %><%= number_with_precision(@course.computed_price-(@course.computed_price/1.10), :precision => 2) %> €<% end %><% if @partner.status == "self_employed" %>-<% end %></td>
 						</tr>
 						<tr>
-							<td width="200" style="padding: 3px 0px 6px 0px;">Total TTC :</td><td> <%= number_with_precision(@course.computed_price, :precision => 2) %> €</td>
+							<td width="200" style="padding: 3px 0px 6px 0px;">Total TTC :</td><td><% if @partner.status == "company" %><%= number_with_precision(@course.computed_price, :precision => 2) %> €<% end %><% if @partner.status == "self_employed" %> - <% end %></td>
 						</tr>
 						<tr style="border-bottom:1px solid #AAA;">
 							<td width="200" style="padding: 3px 0px;">Code Promo : </td><td><% if @course.promocode_amount %>
@@ -163,8 +163,21 @@
 							
 					</table>
 					<br />
-					<span style="font-size: 10px; color: #000;">Le prix n’inclut pas d’éventuels frais bancaires. Contactez votre banque pour en savoir plus sur les frais applicables.</span>
-					<br />
+						<table cellpadding="0" cellspacing="0" border="0" width="440">
+							<tr>
+								<td style="text-align:center;">
+									<span style="font-size: 10px; color: #000;">Le prix n’inclut pas d’éventuels frais bancaires. Contactez votre banque pour en savoir plus sur les frais applicables.</span>
+									<br />
+								</td>
+							</tr>
+							<% if @partner.status == "self_employed" %>
+								<tr>
+									<td style="text-align:center;">
+										<span style="font-size: 10px; color: #000;">Chauffeur : <%= @partner.name %> - <%= Partner::Statuses[@partner.status.to_sym][:name] %> - SIREN : <%= @partner.company_code %> <br /> <i>dispensé d'immatriculation en application de l'article L.123-1-1 du Code du Commerce</i><br />TVA non applicable, art.293 B du CGI</span>
+									</td>
+								</tr>
+							<% end %>
+						</table>
 					<br />
 
 				</td>

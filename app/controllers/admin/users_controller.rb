@@ -9,6 +9,8 @@ class Admin::UsersController < ApplicationController
 
 	def index
 		if userWeight <= User::Account_types[:admin][:weight]
+			@driversToEnable = User.where("account_type = ? AND enabled = false", User.account_types[:driver])
+			
 			@clients = User.where("account_type = ?", User.account_types[:client])
 
 			@users_selfemployed_admins = []

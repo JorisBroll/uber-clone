@@ -75,7 +75,13 @@ class Admin::StaticPagesController < ApplicationController
 	end
 
 	def map
-		@partners = Partner.all
+		if userWeight <= User::Account_types[:admin][:weight]
+			@drivers = User.where("account_type = ?", User.account_types[:driver])
+			@partners = Partner.all
+		else
+			@drivers = current_partner.users.where("account_type = ?", User.account_types[:driver])
+		end
+		
 	end
 
 	def operator_steps
@@ -234,10 +240,11 @@ class Admin::StaticPagesController < ApplicationController
 			course_prix = price_afterExtras(course_object).round(2)
 			course_duration = getTripDuration(course_object)
 			client_object = Course.find_by(id: params['id'].to_i).user
+			partner_object = Partner.find_by(id: params['partner_id'])
 			subject = "Naveco - Votre facture pour la course [##{Course.find_by(id: params['id'].to_i).id}]"
 		end
 
-		UserMailer.invoice_email(to, subject, params['contents'], course_object, client_object, course_prix, course_duration).deliver
+		UserMailer.invoice_email(to, subject, params['contents'], course_object, client_object, course_prix, course_duration, partner_object).deliver
 
 		flash[:success] = 'Votre message a bien été envoyé au(x) destinataire(s) sélectionné(s).'
 

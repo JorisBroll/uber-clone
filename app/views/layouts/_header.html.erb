@@ -204,29 +204,33 @@
 							<a href="<%= admin_home_path %>?for_partner=1"><i class="menu-icon fa fa-info-circle"></i><span class="mm-text">Informations</span></a>
 						</li>
 						<li>
+							<a href="<%= admin_map_path %>?for_partner=1"><i class="menu-icon fa fa-map-marker"></i><span class="mm-text">Carte des taxis</span></a>
+						</li>
+						<li>
 							<a href="<%= admin_monthly_path %>?for_partner=1"><i class="menu-icon fa fa-usd"></i><span class="mm-text">Récapitulatif mensuel</span></a>
 						</li>
 						<li>
 							<a href="<%= admin_users_path %>?for_partner=1"><i class="menu-icon fa fa-users"></i><span class="mm-text">Utilisateurs</span></a>
-						</li>
-						<li>
-							<a href="<%= admin_companies_path %>?for_partner=1"><i class="menu-icon fa fa-university"></i><span class="mm-text">Entreprises clientes</span></a>
-						</li>
-						<li>
+						</li<li>
 							<a href="<%= admin_cars_path %>?for_partner=1"><i class="menu-icon fa fa-taxi"></i><span class="mm-text">Voitures</span></a>
 						</li>
-						<li>
-							<a href="<%= admin_courses_path %>?for_partner=1"><i class="menu-icon fa fa-flag-checkered"></i><span class="mm-text">Courses</span></a>
-						</li>
+						<%#<li>
+							<a href="<%= admin_companies_path ?for_partner=1"><i class="menu-icon fa fa-university"></i><span class="mm-text">Entreprises clientes</span></a>
+						</li>%>
+						<%#<li>
+							<a href="<%= admin_courses_path ?for_partner=1"><i class="menu-icon fa fa-flag-checkered"></i><span class="mm-text">Courses</span></a>
+						</li>%>
 				<% end %>		
 				<% if currently_admining_partner? %>
 					</ul>
 				</li>
 				<% end %>
 			</ul>
-			<div class="menu-content">
-				<%= link_to "Créer une course", admin_operator_steps_path, class:"btn btn-primary btn-block btn-outline dark" %>
-			</div>
+			<% if !currently_admining_partner? && !current_partner %>
+				<div class="menu-content">
+					<%= link_to "Créer une course", admin_operator_steps_path, class:"btn btn-primary btn-block btn-outline dark" %>
+				</div>
+			<% end %>
 		</div> <!-- / #main-menu-inner -->
 	</div> <!-- / #main-menu -->
 <!-- /4. $MAIN_MENU -->
