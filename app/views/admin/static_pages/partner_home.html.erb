@@ -85,8 +85,8 @@ init.push(function () {
 
 		<div class="panel widget-support-tickets panel-warning" id="panel-courses">
 			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses de l'entreprise <span class="label label-success"><%= @courses.count %></span></span>
-				<ul class="nav nav-tabs nav-tabs-sm">
+				<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses de l'entreprise <span class="label label-success"><%= @courses.count %></span><br /><br /><br /></span>
+				<ul class="nav nav-tabs nav-tabs-sm panel-align-left">
 					<li class="active ">
 						<a href="#courses_done" data-toggle="tab">Terminées <span class="badge badge-success"><%= @courses.where("status = ?", Course.statuses[:done]).count %></span></a>
 					</li>

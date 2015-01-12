@@ -96,14 +96,15 @@ class AjaxFunctionsController < ApplicationController
 		rData['status'] = true
 
 		user = User.new(user_params)
+
 		user.enabled = false
 		user.password = 'default'
 		user.account_type = 'client'
-		if user.valid?
-			user.save
+		if user.minimal_valid?
+			user.save(:validate => false)
 			rData['user_created'] = {:id => user.id, :status => true }
 		else
-			rData['user_created'] = {:status => false, :errors => user.errors.full_messages}
+			rData['user_created'] = {:status => false, :errors => ["Vérifiez que \"Nom\" et \"Téléphone portable\" sont bien remplis."]}
 			rData['status'] = false
 		end
 

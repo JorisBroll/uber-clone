@@ -11,7 +11,9 @@
 		<thead>
 			<tr>
 				<th>#</th>
-				<th>Nom</th>
+				<th>Dénomination sociale</th>
+				<th>Adresse</th>
+				<th>Téléphone</th>
 				<th>Actions</th>
 			</tr>
 		</thead>
@@ -20,6 +22,8 @@
 				<tr>
 					<td><%= company.id %></td>
 					<td><%= company.name %></td>
+					<td><%= build_address(company) %></td>
+					<td><%= company.phone %></td>
 					<td style="font-size:16px;"><%= link_to admin_company_path(company), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_company_path(company), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_company_path(company), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 				</tr>
 			<% end %>

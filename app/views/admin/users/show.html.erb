@@ -88,8 +88,8 @@ init.push(function () {
 		
 		<div class="panel widget-support-tickets panel-warning" id="panel-courses">
 			<div class="panel-heading">
-				<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses de l'utilisateur</span>
-				<ul class="nav nav-tabs nav-tabs-sm">
+				<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses de l'utilisateur <br /><br /><br /></span>
+				<ul class="nav nav-tabs nav-tabs-sm panel-align-left">
 					<li class="active ">
 						<a href="#courses_done" data-toggle="tab">Terminées <span class="badge badge-success"><%= @user.courses.where("status = ?", Course.statuses[:done]).count %></span></a>
 					</li>
@@ -304,7 +304,7 @@ init.push(function () {
 				</div>
 				<hr />
 				<div class="text-right">
-					<form id="select-date" class="form-inline col-xs-6" action="<%= admin_user_path %>">
+					<form id="select-date" class="form-inline" action="<%= admin_user_path %>">
 						<span>Voir jusqu'à : </span><%= date_select("recap", "date", {:start_year => 2014, :end_year => Time.new.year, :discard_day => true }, {:class => "form-control"} ) %>
 						<button type="submit" class="btn btn-info">Voir</button>
 					</form>
@@ -354,7 +354,7 @@ init.push(function () {
 		</div>
 		</div>
 <!-- /$RATING -->
-
+		<% if !current_partner.nil? %>
 		<div class="panel">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-envelope"></i>Envoyer un Email à cet utilisateur</span>
@@ -383,6 +383,7 @@ init.push(function () {
 				<% end %>
 			</div>
 		</div>
+		<% end %>
 
 	</div>
 

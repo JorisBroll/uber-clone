@@ -1,5 +1,7 @@
 <script>
 	init.push(function () {
+		$('#balance_partners .ticket .panel').slimScroll({ height: 200, alwaysVisible: false, color: '#888',allowPageScroll: true });
+
 		$('.date').datepicker({
 			daysOfWeekDisabled: "6",
 			todayHighlight: true,
@@ -61,7 +63,7 @@
 				<span> </span><span><%= @a.to_s %></span>
 			</div>
 		</div>
-		<div class="panel widget-support-tickets">
+		<div class="panel widget-support-tickets" id="balance_partners">
 			<div class="panel-heading">
 				<span class="panel-title">Balance des entreprises partenaires</span>
 			</div>
@@ -83,31 +85,44 @@
 							<a href="<%= admin_partner_path(partner) %>" class="ticket-title"><b><%= partner.name %></b></a>
 						</div>
 						<div class="panel">
-						<table class="table text-xs">
-							<tr>
-								<th class="text-center">#</th>
-								<th>Départ</th>
-								<th>Destination</th>
-								<th>Type règlement</th>
-								<th>Prix client</th>
-								<th>Prix affilié</th>
-								<th>Marge</th>
-							</tr>
-							<% courses.each do |course| %>
-							<tr>
-								<td class="text-center"><a href="<%= admin_course_path(course) %>"><b><%= course.id %></b></a></td>
-								<td><%= course.from %></td>
-								<td><%= course.to %></td>
-								<td><%= Course::Payment_by[course.payment_by.to_sym][:name_admin] %></td>
-								<td><%= price_afterExtras(course).round(2) %> € </td>
-								<td><%= price_afterExtras(course, 'partner').round(2) %> €</td>
-								<td><%= price_afterExtras(course, 'naveco').round(2) %> €</td>
-							</tr>
-							<% end %>
-						</table>
+							<table class="table text-xs">
+								<tr>
+									<th class="text-center">#</th>
+									<th>Départ</th>
+									<th>Destination</th>
+									<th>Type règlement</th>
+									<th>Prix client</th>
+									<th>Prix affilié</th>
+									<th>Marge</th>
+								</tr>
+								<% courses.each do |course| %>
+								<tr>
+									<td class="text-center"><a href="<%= admin_course_path(course) %>"><b><%= course.id %></b></a></td>
+									<td><%= course.from %></td>
+									<td><%= course.to %></td>
+									<td><%= Course::Payment_by[course.payment_by.to_sym][:name_admin] %></td>
+									<td><%= price_afterExtras(course).round(2) %> € </td>
+									<td><%= price_afterExtras(course, 'partner').round(2) %> €</td>
+									<td><%= price_afterExtras(course, 'naveco').round(2) %> €</td>
+								</tr>
+								<% end %>
+							</table>
 						</div>
+						<hr />
 						<div class="text-right">
 							<a href="<%= admin_monthly_pdf_path %>?p=<%= partner.id.to_s %>&recap[date(3i)]=<%= @date[:start].beginning_of_month.strftime("%d") %>&recap[date(2i)]=<%= @date[:start].beginning_of_month.strftime("%m") %>&recap[date(1i)]=<%= @date[:start].beginning_of_month.strftime("%Y") %>" class="btn btn-sm">Générer la facture</a>
+
+							<div class="btn-group">
+								<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">Factures par semaines&nbsp;<i class="fa fa-caret-down"></i></button>
+								<ul class="dropdown-menu">
+									<% (0..6).each do |i| %>
+										<% if (@date_week[i][:start].strftime("%m")) == (@date[:start].beginning_of_month.strftime("%m")) %>
+											<li><a href="<%= admin_monthly_pdf_path %>?p=<%= partner.id.to_s %>&recap[date(3i)]=<%= @date_week[i][:start].strftime("%d") %>&recap[date(2i)]=<%= @date_week[i][:start].strftime("%m") %>&recap[date(1i)]=<%= @date_week[i][:start].strftime("%Y") %>">Facture du <%= @date_week[i][:start].strftime("%d/%m/%Y") %> au <%= @date_week[i][:end].strftime("%d/%m/%Y") %></a></li>
+										<% end %>
+									<% end %>
+								</ul>
+							</div>&nbsp;&nbsp;
+
 							<p>Balance au <%= @date[:start].beginning_of_month.strftime("%d/%m/%Y") %> : <%= alltime_balance.round(2) %> €</p>
 						</div>
 					</div>

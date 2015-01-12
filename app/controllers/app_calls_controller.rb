@@ -43,7 +43,7 @@ class AppCallsController < ApplicationController
 	def login # Call to log into the app
 		user = User.find_by(email: params['credentials']['email']).try(:authenticate, Base64.decode64(params['credentials']['password']))
 
-		if !user.enabled
+		if user && !user.enabled
 			rData = {:status => false, :errorMessage => 'Utilisateur non activé. Veuillez contacter Naveco pour résoudre le problème.' }
 		elsif user
 			uncrypted_token = {:user_id => user.id.to_s, :deliver_date => Time.zone.now}

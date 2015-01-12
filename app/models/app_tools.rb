@@ -9,28 +9,36 @@ class AppTools
 		def self.objects
 			return {
 				:user => {
-					:name => 'Utilisateur'
+					:name => 'Utilisateur',
+					:with_article => "l'utilisateur"
 				},
 				:course => {
-					:name => 'Course'
+					:name => 'Course',
+					:with_article => "la course"
 				},
 				:partner => {
-					:name => 'Entreprise partenaire'
+					:name => 'Entreprise partenaire',
+					:with_article => "l'entreprise partenaire"
 				},
 				:company => {
-					:name => 'Entreprise cliente'
+					:name => 'Entreprise cliente',
+					:with_article => "l'entreprise cliente"
 				},
 				:promocode => {
-					:name => 'Code promotion'
+					:name => 'Code promotion',
+					:with_article => "le code promotion"
 				},
 				:payment => {
-					:name => 'Paiement'
+					:name => 'Paiement',
+					:with_article => "le paiement"
 				},
 				:event => {
-					:name => 'Événement'
+					:name => 'Événement',
+					:with_article => "l'évènement"
 				},
 				:log => {
-					:name => 'Entrée de journal'
+					:name => 'Entrée de journal',
+					:with_article => "l'entrée de journal"
 				},
 			}
 		end

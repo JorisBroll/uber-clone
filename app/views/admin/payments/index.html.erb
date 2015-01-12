@@ -12,7 +12,7 @@
 			<tr>
 				<th>#</th>
 				<th>Type de récepteur</th>
-				<th>Nom du récepteur</th>
+				<th>ID / Nom du récepteur</th>
 				<th>Valeur de la transaction</th>
 				<th>Méthode de paiement</th>
 				<th>Date d'enregistrement</th>
@@ -24,8 +24,8 @@
 		<% @payments.each do |payment| %>
 			<tr>
 				<td><%= payment.id %></td>
-				<td><%= payment.to_type %></td>
-				<td><%= payment.to_id %></td>
+				<td><%= AppTools.objects[payment.to_type.to_sym][:name] %></td>
+				<td><%= payment.to_id.to_s+' / '+payment.to_type.classify.constantize.find_by(id: payment.to_id).name %></td>
 				<td><%= payment.amount %></td>
 				<td><%= Payment::Methods[payment.method.to_sym][:name] %></td>
 				<td><%= build_date(payment.created_at) %></td>

@@ -4,10 +4,13 @@ class Payment < ActiveRecord::Base
 			:name => "Paypal"
 		},
 		:card => {
-			:name => "Carte banquaire"
+			:name => "Carte bancaire"
+		},
+		:transfer => {
+			:name => "Virement"
 		},
 		:cash => {
-			:name => "En liquide"
+			:name => "Espèce"
 		}
 	}
 	

@@ -12,12 +12,12 @@
 			</div>
 			<div class="panel-body">
 				<% @logs[:users].each do |l| %>
+				<% user = User.find_by(id: l.user_id) %>
 				<p>
-					<%= l.user_id %>
-					<%= l.target_type %>
-					<%= l.target_id %>
-					<%= l.action %>
-					<%= l.created_at %>
+					<%= l.created_at.strftime("%d/%m/%Y à %H:%I:%S") %> - 
+					<%= link_to(admin_user_path(user)) do build_name(user) end %>
+					<span class="text-danger"><%= l.action_string %></span>
+					<%= l.target_string %>
 				</p>
 				<% end %>
 			</div>
@@ -31,11 +31,10 @@
 			<div class="panel-body">
 				<% @logs[:courses].each do |l| %>
 				<p>
-					<%= l.user_id %>
-					<%= l.target_type %>
-					<%= l.target_id %>
-					<%= l.action %>
-					<%= l.created_at %>
+					<%= l.created_at.strftime("%d/%m/%Y à %H:%I:%S") %> - 
+					<%= link_to(admin_user_path(User.find_by(id: l.user_id))) do build_name(User.find_by(id: l.user_id)) end %>
+					<span class="text-danger"><%= l.action_string %></span>
+					<%= l.target_string %>
 				</p>
 				<% end %>
 			</div>
@@ -49,11 +48,10 @@
 			<div class="panel-body">
 				<% @logs[:partners].each do |l| %>
 				<p>
-					<%= l.user_id %>
-					<%= l.target_type %>
-					<%= l.target_id %>
-					<%= l.action %>
-					<%= l.created_at %>
+					<%= l.created_at.strftime("%d/%m/%Y à %H:%I:%S") %> - 
+					<%= link_to(admin_user_path(User.find_by(id: l.user_id))) do build_name(User.find_by(id: l.user_id)) end %>
+					<span class="text-danger"><%= l.action_string %></span>
+					<%= l.target_string %>
 				</p>
 				<% end %>
 			</div>

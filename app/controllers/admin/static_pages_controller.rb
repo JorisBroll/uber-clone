@@ -91,7 +91,7 @@ class Admin::StaticPagesController < ApplicationController
 
 	def logs
 		@logs = {}
-		@logs[:all] = Log.all
+		@logs[:all] = Log.all.order(created_at: :desc)
 		@logs[:users] = @logs[:all].where('target_type = 0')
 		@logs[:courses] = @logs[:all].where('target_type = 1')
 		@logs[:partners] = @logs[:all].where('target_type = 2')
@@ -105,12 +105,20 @@ class Admin::StaticPagesController < ApplicationController
 	end
 	
 	def monthly
+		@date_week = []
+
 		if !params['recap'].nil?
 			@select_date = Date.new(params['recap']['date(1i)'].to_i, params['recap']['date(2i)'].to_i, 1)
 			@date = {
 				:start => @select_date.beginning_of_month,
 				:end => @select_date.end_of_month
-			}
+			}			
+			(0..6).each do |i|
+				@date_week[i] = {
+					:start => @select_date.weeks_since(i).at_beginning_of_week,
+					:end => @select_date.weeks_since(i).at_end_of_week
+				}
+			end
 		elsif !params['date_start'].nil?
 			@date = {
 				:start => params['date_start'].to_date,
@@ -121,9 +129,14 @@ class Admin::StaticPagesController < ApplicationController
 				:start => Time.zone.now.beginning_of_month,
 				:end => Time.zone.now.end_of_month
 			}
+			@date_week = {
+				:start => Time.zone.now.next_week,
+				:end => Time.zone.now.at_end_of_week
+			}
 		end
 		
 		@courses = Course.where("date_when >= ? AND date_when <= ? AND status = ?", @date[:start], @date[:end], Course.statuses[:done])
+		#@courses_week = Course.where("date_when >= ? AND date_when <= ? AND status = ?", @date_week[:start], @date_week[:end], Course.statuses[:done])
 		@totals = {
 			:full_price => @courses.map {|s| s.computed_price}.reduce(0, :+),
 			:promo_price => @courses.map {|s| price_afterExtras(s)}.reduce(0, :+),
@@ -151,9 +164,14 @@ class Admin::StaticPagesController < ApplicationController
 			@partner = Partner.find_by(id: params['p'])
 			if !params['recap'].nil?
 				@select_date = Date.new(params['recap']['date(1i)'].to_i, params['recap']['date(2i)'].to_i, 1)
+				@select_date_week = Date.new(params['recap']['date(1i)'].to_i, params['recap']['date(2i)'].to_i, params['recap']['date(3i)'].to_i)
 				@date = {
 					:start => @select_date.beginning_of_month,
 					:end => @select_date.end_of_month
+				}
+				@date_week = {
+					:start => @select_date_week.at_beginning_of_week,
+					:end => @select_date_week.at_end_of_week
 				}
 			elsif !params['date_start'].nil?
 				@date = {
@@ -165,14 +183,19 @@ class Admin::StaticPagesController < ApplicationController
 					:start => Time.zone.now.beginning_of_month,
 					:end => Time.zone.now.end_of_month
 				}
+				@date_week = {
+					:start => Time.zone.now.next_week.at_beginning_of_week,
+					:end => Time.zone.now.next_week.at_end_of_week
+				}
 			end
 			@courses = @partner.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @date[:start], @date[:end], Course.statuses[:done]).order(date_when: :asc)
+			@courses_week = @partner.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @date_week[:start], @date_week[:end], Course.statuses[:done]).order(date_when: :asc)
 			@courses_to_naveco = @courses.where("payment_by = ?", Course.payment_bies[:partner])
 			
 			@totals = {
-				:ttc => (@courses.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+)).round(2),
-				:ht => ((@courses.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+))/1.10).round(2),
-				:tva => (@courses.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+))-((@courses.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+))/1.10).round(2),
+				:ttc => (@courses_week.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+)).round(2),
+				:ht => ((@courses_week.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+))/1.10).round(2),
+				:tva => (@courses_week.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+))-((@courses_week.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+))/1.10).round(2),
 				:naveco_collected => (@courses_to_naveco.map {|s| price_afterExtras(s)}.reduce(0, :+)).round(2)
 			}
 

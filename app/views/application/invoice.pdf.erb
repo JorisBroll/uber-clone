@@ -235,7 +235,7 @@
 							<td id="head-date" width="100%" valign="top">
 								<%= I18n.localize(@date[:end], :format => "%d %B %Y") %><br /><br />
 								<strong>Facture n°</strong><br />
-								<span id="invoice-number"><%= @partner.name[0,3].upcase %>-<%= @date[:end].strftime("%m/%Y") %>-1</span>
+								<span id="invoice-number"><%= @partner.name[0,3].upcase %>-<%= @date_week[:start].strftime("%m.%Y") %>/<%= @date_week[:start].strftime("%d") %>-<%= @date_week[:end].strftime("%d") %></span>
 							</td>
 						</tr>
 					</table>
@@ -263,12 +263,12 @@
 								<th>Date/Heure</th>
 								<th>Code Promo</th>
 								<th>Extras divers</th>
-								<th>Prix client H.T</th>
-								<th>Prix affilié H.T</th>
+								<th>Prix client TTC</th>
+								<th>Comission Naveco TTC/th>
 							</tr>
 						</thead>
 						<tbody>
-						<% @courses.where("status = ?", Course.statuses[:done]).order('payment_status ASC').each do |course| %>
+						<% @courses_week.where("status = ?", Course.statuses[:done]).order('payment_status ASC').each do |course| %>
 							<tr>
 								<td><%= course.id.to_s %></td>
 								<td width="220mm" id="details_course">

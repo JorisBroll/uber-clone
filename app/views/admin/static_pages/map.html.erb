@@ -31,7 +31,7 @@
 </script>
 <div id="map-filters" class="panel panel-info">
 	<div class="panel-heading">
-		<span class="panel-title">Filtres (En construction)</span>
+		<span class="panel-title">Filtres</span>
 		<div class="panel-heading-controls">
 			<span id="status-ok-counter" class="label label-success popsover" data-content="Courses affichées" data-placement="top" data-toggle="popover">0</span>
 			<span id="status-ko-counter" class="label label-danger popsover" data-content="Courses invalides" data-placement="top" data-toggle="popover">0</span>
@@ -82,7 +82,7 @@
 				<div>
 					<% if current_partner.nil? %>
 						<%= label_tag("partners-drivers", "Chauffeurs de l'entreprise :") %>
-						<%= select_tag("partners-drivers", options_for_select(partners_for_select)) %>
+						<%= select_tag("partners-drivers", options_for_select([['Tous', 'all']]+partners_for_select)) %>
 					<% else %>
 						<%= hidden_field_tag("partners-drivers", current_partner.id) %>
 					<% end %>
