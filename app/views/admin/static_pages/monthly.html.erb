@@ -113,7 +113,7 @@
 							<a href="<%= admin_monthly_pdf_path %>?p=<%= partner.id.to_s %>&recap[date(3i)]=<%= @date[:start].beginning_of_month.strftime("%d") %>&recap[date(2i)]=<%= @date[:start].beginning_of_month.strftime("%m") %>&recap[date(1i)]=<%= @date[:start].beginning_of_month.strftime("%Y") %>" class="btn btn-sm">Générer la facture</a>
 
 							<div class="btn-group">
-								<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">Factures par semaines&nbsp;<i class="fa fa-caret-down"></i></button>
+								<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">Factures commissions par semaines&nbsp;<i class="fa fa-caret-down"></i></button>
 								<ul class="dropdown-menu">
 									<% (0..6).each do |i| %>
 										<% if (@date_week[i][:start].strftime("%m")) == (@date[:start].beginning_of_month.strftime("%m")) %>
@@ -131,29 +131,6 @@
 			</div>
 		</div>
 
-		<div class="panel widget-support-tickets">
-			<div class="panel-heading">
-				<span class="panel-title">Sommes dues par les entreprises clientes</span>
-			</div>
-			<div class="panel-body">
-				<% @companies.each do |company|
-					@unpaidCourses2 = company.courses.where("status = ? AND payment_status = ? AND payment_by = ? AND date_when >= ? AND date_when <= ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:company], @date[:start], @date[:end])
-					if @unpaidCourses2.count > 0 %>
-					<div class="ticket">
-						<div>
-							<span class="label label-danger ticket-label"><%= (@unpaidCourses2.map {|s| price_afterExtras(s)}.reduce(0, :+)).round(2) %> €</span>
-							<a href="<%= admin_company_path(company) %>" class="ticket-title"><b><%= company.name %></b></a>
-						</div>
-						<% @unpaidCourses2.each do |course| %>
-						<div class="ticket-info">
-							Course n°<a href="<%= admin_course_path(course) %>"><b><%= course.id %></b></a> - De <%= course.from %> à <%= course.to %><span class="text-default text-xs" style="float:right;"><%= price_afterExtras(course).round(2) %> €</span>
-						</div>
-						<% end %>
-					</div>
-					<% end %>
-				<% end %>
-			</div>
-		</div>
 	</div>
 	<div class="col-md-6">
 		<div class="panel widget-support-tickets">
@@ -184,6 +161,37 @@
 					<% totalUnpaid += price_afterExtras(course) %>
 				<% end %>
 				<%= @unpaidCourses.count %> courses non reglées <span class="text-default text-sm" style="float:right;"><%= totalUnpaid.round(2) %> €</span>
+			</div>
+		</div>
+
+		<div class="panel widget-support-tickets">
+			<div class="panel-heading">
+				<span class="panel-title">Sommes dues par les entreprises clientes</span>
+			</div>
+			<div class="panel-body">
+				<% @companies.each do |company|
+					@unpaidCourses2 = company.courses.where("status = ? AND payment_status = ? AND payment_by = ? AND date_when >= ? AND date_when <= ?", Course.statuses[:done], Course.payment_statuses[:not_paid], Course.payment_bies[:company], @date[:start], @date[:end])
+					if @unpaidCourses2.count > 0 %>
+					<div class="ticket">
+						<div>
+							<span class="label label-danger ticket-label"><%= (@unpaidCourses2.map {|s| price_afterExtras(s)}.reduce(0, :+)).round(2) %> €</span>
+							<a href="<%= admin_company_path(company) %>" class="ticket-title"><b><%= company.name %></b></a>
+						</div>
+						<% @unpaidCourses2.each do |course| %>
+						<div class="ticket-info">
+							Course n°<a href="<%= admin_course_path(course) %>"><b><%= course.id %></b></a> - De <%= course.from %> à <%= course.to %><span class="text-default text-xs" style="float:right;"><%= price_afterExtras(course).round(2) %> €</span>
+						</div>
+						<% end %>
+					</div>
+					<% end %>
+				<% end %>
+			</div>
+			<div class="panel-footer">
+				<% totalUnpaid2 = 0 %>
+				<% @unpaidCourses2.each do |course| %>
+					<% totalUnpaid2 += price_afterExtras(course) %>
+				<% end %>
+				<%= @unpaidCourses2.count %> courses non reglées <span class="text-default text-sm" style="float:right;"><%= totalUnpaid2.round(2) %> €</span>
 			</div>
 		</div>
 	</div>

@@ -11,6 +11,42 @@ class Admin::CompaniesController < ApplicationController
 	end
 	def show
 		@users = @company.users
+
+		@date_week = []
+
+		if !params['recap'].nil?
+			@select_date = Date.new(params['recap']['date(1i)'].to_i, params['recap']['date(2i)'].to_i, 1)
+			@date = {
+				:start => @select_date.beginning_of_month,
+				:end => @select_date.end_of_month
+			}			
+			(0..6).each do |i|
+				@date_week[i] = {
+					:start => @select_date.weeks_since(i).at_beginning_of_week,
+					:end => @select_date.weeks_since(i).at_end_of_week
+				}
+			end
+		elsif !params['date_start'].nil?
+			@date = {
+				:start => params['date_start'].to_date,
+				:end => params['date_end'].to_date
+			}
+		else	
+			@date = {
+				:start => Time.zone.now.beginning_of_month,
+				:end => Time.zone.now.end_of_month
+			}
+			(0..6).each do |i|
+				@date_week[i] = {
+					:start => Time.zone.now.beginning_of_month.weeks_since(i).at_beginning_of_week,
+					:end => Time.zone.now.beginning_of_month.weeks_since(i).at_end_of_week
+				}
+			end
+		end
+		
+		#@courses = Course.where("date_when >= ? AND date_when <= ? AND status = ?", @date[:start], @date[:end], Course.statuses[:done])
+		#@courses_week = Course.where("date_when >= ? AND date_when <= ? AND status = ?", @date_week[:start], @date_week[:end], Course.statuses[:done])
+
 	end
 	def new
 		@company = Company.new

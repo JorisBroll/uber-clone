@@ -7,7 +7,11 @@ class Admin::PartnersController < ApplicationController
 
 	def index
 		sign_out_partner
-		@partners = Partner.all
+		if userWeight <= User::Account_types[:admin][:weight]
+			@partners = Partner.all
+		else
+			redirect_to admin_partner_path(current_partner)
+		end
 	end
 	def show
 		admin_this_partner @partner

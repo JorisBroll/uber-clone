@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     get '/operator_steps', to: 'static_pages#operator_steps'
     get '/monthly', to: 'static_pages#monthly'
     get '/monthly/pdf', to: 'static_pages#monthly_pdf'
+    get '/companies/pdf', to: 'static_pages#companies_pdf'
     get '/global_stats', to: 'static_pages#global_stats'
     get '/partner_home', to: 'static_pages#partner_home'
     post '/email', to: 'static_pages#email'

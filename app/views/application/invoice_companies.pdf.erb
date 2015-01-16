@@ -161,75 +161,6 @@
 					border-top: 0.5mm solid #E2E2E2;
 					background-color: none;
 				}
-
-			.column {
-				width:50%;
-			}
-			.left {
-				float:left;
-			}
-			.right {
-				float:right;
-			}
-			.clear {
-				clear:both;
-			}
-			.relative {
-				position:relative;
-			}
-
-			#header {
-				padding-bottom:8mm;
-				margin-bottom:9mm;
-				border-bottom:0.5mm solid #000;
-			}
-
-			#header .columns p {
-				font-size:13px;
-			}
-				#header .right {
-					text-align:right;
-				}
-
-			#date {
-				margin-left:12cm;
-				margin-bottom:7mm;
-				font-size:15px;
-			}
-
-			#overview_courses {
-				border-collapse:collapse;
-				border:0.5mm solid #00B2A9;
-				width:100%;
-				margin-bottom:5mm;
-			}
-				#overview_courses th {
-					background:#00B2A9;
-					padding:1.5mm 2mm;
-					text-align:center;
-					color:white;
-				}
-				#overview_courses td {
-					padding:2mm;
-				}
-				#overview_courses tr td:nth-last-child(-n+3) {
-					text-align:center;
-				}
-
-			.right-table {
-				position:absolute;
-				right:0;
-			}
-
-			#courses_totals {
-				border-collapse:collapse;
-				border:0.5mm solid #00B2A9;
-				margin-bottom:5mm;
-			}
-
-			#partner_total_collected {
-				margin-bottom:5mm;
-			}
 		</style>
 	</head>
 	<body onload='number_pages'>
@@ -245,9 +176,9 @@
 									<%= @naveco.phone %>
 							</td>
 							<td id="head-date" width="100%" valign="top">
-								<%= I18n.localize(@date_week[:end], :format => "%d %B %Y") %><br /><br />
+								<%= I18n.localize(@date[:end], :format => "%d %B %Y") %><br /><br />
 								<strong>Facture n°</strong><br />
-								<span id="invoice-number"><%= @partner.name[0,3].upcase %>-<%= @date_week[:start].strftime("%m.%Y") %>/<%= @date_week[:start].strftime("%d") %>-<%= @date_week[:end].strftime("%d") %></span>
+								<span id="invoice-number"><%= @company.name[0,3].upcase %>-<%= @date[:start].strftime("%m.%Y") %>/<%= @date[:start].strftime("%d") %>-<%= @date[:end].strftime("%d") %></span>
 							</td>
 						</tr>
 					</table>
@@ -255,17 +186,17 @@
 				<div class="invoice-info">
 					<table>
 						<tr>
-							<td id="destinataire_com">Au nom et <br />pour le compte de</td>
-							<td id="destinataire_com_2"><strong><%= @partner.name %></strong> [<small><%= Partner::Statuses[@partner.status.to_sym][:name] %></small>]<br />
-								<%= build_address(@partner) %><br />
-								N° TVA : <% if @partner.status == "company" %><%= @partner.tva_number.to_s %><% end %><% if @partner.status == "self_employed" %><small><i> TVA non applicable, art. 293 B du CGI</i></small><% end %><br />
-								<% if @partner.status == "company" %>SIRET : <%= @partner.company_code %><% end %><% if @partner.status == "self_employed" %>SIREN : <%= @partner.company_code %> | <small><i>dispensé d'immatriculation en application de l'article L.123-1-1 du Code du Commerce</i></small><% end %>
+							<td id="destinataire_com"><span id="destinataire">À</span></td>
+							<td id="destinataire_com_2"><strong><%= @company.name %></strong><br />
+								<%= build_address(@company) %><br />
+								N° TVA : <%= @company.tva_number.to_s %><br />
+								SIRET : <%= @company.company_code %>
 							</td>
 						</tr>
 					</table>
 				</div>
 				<div class="invoice-recap">
-					<h1>Récapitulatif des prestations du <%= @date_week[:start].strftime("%d/%m/%Y") %> au <%= @date_week[:end].strftime("%d/%m/%Y") %></h1>
+					<h1>Récapitulatif des prestations du <%= @date[:start].strftime("%d/%m/%Y") %> au <%= @date[:end].strftime("%d/%m/%Y") %></h1>
 
 					<table>
 						<thead>
@@ -275,33 +206,49 @@
 								<th>Date/Heure</th>
 								<th>Code&nbsp;Promo</th>
 								<th>Extras&nbsp;Divers</th>
-								<th>Prix&nbsp;Client TTC</th>
-								<th>Prix&nbsp;Affilié TTC</th>
-								<th>Commission Naveco TTC</th>
+								<th>Prix HT</th>
 							</tr>
 						</thead>
 						<tbody>
-						<% @courses_week.where("status = ?", Course.statuses[:done]).order('payment_status ASC').each do |course| %>
-							<tr>
-								<td><%= course.id.to_s %></td>
-								<td width="220mm" id="details_course">
-									De <strong><%= course.from %></strong> à <strong><%= course.to %><br />
-									Véhicule : <%= course.car.name unless course.car.nil? %><br />
-									<%= course.nb_people %> personne(s) | <%= course.computed_distance %> Km<br />
-								</td>
-								<td id="date_heure"><%= getDateTime(course) %></td>
-								<td>
-									<% if course.promocode_amount %>
-										- <%= number_with_precision(course.promocode_amount, :precision => 2) %> €
-									<% else %>
-										0,00 €
-									<% end %>
-								</td>
-								<td><%= course.stops_price %></td>
-								<td><%= number_with_precision(price_afterExtras(course), :precision => 2) %> €</td>
-								<td><%= number_with_precision(price_afterExtras(course, 'partner'), :precision => 2) %> €</td>
-								<td><%= number_with_precision(price_afterExtras(course, 'naveco'), :precision => 2) %> €</td>
-							</tr>
+
+						<% @company.users.each do |user| %>
+
+							
+							<% courses_test = user.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @date[:start], @date[:end], Course.statuses[:done]) %>
+
+							<% if courses_test.count > 0 %>
+
+								<tr>
+									<td colspan="3">Courses pour <%= user.name %> <%= user.last_name %></td>
+								</tr>
+
+								<% courses_test.where("status = ?", Course.statuses[:done]).order('payment_status ASC').each do |course| %>
+									<tr>
+										<td><%= course.id.to_s %></td>
+										<td id="details_course">
+											De <strong><%= course.from %></strong> à <strong><%= course.to %><br />
+											Véhicule : <%= course.car.name unless course.car.nil? %><br />
+											<%= course.nb_people %> personne(s) | <%= course.computed_distance %> Km<br />
+										</td>
+										<td id="date_heure"><%= getDateTime(course) %></td>
+										<td>
+											<% if course.promocode_amount %>
+												- <%= number_with_precision(course.promocode_amount, :precision => 2) %>&nbsp;€
+											<% else %>
+												0,00&nbsp;€
+											<% end %>
+										</td>
+										<td><% if course.stops_price %>
+												<%= course.stops_price %>&nbsp;€
+											<% else %>
+												0,00&nbsp;€
+											<% end %>
+										</td>
+										<td><%= number_with_precision(price_afterExtras(course)/1.20, :precision => 2) %>&nbsp;€</td>
+									</tr>
+								<% end %>
+							<% end %>
+
 						<% end %>
 						</tbody>
 					</table>
@@ -313,23 +260,23 @@
 								<table>
 									<tr>
 										<td>Paiement le</td>
-										<td><%= I18n.localize(@date_week[:start].next_week, :format => "%A %e %B %Y") %></td>
+										<td><%= I18n.localize(@date[:end].next_day, :format => "%A %e %B %Y") %></td>
 									</tr>
 								</table>
 							</td>
 							<td width="50%">
 								<table>
 									<tr>
-										<td>Total Commissions Naveco HT</td>
-										<td><strong><%= number_with_precision(@totals_week[:ht], :precision => 2) %> €</strong></td>
+										<td>Total HT</td>
+										<td><strong><%= number_with_precision(@totals[:ht], :precision => 2) %> €</strong></td>
 									</tr>
 									<tr>
-										<td>Total Commissions Naveco TVA (20%)</td>
-										<td><strong><% if @partner.status == "company" %><%= number_with_precision(@totals_week[:tva], :precision => 2) %><% end %><% if @partner.status == "self_employed" %>N/A<% end %></strong></td>
+										<td>Total TVA (20%)</td>
+										<td><strong><%= number_with_precision(@totals[:tva], :precision => 2) %> €</strong></td>
 									</tr>
 									<tr>
-										<td>Total Commissions Naveco TTC</td>
-										<td><strong><% if @partner.status == "company" %><%= number_with_precision(@totals_week[:ttc], :precision => 2) %> €<% end %><% if @partner.status == "self_employed" %>N/A<% end %></strong></td>
+										<td>Total TTC</td>
+										<td><strong><%= number_with_precision(@totals[:ttc], :precision => 2) %> €</strong></td>
 									</tr>
 								</table>
 							</td>
@@ -337,10 +284,14 @@
 					</table>
 				</div>
 				<div class="invoice-footer">
+				<small style="text-align:center;">
+					En cas de retard de paiement, application d’une indemnité forfaitaire pour frais de recouvrement de 40€ selon l'article D. 441-5 du code du commerce<br />
+				Taux d'escompte : 8,25 % | Taux des pénalités de retard : 1,5 %				
+				</small>
 				<hr />
 					Tél. <%= @naveco.phone %> -  <%= @naveco.email %><br />
-					N° SIRET : <%= @naveco.company_code %> - N° TVA Intracommunautaire : <%= @partner.tva_number.to_s %> - NAF : 4939B - RCS : Lyon B 539 056 051<br />
-					<%= @naveco.name %> <%= Partner::Statuses[@naveco.status.to_sym][:name] %> au capital social de 6 000,00 € - <%= build_address(@partner) %><br />
+					N° SIRET : <%= @naveco.company_code %> - N° TVA Intracommunautaire : <%= @company.tva_number.to_s %> - NAF : 4939B - RCS : Lyon B 539 056 051<br />
+					<%= @naveco.name %> <%= Partner::Statuses[@naveco.status.to_sym][:name] %> au capital social de 6 000,00 € - <%= build_address(@company) %><br />
 					www.nav-eco.fr
 					
 				</div>

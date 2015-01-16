@@ -2,12 +2,79 @@ fr:
   activerecord:
     attributes:
       partner:
-        name: "Le nom"
+        name: "Nom"
+        phone: "Téléphone"
+        address: "Adresse"
+        postcode: "Code postal"
+        city: "Ville"
+        company_code: "Numéro SIRET"
+        tva_number: "Numéro TVA"
+        status: "Status"
+        note: "Détails additionnels"
       user:
-        name: "Le nom"
+        name: "Nom et prénom"
+        phone: "Téléphone"
+        address: "Adresse"
+        postcode: "Code postal"
+        city: "Ville"
         account_type: "Type de compte"
         password: "Mot de passe"
         password_confirmation: "Confirmation du mot de passe"
+        enabled: "Activé ?"
+        partner_id: "Rattaché au partenaire"
+        companies: "Membre des entreprises clientes"
+        promocodes: "Codes promotions rattachés"
+      company:
+        nom: "Dénomination sociale"
+        phone: "Téléphone"
+        address: "Adresse"
+        postcode: "Code postal"
+        city: "Ville"
+        company_code: "Numéro SIRET"
+        tva_number: "Numéro TVA"
+        bookmanager: "Interlocuteur principal"
+        notes: "Détails additionnels"
+        partner_id: "Rattaché au partenaire"
+      course:
+        from: "Départ"
+        to: "Arrivée"
+        car_type: "Type de véhicule"
+        computed_distance: "Distance calculée"
+        computed_duration: "Durée calculée"
+        computed_price: "Prix calculé"
+        commission: "Commission pour Naveco"
+        nb_people: "Nombre de personnes"
+        date_when: "Date de début de la course"
+        flight_number: "Numéro de vol"
+        nb_luggage: "Nombre de baggages"
+        notes: "Détails additionnels"
+        stops: "Arrêts"
+        user_id: "Client"
+        company_id: "Entreprise cliente"
+        payment_by: "Payée par"
+        payment_status: "Status du paiement"
+        payment_when: "Moment du débit"
+        partner_id: "Partenaire rattaché"
+        driver_id: "Conducteur de la course"
+        car_id: "Voiture utilisée"
+        promocode_id: "Code promotion utilisé"
+        status: "Status de la course"
+        need_review: "Doit être revue par un administrateur Naveco ?"
+      payment:
+        to_type: "Type de destinataire"
+        to_id: "Nom du destinataire"
+        amount: "Valeur de la transaction (€)"
+        method: "Méthode de paiement"
+        notes: "Détails additionnels"
+        created_at: "Date de versement"
+      promocode:
+        name: "Nom du code"
+        code: "Code"
+        effect_type: "Type d'effet"
+        effect_type_value: "Valeur de la remise"
+        effect_length: "Type de validité"
+        effect_length_value: "Longueur de validité"
+        created_at: "Valide à partir du :"
   date:
     abbr_day_names:
       - dim
@@ -148,10 +215,6 @@ fr:
         other: "Impossible d'enregistrer ce(tte) %{model} : %{count} erreurs"
   helpers:
     label:
-      partner:
-        name: "Nom"
-      user:
-        name: "Nom"
     select:
       prompt: "Veuillez sélectionner"
     submit:

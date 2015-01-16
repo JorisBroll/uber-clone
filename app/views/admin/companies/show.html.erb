@@ -1,5 +1,6 @@
 <script>
 	init.push(function () {
+		$('#panel-courses .tab-content').slimScroll({ height: 400, alwaysVisible: true, color: '#888',allowPageScroll: true });
 		$("#company_users_id").select2({
 			allowClear: true,
 			placeholder: "Sélectionner..."
@@ -97,7 +98,7 @@
 		</div>
 	</div>
 	<div class="col-md-6">
-		<div class="panel">
+		<!-- <div class="panel">
 			<div class="panel-heading">
 				<span class="panel-title"><i class="panel-title-icon fa fa-envelope"></i>Envoyer un Email à cette entreprise</span>
 			</div>
@@ -124,7 +125,136 @@
 					</div>
 				<% end %>
 			</div>
+		</div> -->
+
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">Factures entreprise cliente</span>
+			</div>
+			<div class="panel-body">
+				<form id="select-date" class="form-inline col-xs-6" action="<%= admin_company_path %>">
+					<span>Par mois : </span><%= date_select("recap", "date", {:start_year => 2014, :end_year => Time.new.year, :discard_day => true }, {:class => "form-control"} ) %>
+					<button type="submit" class="btn btn-info">Voir</button>
+				</form>
+
+						<a href="<%= admin_companies_pdf_path %>?p=<%= @company.id.to_s %>&recap[date(3i)]=<%= @date[:start].strftime("%d") %>&recap[date(2i)]=<%= @date[:start].strftime("%m") %>&recap[date(1i)]=<%= @date[:start].strftime("%Y") %>" class="btn btn-primary btn-flat">Génerer la facture</a>
+
+				<div class="clearfix"></div>
+			</div>
 		</div>
+
+		<div class="panel panel-warning">
+					<div class="panel-heading">
+						<span class="panel-title"><i class="panel-title-icon fa fa-flag-checkered"></i>Liste des courses par utilisateurs</span>
+					</div>
+					<div class="panel-body">
+
+						<div class="panel-group" id="accordion-example">
+						<% @company.users.each do |user| %>
+
+							<div class="panel">
+								<div class="panel-heading">
+									<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-example" href="#collapse<%= user.id %>">
+										<%= build_name(user) %> <span class="label label-success" style="float:right;"><%= user.courses.count %></span>
+									</a>
+								</div> <!-- / .panel-heading -->
+								<div id="collapse<%= user.id %>" class="panel-collapse collapse">
+									<div class="panel-body">
+										<div class="panel widget-support-tickets" id="panel-courses">
+											<div class="panel-heading">
+												<span class="panel-title"><br /><br /></span>
+												<ul class="nav nav-tabs nav-tabs-sm panel-align-left">
+													<li class="active ">
+														<a href="#courses_done" data-toggle="tab">Terminées <span class="badge badge-success"><%= user.courses.where("status = ?", Course.statuses[:done]).count %></span></a>
+													</li>
+													<li>
+														<a href="#courses_inactive" data-toggle="tab">À venir <span class="badge badge-primary"><%= user.courses.where("status = ?", Course.statuses[:inactive]).count %></span></a>
+													</li>
+													<li>
+														<a href="#courses_in-progress" data-toggle="tab">En cours <span class="badge badge-info"><%= user.courses.where("status = ?", Course.statuses[:in_progress]).count %></span></a>
+													</li>
+													<li>
+														<a href="#courses_canceled" data-toggle="tab">Annulées <span class="badge badge-danger"><%= user.courses.where("status = ?", Course.statuses[:canceled]).count %></span></a>
+													</li>
+												</ul>
+											</div>
+
+											<div class="tab-content">
+												<div class="panel-body tab-pane fade active in " id="courses_done">
+													<% if user.courses.where("status = ?", Course.statuses[:done]).each do |course| %>
+														<div class="ticket">
+															<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
+															<%= link_to admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
+															<span class="ticket-info">
+																Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
+															</span><br />
+															<%= link_to edit_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
+															<%= link_to admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
+														</div> <!-- / .ticket -->
+													<% end.empty? %>
+														Aucune course
+													<% end %>
+												</div>				
+
+												<div class="panel-body tab-pane fade" id="courses_inactive">
+													<% if user.courses.where("status = ?", Course.statuses[:inactive]).each do |course| %>
+														<div class="ticket">
+															<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
+															<%= link_to admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
+															<span class="ticket-info">
+																Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
+															</span><br />
+															<%= link_to edit_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
+															<%= link_to admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
+														</div> <!-- / .ticket -->
+													<% end.empty? %>
+														Aucune course
+													<% end %>
+												</div>
+
+												<div class="panel-body tab-pane fade" id="courses_in-progress">
+													<% if user.courses.where("status = ?", Course.statuses[:in_progress]).each do |course| %>
+														<div class="ticket">
+															<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
+															<%= link_to admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
+															<span class="ticket-info">
+																Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
+															</span><br />
+															<%= link_to edit_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
+															<%= link_to admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
+														</div> <!-- / .ticket -->
+													<% end.empty? %>
+														Aucune course
+													<% end %>
+												</div>
+
+												<div class="panel-body tab-pane fade" id="courses_canceled">
+													<% if user.courses.where("status = ?", Course.statuses[:canceled]).each do |course| %>
+														<div class="ticket">
+															<span class="label label-<%= Course::Status_alias_css[course.status] %> ticket-label"><%= Course::Status_alias[course.status] %></span>
+															<%= link_to admin_course_path(course), title: "Voir la course", class: "ticket-title" do %>De <%= course.from %> à <%= course.to %><span>[#<%= course.id %>]</span><% end %>
+															<span class="ticket-info">
+																Démarrée par <a href="#" title=""><%= course.user.name unless course.user.nil? %></a> <%= getDateTime(course) %>
+															</span><br />
+															<%= link_to edit_admin_course_path(course), title: "Editer", class: "text-xs text-default" do %>Editer<% end %>
+															<%= link_to admin_course_path(course), method: :delete, data: { confirm: "You sure?" }, title: "Editer", class: "text-xs text-default" do %>Supprimer<% end %>
+														</div> <!-- / .ticket -->
+													<% end.empty? %>
+														Aucune course
+													<% end %>
+												</div>
+
+											</div>
+										</div>
+									
+									</div> <!-- / .panel-body -->
+								</div> <!-- / .collapse -->
+							</div> <!-- / .panel -->
+							<% end %>
+						</div> <!-- / .panel-group -->
+
+					</div>
+				</div>
 
 		<% if @company.partner %>
 		<div class="panel">

@@ -171,7 +171,161 @@ class AppCallsController < ApplicationController
 		def courses_index
 			rData = {}
 
-			rData[:courses] = @user.drives_courses.order(date_when: :desc, time_when: :desc)
+			rData[:courses] = @user.drives_courses.where('status = ?', Course.statuses[:inactive]).order(date_when: :desc, time_when: :desc)
+
+			rendering(rData)
+		end
+
+		def course_cancel
+			rData = {}
+
+			course = Course.find_by(id: params['course_id'])
+
+			if course
+				course.status = Course.statuses[:canceled]
+				if course.save
+					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'cancel');
+					rData = {
+						:status => true
+					}
+				else
+					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'fail_cancel');
+					rData = {
+						:status => false,
+						:errorMessage => ''
+					}
+				end
+			else
+				rData = {
+					:status => false,
+					:errorMessage => 'Paramètres incorrects'
+				}
+			end
+
+			rendering(rData)
+		end
+
+		def incoming_sms
+			course = Course.find_by(id: params['course_id'])
+
+			if course
+				@twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid, Rails.application.secrets.twilio_token
+
+				#@twilio_client.account.sms.messages.create(
+				#  :from => "+13852157506",
+				#  :to => @user.cellphone,
+				#  :body => "Course [##{course.id}] : Votre chauffeur est en route !"
+				#)
+				rData = {:status => true}
+			else
+				rData = {
+					:status => false,
+					:errorMessage => 'Paramètres incorrects'
+				}
+			end
+
+			rendering(rData)
+		end
+
+		def start_sms
+			course = Course.find_by(id: params['course_id'])
+
+			if course
+				@twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid, Rails.application.secrets.twilio_token
+
+				#@twilio_client.account.sms.messages.create(
+				#  :from => "+13852157506",
+				#  :to => @user.cellphone,
+				#  :body => "Course [##{course.id}] : Votre chauffeur est en arrivé !"
+				#)
+				rData = {:status => true}
+			else
+				rData = {
+					:status => false,
+					:errorMessage => 'Paramètres incorrects'
+				}
+			end
+
+			rendering(rData)
+		end
+
+		def start_trip
+			course = Course.find_by(id: params['course_id'])
+
+			if course
+				course.trip_started = Time.now
+				if course.save
+					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'start');
+					rData = {
+						:status => true
+					}
+				else
+					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'fail_start');
+					rData = {
+						:status => false,
+						:errorMessage => "La date de départ de la course n'a pas été enregistrée."
+					}
+				end
+			else
+				rData = {
+					:status => false,
+					:errorMessage => 'Paramètres incorrects'
+				}
+			end
+
+			rendering(rData)
+		end
+
+		def end_trip
+			course = Course.find_by(id: params['course_id'])
+
+			if course
+				course.trip_finished = Time.now
+				if course.save
+					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'end');
+					rData = {
+						:status => true
+					}
+				else
+					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'fail_end');
+					rData = {
+						:status => false,
+						:errorMessage => "La date de départ de la course n'a pas été enregistrée."
+					}
+				end
+			else
+				rData = {
+					:status => false,
+					:errorMessage => 'Paramètres incorrects'
+				}
+			end
+
+			rendering(rData)
+		end
+
+		def send_feedback
+			course = Course.find_by(id: params['course_id'])
+
+			if course
+				course.trip_feedback = params['feedback_value']
+				if course.save
+					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'feedback');
+					rData = {
+						:status => true
+					}
+				else
+					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'fail_feedback');
+					rData = {
+						:status => false,
+						:errorMessage => "La date de départ de la course n'a pas été enregistrée."
+					}
+				end
+			else
+				rData = {
+					:status => false,
+					:errorMessage => 'Paramètres incorrects'
+				}
+			end
 
 			rendering(rData)
 		end

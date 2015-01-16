@@ -1,13 +1,10 @@
 <script>
 	init.push(function () {
 		$("#user_phone").mask("99.99.99.99.99");
-		$("#user_cellphone").mask("99.99.99.99.99");
+		$("#user_cellphone").mask("(+99) 9.99.99.99.99");
 		$("#user_postcode").mask("99999");
 
 		rules = {
-			'user[name]': {
-				required: true
-			},
 			'user[last_name]': {
 				required: true
 			},
@@ -19,9 +16,6 @@
 				required: true
 			},
 			'user[postcode]': {
-				required: true
-			},
-			'user[city]': {
 				required: true
 			}
 		}
@@ -104,9 +98,9 @@
 	<div class="row">
 		<%= f.label :name, class: "col-sm-3 control-label" %>
 		<div class="col-sm-4 form-group has-error">
-			<%= f.text_field :name, class: "form-control", :placeholder => "Nom" %>
+			<%= f.text_field :last_name, class: "form-control", :placeholder => "Nom" %>
 		</div><div class="col-sm-5">
-			<%= f.text_field :last_name, class: "form-control", :placeholder => "Prénom" %>
+			<%= f.text_field :name, class: "form-control", :placeholder => "Prénom" %>
 		</div>
 	</div>
 
@@ -144,11 +138,16 @@
 		</div>
 	</div>
 
+	
 	<% if params["action"] == 'new' || params["action"] == 'operator_steps' then selected = 'client' else selected = @user.account_type end %>
 	<div class="row form-group accountTypeRow">
 		<%= f.label :account_type, class: "col-sm-3 control-label" %>
 		<div class="col-sm-9">
-			<%= zob=f.select(:account_type, User::Account_types_select, :selected => selected, class: "form-control select") %>
+			<% if current_partner.nil? %>
+				<%= f.select(:account_type, User::Account_types_select, :selected => selected, class: "form-control select") %>
+			<% else %>
+				<%= f.select(:account_type, User::Account_types_select_partneradmin, :selected => selected, class: "form-control select") %>
+			<% end %>
 		</div>
 	</div>
 
@@ -185,7 +184,7 @@
 	</div>
 
 	<% if current_partner.nil? %>
-		<% if params["action"] == 'new' then checked = true else checked = !@user.enabled end %>
+		<% if params["action"] == 'new' then checked = false else checked = @user.enabled end %>
 		<div class="row form-group enableRow">
 			<%= f.label :enabled, class: "col-sm-3 control-label" %>
 			<div class="col-sm-9">

@@ -129,10 +129,12 @@ class Admin::StaticPagesController < ApplicationController
 				:start => Time.zone.now.beginning_of_month,
 				:end => Time.zone.now.end_of_month
 			}
-			@date_week = {
-				:start => Time.zone.now.next_week,
-				:end => Time.zone.now.at_end_of_week
-			}
+			(0..6).each do |i|
+				@date_week[i] = {
+					:start => Time.zone.now.weeks_since(i).at_beginning_of_week,
+					:end => Time.zone.now.weeks_since(i).at_end_of_week
+				}
+			end
 		end
 		
 		@courses = Course.where("date_when >= ? AND date_when <= ? AND status = ?", @date[:start], @date[:end], Course.statuses[:done])
@@ -191,12 +193,20 @@ class Admin::StaticPagesController < ApplicationController
 			@courses = @partner.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @date[:start], @date[:end], Course.statuses[:done]).order(date_when: :asc)
 			@courses_week = @partner.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @date_week[:start], @date_week[:end], Course.statuses[:done]).order(date_when: :asc)
 			@courses_to_naveco = @courses.where("payment_by = ?", Course.payment_bies[:partner])
+			@courses_to_naveco_week = @courses_week.where("payment_by = ?", Course.payment_bies[:partner])
 			
 			@totals = {
-				:ttc => (@courses_week.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+)).round(2),
-				:ht => ((@courses_week.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+))/1.10).round(2),
-				:tva => (@courses_week.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+))-((@courses_week.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+))/1.10).round(2),
+				:ttc => (@courses.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+)).round(2),
+				:ht => ((@courses.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+))/1.20).round(2),
+				:tva => (@courses.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+))-((@courses.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+))/1.20).round(2),
 				:naveco_collected => (@courses_to_naveco.map {|s| price_afterExtras(s)}.reduce(0, :+)).round(2)
+			}
+
+			@totals_week = {
+				:ttc => (@courses_week.map {|s| price_afterExtras(s, 'naveco')}.reduce(0, :+)).round(2),
+				:ht => ((@courses_week.map {|s| price_afterExtras(s, 'naveco')}.reduce(0, :+))/1.20).round(2),
+				:tva => (@courses_week.map {|s| price_afterExtras(s, 'naveco')}.reduce(0, :+))-((@courses_week.map {|s| price_afterExtras(s, 'naveco')}.reduce(0, :+))/1.20).round(2),
+				:naveco_collected => (@courses_to_naveco_week.map {|s| price_afterExtras(s)}.reduce(0, :+)).round(2)
 			}
 
 			(@courses_to_naveco.map {|s| price_afterExtras(s, 'naveco')}.reduce(0, :+)).round(2)
@@ -204,6 +214,46 @@ class Admin::StaticPagesController < ApplicationController
 			@naveco = Partner.find(1)
 
 			render :pdf => "file_name", :template => 'application/invoice.pdf.erb'
+		else
+
+		end
+	end
+
+	def companies_pdf
+		if !params['p'].nil?
+			@company = Company.find_by(id: params['p'])
+			if !params['recap'].nil?
+				@select_date = Date.new(params['recap']['date(1i)'].to_i, params['recap']['date(2i)'].to_i, 1)
+				@date = {
+					:start => @select_date.beginning_of_month,
+					:end => @select_date.end_of_month
+				}
+			elsif !params['date_start'].nil?
+				@date = {
+					:start => params['date_start'].to_date,
+					:end => params['date_end'].to_date
+				}
+			else	
+				@date = {
+					:start => Time.zone.now.beginning_of_month,
+					:end => Time.zone.now.end_of_month
+				}
+			end
+			@courses = @company.courses.where("date_when >= ? AND date_when <= ? AND status = ?", @date[:start], @date[:end], Course.statuses[:done]).order(date_when: :asc)
+			@courses_to_naveco = @courses.where("payment_by = ?", Course.payment_bies[:partner])
+			
+			@totals = {
+				:ttc => (@courses.map {|s| price_afterExtras(s)}.reduce(0, :+)).round(2),
+				:ht => ((@courses.map {|s| price_afterExtras(s)}.reduce(0, :+))/1.20).round(2),
+				:tva => (@courses.map {|s| price_afterExtras(s)}.reduce(0, :+))-((@courses.map {|s| price_afterExtras(s)}.reduce(0, :+))/1.20).round(2),
+				:naveco_collected => (@courses_to_naveco.map {|s| price_afterExtras(s)}.reduce(0, :+)).round(2)
+			}
+
+			(@courses_to_naveco.map {|s| price_afterExtras(s, 'naveco')}.reduce(0, :+)).round(2)
+
+			@naveco = Partner.find(1)
+
+			render :pdf => "file_name", :template => 'application/invoice_companies.pdf.erb'
 		else
 
 		end

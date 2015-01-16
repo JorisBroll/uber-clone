@@ -16,7 +16,7 @@ class Log < ActiveRecord::Base
 		when 'fail_destroy'
 			return " n'a pas pu supprimer "
 		else
-			return " a effectué une action inconnue "
+			return self.action
 		end
 	end
 
