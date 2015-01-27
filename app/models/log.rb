@@ -15,6 +15,18 @@ class Log < ActiveRecord::Base
 			return " a supprimé "
 		when 'fail_destroy'
 			return " n'a pas pu supprimer "
+		when 'select'
+			return " a sélectionné "
+		when 'fail_select'
+			return " n'a pas pû sélectionner "
+		when 'start'
+			return " a commencé "
+		when 'fail_start'
+			return " n'a pas pû commencer "
+		when 'end'
+			return " a terminé "
+		when 'fail_end'
+			return " n'a pas pû terminer "
 		else
 			return self.action
 		end
@@ -35,6 +47,8 @@ class Log < ActiveRecord::Base
 			string += "l'entreprise cliente"
 		when 'partner'
 			string += "l'entreprise partenaire"
+		when 'car'
+			string += "la voiture"	
 		else
 			string += "l'objet"
 		end

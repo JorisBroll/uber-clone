@@ -13,8 +13,8 @@ class Admin::CarsController < ApplicationController
 	def create
 		@car = current_partner.cars.build(car_params)
 		if @car.save
-			flash[:success] = "La voiture "+@car.name+" a été crée."
-			redirect_to partner_admin_cars_path(@partner)
+			flash[:success] = "La voiture #{@car.name} a été crée."
+			redirect_to admin_cars_path(@partner)
 	    else
 	    	flash[:error] = "La voiture n'a pas pu être créée, veuillez réessayer :"
 	    	render 'new'
@@ -26,8 +26,8 @@ class Admin::CarsController < ApplicationController
 	def update
 		@car = get_correct_car
 		if @car.update_attributes(car_params)
-			flash[:success] = "La voiture "+@car.name+" a été modifiée avec succès."
-			redirect_to partner_admin_cars_path
+			flash[:success] = "La voiture #{@car.name} a été modifiée avec succès."
+			redirect_to admin_cars_path
 		else
 			flash[:error] = "La voiture n'a pas pu être modifiée, veuillez réessayer :"
 			render 'edit'
@@ -37,7 +37,7 @@ class Admin::CarsController < ApplicationController
 		@car = get_correct_car
 		@car.destroy
 		flash[:success] = "Voiture supprimée."
-	    redirect_to partner_admin_cars_path
+	    redirect_to admin_cars_path
 	end
 
 		private
@@ -51,7 +51,7 @@ class Admin::CarsController < ApplicationController
 					return current_partner.cars.find(params[:id])
 				else
 					flash[:error] = "Aucune voiture trouvée."
-					redirect_to partner_admin_cars_path
+					redirect_to admin_cars_path
 				end
 	        end
 

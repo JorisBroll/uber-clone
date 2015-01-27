@@ -58,3 +58,24 @@
 		</div>
 	</div>
 </div>
+<div class="row">
+	<div class="col-md-4">
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">Voitures</span>
+			</div>
+			<div class="panel-body">
+				<% @logs[:cars].each do |l| %>
+				<% user = User.find_by(id: l.user_id) %>
+				<p>
+					<%= l.created_at.strftime("%d/%m/%Y à %H:%I:%S") %> - 
+					<%= link_to(admin_user_path(user)) do build_name(user) end %>
+					<span class="text-danger"><%= l.action_string %></span>
+					<%= l.target_string %>
+				</p>
+				<% end %>
+			</div>
+		</div>
+	</div>
+	
+</div>

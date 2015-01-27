@@ -40,6 +40,10 @@ class AppTools
 					:name => 'Entrée de journal',
 					:with_article => "l'entrée de journal"
 				},
+				:car => {
+					:name => 'Voiture',
+					:with_article => "la voiture"
+				}
 			}
 		end
 end

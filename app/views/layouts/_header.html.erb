@@ -135,7 +135,7 @@
 								<a href="#" class="dropdown-toggle user-menu" data-toggle="dropdown">
 									<img src="<%= image_path('pixel-admin/derp.png') %>">
 									<span><%= current_user.name %> <%= current_user.last_name %> - </span>
-									<spa class="text-info"><%= User::Account_types[current_user.account_type.to_sym][:name] %></span>
+									<span class="text-info"><%= User::Account_types[current_user.account_type.to_sym][:name] %></span>
 								</a>
 								<ul class="dropdown-menu">
 									<li><a href="<%= admin_user_path(current_user) %>"><i class="dropdown-icon fa fa-user"></i>&nbsp;&nbsp;Profil</a></li>

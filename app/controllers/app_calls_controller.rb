@@ -56,8 +56,10 @@ class AppCallsController < ApplicationController
 			token = crypt_token(uncrypted_token.to_json)
 			#token = uncrypted_token.to_json
 			
-			user.update(login_token: token)
-			rData = {:status => true, :loginData => {:token => token} }
+			user.login_token = token
+			if user.save
+				rData = {:status => true, :loginData => {:token => token} }
+			end
 		else
 			rData = {:status => false, :errorMessage => 'Impossible de se connecter. Veuillez vérifier votre email/password.' }
 		end
@@ -102,7 +104,59 @@ class AppCallsController < ApplicationController
 		rendering(rData)
 	end
 
+	def logout
+		@user.login_token = nil
+		@user.save
+		rendering({})
+	end
+
 	####### CLIENT APP ###########
+
+		####### Courses REST ###########
+		def course_create
+			rData = {}
+
+			course = @user.courses.build(course_params)
+
+			if course.valid?
+				course.save
+				Log.create(user_id: @user.id, target_type: 1, target_id: @user.id, action: 'create');
+				rData = {
+					:status => true,
+					:course_id => course.id
+				}
+			else
+				Log.create(user_id: @user.id, target_type: 1, target_id: @user.id, action: 'fail_create');
+				rData = {
+					:status => false
+				}
+			end
+
+			rendering(rData)
+		end
+
+		def course_check_driver
+			rData = {}
+
+			course = @user.courses.find_by(id: params['course_id'])
+
+			if !course.nil?
+				rData = { :status => true }
+				if !course.driver_id.nil?
+					driver = User.select(:id, :name, :last_name, :cellphone, :photo).find_by(id: course.driver_id)
+					rData[:driver] = driver
+					rData['driver_status'] = true
+				else
+					rData['driver_status'] = false
+				end
+			else
+				rData = {
+					:status => false
+				}
+			end
+
+			rendering(rData)
+		end
 
 		####### Payment Infos REST ###########
 		def payment_infos_index
@@ -158,11 +212,122 @@ class AppCallsController < ApplicationController
 
 	####### DRIVER APP ###########
 
+		####### User REST ###########
+		def profile_index
+			rData = @user
+			rendering(rData)
+		end
+
+		def update_status
+			rData = {}
+
+			@user.status = params['status']
+
+			if @user.save
+				Log.create(user_id: @user.id, target_type: 0, target_id: @user.id, action: 'update_status');
+				rData = {
+					:status => true,
+					:new_user_status => @user.status
+				}
+			else
+				Log.create(user_id: @user.id, target_type: 0, target_id: @user.id, action: 'fail_update_status');
+				rData = {
+					:status => false,
+					:errorMessage => ''
+				}
+			end
+
+			rendering(rData)
+		end
+
+		def update_photo
+			rData = {}
+
+			#@user.cellphone = params['number']
+
+			#if @user.save
+			#	Log.create(user_id: @user.id, target_type: 0, target_id: @user.id, action: 'update_cellphone');
+			#	rData = {
+			#		:status => true
+			#	}
+			#else
+			#	Log.create(user_id: @user.id, target_type: 0, target_id: @user.id, action: 'fail_update_cellphone');
+			#	rData = {
+			#		:status => false,
+			#		:errorMessage => ''
+			#	}
+			#end
+			
+			rendering(rData)
+		end
+
+		def update_cellphone
+			rData = {}
+
+			@user.cellphone = params['number']
+
+			if @user.save
+				Log.create(user_id: @user.id, target_type: 0, target_id: @user.id, action: 'update_cellphone');
+				rData = {
+					:status => true
+				}
+			else
+				Log.create(user_id: @user.id, target_type: 0, target_id: @user.id, action: 'fail_update_cellphone');
+				rData = {
+					:status => false,
+					:errorMessage => ''
+				}
+			end
+			
+			rendering(rData)
+		end
+
 		####### Cars REST ###########
 		def cars_index
 			rData = {}
 
+			cars = @user.partner.cars
+
+			thisMorning = DateTime.new(Time.now.year, Time.now.month, Time.now.day, 8, 0, 0)
+
+			cars.each do |car|
+				if !car.last_selected.nil? && car.last_selected < thisMorning
+					car.update(driven_by: nil)
+				end
+			end
+
 			rData[:cars] = @user.partner.cars
+
+			rendering(rData)
+		end
+
+		def select_car
+			rData = {}
+
+			car = Car.find_by(id: params['car_id'])
+
+			if car
+				Car.where('driven_by = ?', @user.id).update_all(driven_by: nil)
+				car.driven_by = @user.id
+				if car.save
+					Log.create(user_id: @user.id, target_type: 8, target_id: car.id, action: 'select');
+					rData = {
+						:status => true
+					}
+				else
+					Log.create(user_id: @user.id, target_type: 8, target_id: car.id, action: 'fail_select');
+					rData = {
+						:status => false,
+						:errorMessage => ''
+					}
+				end
+			else
+				rData = {
+					:status => false,
+					:errorMessage => ''
+				}
+			end
+
 
 			rendering(rData)
 		end
@@ -171,9 +336,9 @@ class AppCallsController < ApplicationController
 		def courses_index
 			rData = {}
 
-			rData[:courses] = @user.drives_courses.where('status = ?', Course.statuses[:inactive]).order(date_when: :desc, time_when: :desc)
+			rData[:courses] = @user.drives_courses.where('status = ?', Course.statuses[:inactive]).order(date_when: :desc, time_when: :desc).select(:id, :from, :to, :date_when, :time_when, :user_id, :created_at)
 
-			rendering(rData)
+			rendering(rData, [ :user => {:only => [:id, :name, :last_name, :cellphone, :email, :photo]} ])
 		end
 
 		def course_cancel
@@ -205,15 +370,105 @@ class AppCallsController < ApplicationController
 			rendering(rData)
 		end
 
+		def courses_query_new
+			rData = {}
+
+			#course = Course.find(1)
+			courses_noDriver = Course.where('driver_id IS NULL AND status = ?', Course::statuses[:inactive]).order(id: :asc)
+			r = nil
+			found = false
+
+			courses_noDriver.each do |course|
+				r = course
+				if course.rejected_by.nil? || !course.rejected_by.include?(@user.id)
+					found = true
+					break
+				end
+			end
+
+			if !found then r = nil end
+
+			rData = {
+				:status => true,
+				:course => r
+			}
+
+			rendering(rData)
+		end
+
+		def course_accept
+			rData = {}
+
+			course = Course.find_by(id: params['course_id'])
+
+			if course
+				course.driver_id = @user.id
+				if course.save
+					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'accept_course');
+					rData = {
+						:status => true
+					}
+				else
+					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'fail_accept_course');
+					rData = {
+						:status => false,
+						:errorMessage => "Erreur lors le l'acceptation de la course"
+					}
+				end
+			else
+				rData = {
+					:status => false,
+					:errorMessage => 'Paramètres incorrects'
+				}
+			end
+
+			rendering(rData)
+		end
+
+		def course_decline
+			rData = {}
+
+			course = Course.find_by(id: params['course_id'])
+
+			if course
+				if course.rejected_by != nil
+					if !course.rejected_by.include? @user.id then course.rejected_by = course.rejected_by+[@user.id] end
+				else
+					course.rejected_by = [@user.id]
+				end
+
+				#course.rejected_by = [8]
+				if course.save
+					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'decline_course');
+					rData = course.rejected_by
+				else
+					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'fail_decline_course');
+					rData = {
+						:status => false,
+						:errorMessage => "Erreur lors le l'acceptation de la course"
+					}
+				end
+			else
+				rData = {
+					:status => false,
+					:errorMessage => 'Paramètres incorrects'
+				}
+			end
+
+			rendering(rData)
+		end
+
+
+
 		def incoming_sms
 			course = Course.find_by(id: params['course_id'])
 
 			if course
-				@twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid, Rails.application.secrets.twilio_token
+				#@twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid, Rails.application.secrets.twilio_token
 
 				#@twilio_client.account.sms.messages.create(
 				#  :from => "+13852157506",
-				#  :to => @user.cellphone,
+				#  :to => "+33676665045",
 				#  :body => "Course [##{course.id}] : Votre chauffeur est en route !"
 				#)
 				rData = {:status => true}
@@ -313,6 +568,7 @@ class AppCallsController < ApplicationController
 					rData = {
 						:status => true
 					}
+					course.update(status: Course::statuses[:done])
 				else
 					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'fail_feedback');
 					rData = {
@@ -332,9 +588,9 @@ class AppCallsController < ApplicationController
 
 	####### Functions ###########
 
-	def rendering(rData)
+	def rendering(rData, including = nil)
 		respond_to do |format|
-			format.json { render :json => rData }
+			format.json { render :json => rData, :include => including }
 		end
 	end
 
@@ -375,6 +631,16 @@ class AppCallsController < ApplicationController
 
 	def user_params
     	params.require(:user).permit(:name, :last_name, :email, :cellphone, :password, :password_confirmation, :facebookID)
+    end
+
+    def course_params
+    	vars = {
+			"from" => params['course_data']['from_address'],
+			"to" => params['course_data']['to_address'],
+			"date_when" => params['course_data']['date'],
+			"time_when" => params['course_data']['time'],
+			"car_type" => params['course_data']['car_type']
+		}
     end
 
     def crypt_token(token)

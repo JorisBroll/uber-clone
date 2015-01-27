@@ -24,6 +24,15 @@ fr:
         partner_id: "Rattaché au partenaire"
         companies: "Membre des entreprises clientes"
         promocodes: "Codes promotions rattachés"
+      car:
+        name: "Nom"
+        brand: "Marque"
+        model: "Modèle"
+        color: "Couleur"
+        car_type: "Type de véhicule"
+        slots: "Nombre de places"
+        plate_number: "Plaque d'immatriculation"
+        driven_by: "Conduite par"
       company:
         nom: "Dénomination sociale"
         phone: "Téléphone"

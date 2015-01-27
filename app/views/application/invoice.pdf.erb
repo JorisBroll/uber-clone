@@ -4,13 +4,21 @@
 		<meta charset='utf-8' />
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,300,600,700' rel='stylesheet' type='text/css'>
 		<style>
+
+			html{
+				height: 100%;
+			}
+
 			body {
 				font-family: 'Open Sans', sans-serif;
 				color: #555555;
 				font-size: 12px;
+				height: 100%;
+				border:0.5mm solid #E2E2E2;
 			}
 			.invoice{
-				border:0.5mm solid #E2E2E2;
+				
+				height: 100%;
 			}
 			.invoice-header{
 				background-color:#f6f6f6;
@@ -154,6 +162,9 @@
 				padding: 5mm 5mm;
 				text-align: center;
 				font-size: 9px;
+				position: absolute;
+				width: 100%;
+				bottom: 0;
 			}
 				.invoice-footer hr{
 					width:80%;
@@ -232,7 +243,7 @@
 			}
 		</style>
 	</head>
-	<body onload='number_pages'>
+	<body onload='number_pages()'>
 		<div class="panel invoice">
 			<div class="invoice-header">
 					<table>
@@ -287,7 +298,7 @@
 								<td width="220mm" id="details_course">
 									De <strong><%= course.from %></strong> à <strong><%= course.to %><br />
 									Véhicule : <%= course.car.name unless course.car.nil? %><br />
-									<%= course.nb_people %> personne(s) | <%= course.computed_distance %> Km<br />
+									<%= course.nb_people %> personne(s) | <%= course.computed_distance %> Km
 								</td>
 								<td id="date_heure"><%= getDateTime(course) %></td>
 								<td>
@@ -320,15 +331,15 @@
 							<td width="50%">
 								<table>
 									<tr>
-										<td>Total Commissions Naveco HT</td>
-										<td><strong><%= number_with_precision(@totals_week[:ht], :precision => 2) %> €</strong></td>
+										<td>Total perçu chauffeur</td>
+										<td><strong><%= number_with_precision(@totals_week[:partner_collected], :precision => 2) %> €</strong></td>
 									</tr>
 									<tr>
-										<td>Total Commissions Naveco TVA (20%)</td>
+										<td>20% de Commission Naveco TTC</td>
 										<td><strong><% if @partner.status == "company" %><%= number_with_precision(@totals_week[:tva], :precision => 2) %><% end %><% if @partner.status == "self_employed" %>N/A<% end %></strong></td>
 									</tr>
 									<tr>
-										<td>Total Commissions Naveco TTC</td>
+										<td>Commission Naveco TTC</td>
 										<td><strong><% if @partner.status == "company" %><%= number_with_precision(@totals_week[:ttc], :precision => 2) %> €<% end %><% if @partner.status == "self_employed" %>N/A<% end %></strong></td>
 									</tr>
 								</table>
@@ -337,10 +348,11 @@
 					</table>
 				</div>
 				<div class="invoice-footer">
+
 				<hr />
 					Tél. <%= @naveco.phone %> -  <%= @naveco.email %><br />
-					N° SIRET : <%= @naveco.company_code %> - N° TVA Intracommunautaire : <%= @partner.tva_number.to_s %> - NAF : 4939B - RCS : Lyon B 539 056 051<br />
-					<%= @naveco.name %> <%= Partner::Statuses[@naveco.status.to_sym][:name] %> au capital social de 6 000,00 € - <%= build_address(@partner) %><br />
+					N° SIRET : <%= @naveco.company_code %> - N° TVA Intracommunautaire : <%= @naveco.tva_number.to_s %> - NAF : 4939B - RCS : Lyon B 539 056 051<br />
+					<%= @naveco.name %> <%= Partner::Statuses[@naveco.status.to_sym][:name] %> au capital social de 6 000,00 € - <%= build_address(@naveco) %><br />
 					www.nav-eco.fr
 					
 				</div>

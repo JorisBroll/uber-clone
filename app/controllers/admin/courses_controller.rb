@@ -35,6 +35,9 @@ class Admin::CoursesController < ApplicationController
 			flash[:success] = "La course n°"+@course.id.to_s+" a été créée."
 			Log.create(user_id: current_user.id, target_type: 1, target_id: @course.id, action: 'create')
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'course', 'id' => @course.id.to_s} })
+			
+			if @course.need_review? then Notification::make('warning', 'Course à valider', "La course n°"+ @course.id.to_s+" du "+@course.date_when.to_s+" a besoin d'être validée.", ['admins'], admin_course_path(@course)) end
+
 			redirect_to admin_course_path(@course)
 	    else
 	    	flash[:error] = "La course n'a pas pu être créée, veuillez réessayer :"
@@ -53,7 +56,11 @@ class Admin::CoursesController < ApplicationController
 			flash[:success] = "La course n°"+@course.id.to_s+" a été modifiée avec succès."
 			Log.create(user_id: current_user.id, target_type: 1, target_id: @course.id, action: 'update')
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'course', 'id' => @course.id.to_s} })
+			
 			Notification::make('warning', 'Course modifiée', "La course n°"+ @course.id.to_s+" du "+@course.date_when.to_s+" a été modifiée.", ['admins', 'partneradmins'], admin_course_path(@course))
+
+			if @course.need_review? then Notification::make('warning', 'Course à valider', "La course n°"+ @course.id.to_s+" du "+@course.date_when.to_s+" a besoin d'être validée.", ['admins'], admin_course_path(@course)) end
+
 			redirect_to admin_course_path(@course)
 		else
 			flash[:error] = "La course n'a pas pu être modifiée, veuillez réessayer :"

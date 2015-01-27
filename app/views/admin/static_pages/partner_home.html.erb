@@ -355,8 +355,8 @@ init.push(function () {
 						<tr>
 							<td><a href="<%= admin_car_path(car) %>"><%= car.name %></a></td>
 							<td><%= car.slots %></td>
-							<td><%= car.car_type %></td>
-							<td><%= car.partner.name %> | <%= car.user.name unless car.user.nil? %></td>
+							<td><%= Car::Car_types[car.car_type.to_sym][:name] %></td>
+							<td><%= car.partner.name %></td>
 						</tr>
 					<% end %>
 				</table>

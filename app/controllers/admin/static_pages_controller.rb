@@ -95,6 +95,7 @@ class Admin::StaticPagesController < ApplicationController
 		@logs[:users] = @logs[:all].where('target_type = 0')
 		@logs[:courses] = @logs[:all].where('target_type = 1')
 		@logs[:partners] = @logs[:all].where('target_type = 2')
+		@logs[:cars] = @logs[:all].where('target_type = 8')
 	end
 
 	def global_stats
@@ -131,8 +132,8 @@ class Admin::StaticPagesController < ApplicationController
 			}
 			(0..6).each do |i|
 				@date_week[i] = {
-					:start => Time.zone.now.weeks_since(i).at_beginning_of_week,
-					:end => Time.zone.now.weeks_since(i).at_end_of_week
+					:start => Time.zone.now.beginning_of_month.weeks_since(i).at_beginning_of_week,
+					:end => Time.zone.now.beginning_of_month.weeks_since(i).at_end_of_week
 				}
 			end
 		end
@@ -206,6 +207,7 @@ class Admin::StaticPagesController < ApplicationController
 				:ttc => (@courses_week.map {|s| price_afterExtras(s, 'naveco')}.reduce(0, :+)).round(2),
 				:ht => ((@courses_week.map {|s| price_afterExtras(s, 'naveco')}.reduce(0, :+))/1.20).round(2),
 				:tva => (@courses_week.map {|s| price_afterExtras(s, 'naveco')}.reduce(0, :+))-((@courses_week.map {|s| price_afterExtras(s, 'naveco')}.reduce(0, :+))/1.20).round(2),
+				:partner_collected => (@courses_week.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+)).round(2),
 				:naveco_collected => (@courses_to_naveco_week.map {|s| price_afterExtras(s)}.reduce(0, :+)).round(2)
 			}
 

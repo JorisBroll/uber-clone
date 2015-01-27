@@ -187,7 +187,7 @@ init.push(function () {
 	<div class="row form-group">
 		<%= f.label :car_type, class: "col-sm-3 control-label" %>
 		<div class="col-sm-9">
-			<%= f.select(:car_type, Car::Car_type_alias, {}, { :class => 'select2' }) %>
+			<%= f.select(:car_type, Car::Car_types_select, {}, { :class => 'select2' }) %>
 		</div>
 	</div>
 

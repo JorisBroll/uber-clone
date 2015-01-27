@@ -16,6 +16,7 @@
 				<th>Nom</th>
 				<th>Places</th>
 				<th>Type de véhicule</th>
+				<th>Couleur</th>
 				<th>Propriétaire</th>
 				<th>Actions</th>
 			</tr>
@@ -26,16 +27,17 @@
 					<td><%= car.id %></td>
 					<td><%= car.name %></td>
 					<td><%= car.slots %></td>
-					<td><%= car.car_type %></td>
-					<td><%= car.partner.name %> | <%= car.user.name unless car.user.nil? %></td>
-					<td style="font-size:16px;"><%= link_to partner_admin_car_path(car), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_partner_admin_car_path(car), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to partner_admin_car_path(car), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
+					<td><%= Car::Car_types[car.car_type.to_sym][:name] %></td>
+					<td><%= car.color %></td>
+					<td><%= car.partner.name %></td>
+					<td style="font-size:16px;"><%= link_to admin_car_path(car), { :title => "Voir" } do %><i class="menu-icon fa fa-eye"></i><% end %> | <%= link_to edit_admin_car_path(car), { :title => "Editer" } do %><i class="menu-icon fa fa-pencil"></i><% end %> | <%= link_to admin_car_path(car), method: :delete, data: { confirm: "Êtes-vous sur ?" }, title: "Supprimer" do %><i class="menu-icon fa fa-trash-o"></i><% end %></td>
 				</tr>
 			<% end %>
 		</tbody>
 	</table>
 </div>
 
-<%= link_to(new_partner_admin_car_path) do %>
+<%= link_to(new_admin_car_path) do %>
 	<button class="btn btn-flat btn-labeled btn-primary">
 	    <span class="btn-label icon fa fa-taxi"></span>Ajouter une voiture
 	</button>

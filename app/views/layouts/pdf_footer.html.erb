@@ -1,0 +1,9 @@
+<div class="invoice-footer">
+
+				<hr />
+					Tél. <%= @naveco.phone %> -  <%= @naveco.email %><br />
+					N° SIRET : <%= @naveco.company_code %> - N° TVA Intracommunautaire : <%= @naveco.tva_number.to_s %> - NAF : 4939B - RCS : Lyon B 539 056 051<br />
+					<%= @naveco.name %> <%= Partner::Statuses[@naveco.status.to_sym][:name] %> au capital social de 6 000,00 € - <%= build_address(@naveco) %><br />
+					www.nav-eco.fr
+					
+				</div>

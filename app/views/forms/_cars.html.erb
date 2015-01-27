@@ -24,16 +24,9 @@
 		<span class="panel-title">Ajouter une nouvelle voiture</span>
 	</div>
 	<div class="panel-body">
-		<%= form_for [controller, @car] do |f| %>
+		<%= form_for [:admin, @car] do |f| %>
 		    
 			<%= render 'common/error_messages', object: f.object %>
-
-			<div class="row form-group">
-				<%= f.label :name, class: "col-sm-3 control-label" %>
-				<div class="col-sm-9">
-					<%= f.text_field :name, class: "form-control", :placeholder => "Nom" %>
-				</div>
-			</div>
 
 			<div class="row form-group">
 				<%= f.label :brand, class: "col-sm-3 control-label" %>
@@ -59,7 +52,7 @@
 			<div class="row form-group">
 				<%= f.label :car_type, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
-					<%= f.select(:car_type, Car::Car_type_alias.reverse, {}, { :class => 'select2' }) %>
+					<%= f.select(:car_type, Car::Car_types_select, {}, { :class => 'select2' }) %>
 				</div>
 			</div>
 
@@ -78,7 +71,7 @@
 			</div>
 	</div>
 	<div class="panel-footer text-right">
-		<a class="btn btn-flat btn-danger" href="<%= send("#{controller}_cars_path") %>">Annuler</a>
+		<a class="btn btn-flat btn-danger" href="<%= admin_cars_path %>">Annuler</a>
 		<%= f.submit action, class: "btn btn-primary btn-flat" %>
 		<% end %>
 	</div>

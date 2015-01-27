@@ -170,10 +170,12 @@
 									<br />
 								</td>
 							</tr>
-							<% if @partner.status == "self_employed" %>
+							
 								<tr>
 									<td style="text-align:center;">
-										<span style="font-size: 10px; color: #000;">Chauffeur : <%= @partner.name %> - <%= Partner::Statuses[@partner.status.to_sym][:name] %> - SIREN : <%= @partner.company_code %> <br /> <i>dispensé d'immatriculation en application de l'article L.123-1-1 du Code du Commerce</i><br />TVA non applicable, art.293 B du CGI</span>
+										<span style="font-size: 10px; color: #000;">Chauffeur : <%= @partner.name %> - <%= Partner::Statuses[@partner.status.to_sym][:name] %> - SIRET : <%= @partner.company_code %> <br />
+<% if @partner.status == "self_employed" %>
+										 <i>dispensé d'immatriculation en application de l'article L.123-1-1 du Code du Commerce</i><br />TVA non applicable, art.293 B du CGI</span>
 									</td>
 								</tr>
 							<% end %>

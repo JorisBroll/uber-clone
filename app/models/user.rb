@@ -6,9 +6,9 @@ class User < ActiveRecord::Base
 	has_many :person, :foreign_key => "created_by"
 	has_many :sponsors, class_name: 'User', :foreign_key => "sponsored_by", inverse_of: :sponsored_by
 	has_many :drives_courses, class_name: 'Course', foreign_key: "driver_id", inverse_of: :driver
-	has_many :cars, inverse_of: :user
 	has_many :notifications, inverse_of: :user
 	has_many :payment_infos, inverse_of: :user
+	has_one :car, class_name: 'Car', :foreign_key => "driven_by", inverse_of: :driver
 	has_and_belongs_to_many :promocodes
 	has_and_belongs_to_many :companies
 
@@ -44,8 +44,11 @@ class User < ActiveRecord::Base
 		:offline => {
 			:name => "Hors-ligne"
 		},
-		:on_break => {
+		:break => {
 			:name => "En pause"
+		},
+		:busy => {
+			:name => "Occupé"
 		}
 	}
 	

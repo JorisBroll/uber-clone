@@ -21,6 +21,7 @@ gem 'wicked_pdf' #PDF library+
 gem 'twilio-ruby' #SMS
 gem 'paypal-sdk-rest' #Paypal receive money
 gem 'paypal-sdk-adaptivepayments' #Paypal send money
+gem 'sepa_king' #XML Payment Initiation (pain)
 
 group :development, :test do
   gem 'rspec-rails'
