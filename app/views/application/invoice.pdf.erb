@@ -266,7 +266,7 @@
 				<div class="invoice-info">
 					<table>
 						<tr>
-							<td id="destinataire_com">Au nom et <br />pour le compte de</td>
+							<td id="destinataire_com">TEST Au nom et <br />pour le compte de</td>
 							<td id="destinataire_com_2"><strong><%= @partner.name %></strong> [<small><%= Partner::Statuses[@partner.status.to_sym][:name] %></small>]<br />
 								<%= build_address(@partner) %><br />
 								N° TVA : <% if @partner.status == "company" %><%= @partner.tva_number.to_s %><% end %><% if @partner.status == "self_employed" %><small><i> TVA non applicable, art. 293 B du CGI</i></small><% end %><br />
