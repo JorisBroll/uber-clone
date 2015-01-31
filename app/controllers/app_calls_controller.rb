@@ -158,6 +158,20 @@ class AppCallsController < ApplicationController
 			rendering(rData)
 		end
 
+		####### User REST ###########
+		def update_user_location
+			@user.pos_lat = params['user_lat']
+			@user.pos_lon = params['user_lon']
+
+			if @user.valid?
+				@user.save
+				rData = { :status => true }
+			else
+				rData = { :status => false }
+			end
+
+		end
+
 		####### Payment Infos REST ###########
 		def payment_infos_index
 			rData = {}
@@ -403,7 +417,7 @@ class AppCallsController < ApplicationController
 
 			if course
 				course.driver_id = @user.id
-				if course.save
+				if 1 #course.save
 					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'accept_course');
 					rData = {
 						:status => true
@@ -438,7 +452,7 @@ class AppCallsController < ApplicationController
 				end
 
 				#course.rejected_by = [8]
-				if course.save
+				if 1 #course.save
 					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'decline_course');
 					rData = course.rejected_by
 				else

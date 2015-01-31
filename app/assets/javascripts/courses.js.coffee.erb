@@ -33,29 +33,29 @@ class window.GmapManager
 
 		zonesCoords = [
 			[
-				new google.maps.LatLng(45.774761, 4.811110),
-	            new google.maps.LatLng(45.774521, 4.814370),
-	            new google.maps.LatLng(45.773979, 4.820680),
-	            new google.maps.LatLng(45.773701, 4.823650),
-	            new google.maps.LatLng(45.772522, 4.839435),
-	            new google.maps.LatLng(45.770039, 4.839177),
-	            new google.maps.LatLng(45.766685, 4.839306),
-	            new google.maps.LatLng(45.763870, 4.839435),
-	            new google.maps.LatLng(45.764351, 4.830930),
-	            new google.maps.LatLng(45.765259, 4.830930),
-	            new google.maps.LatLng(45.766281, 4.829990),
-	            new google.maps.LatLng(45.767052, 4.829020),
-	            new google.maps.LatLng(45.767551, 4.828060),
-	            new google.maps.LatLng(45.767921, 4.826980),
-	            new google.maps.LatLng(45.768131, 4.825930),
-	            new google.maps.LatLng(45.768028, 4.823980),
-	            new google.maps.LatLng(45.767460, 4.820420),
-	            new google.maps.LatLng(45.767220, 4.817460),
-	            new google.maps.LatLng(45.768211, 4.814750),
-	            new google.maps.LatLng(45.769730, 4.813720),
-	            new google.maps.LatLng(45.771469, 4.813290),
-	            new google.maps.LatLng(45.774910, 4.809990),
-	            new google.maps.LatLng(45.774761, 4.811110)
+				new google.maps.LatLng(45.774761,4.811110),
+	            new google.maps.LatLng(45.774521,4.814370),
+	            new google.maps.LatLng(45.773979,4.820680),
+	            new google.maps.LatLng(45.773701,4.823650),
+	            new google.maps.LatLng(45.772522,4.839435),
+	            new google.maps.LatLng(45.770039,4.839177),
+	            new google.maps.LatLng(45.766685,4.839306),
+	            new google.maps.LatLng(45.763721,4.839430),
+	            new google.maps.LatLng(45.764229,4.830980),
+	            new google.maps.LatLng(45.765259,4.830930),
+	            new google.maps.LatLng(45.766281,4.829990),
+	            new google.maps.LatLng(45.767052,4.829020),
+	            new google.maps.LatLng(45.767551,4.828060),
+	            new google.maps.LatLng(45.767921,4.826980),
+	            new google.maps.LatLng(45.768131,4.825930),
+	            new google.maps.LatLng(45.768028,4.823980),
+	            new google.maps.LatLng(45.767460,4.820420),
+	            new google.maps.LatLng(45.767220,4.817460),
+	            new google.maps.LatLng(45.768211,4.814750),
+	            new google.maps.LatLng(45.769730,4.813720),
+	            new google.maps.LatLng(45.771469,4.813290),
+	            new google.maps.LatLng(45.774910,4.809990),
+	            new google.maps.LatLng(45.774761,4.811110)
 	        ],
 	        [
 	        	new google.maps.LatLng(45.763721,4.839430),
@@ -272,14 +272,14 @@ class window.GmapManager
 			    fillColor: zonesColors[i],
 			    fillOpacity: 0.3
 			})
+			@zones.push(newZone)
+			newZone.setMap(@map)
 			#for point, j in coords
 			#	marker = new google.maps.Marker({
 			#		position: point,
 			#		map: @map,
 			#		title:j+' - '+point.lat()+' / '+point.lng()
 			#	});
-			@zones.push(newZone)
-			newZone.setMap(@map)
 
 		@options.rendererOptions.map = @map
 
@@ -368,8 +368,8 @@ class window.GmapManager
 		start_type = _start_type[0]
 		end_type = _end_type[0]
 
-		#console.log start_type
-		#console.log end_type
+		console.log start_type
+		console.log end_type
 
 		if start_type == 'airport' && end_type == 'airport'
 			result = 
@@ -400,7 +400,7 @@ class window.GmapManager
 
 		else if (start_type == 'airport' && end_type == 'outdoors') || (start_type == 'outdoors' && end_type == 'airport') || (start_type == 'indoors' && end_type == 'indoors')
 			timePrice = 0.3
-			kmPrice = 2.5
+			kmPrice = 3
 
 			if route.distance.value > 10000
 				add_kmPrice = 1.5
@@ -478,10 +478,14 @@ class window.GmapManager
 		console.log @options
 		
 		if result.status == 'OK'
-			if @options.computeOptions.carType == 'berline' && result.route.totalPrice < 8
-				result.route.totalPrice = 8
-			if @options.computeOptions.carType == 'van' && result.route.totalPrice < 10
-				result.route.totalPrice = 10
+			if @options.computeOptions.carType == 'berline'
+				if result.route.totalPrice < 8
+					result.route.totalPrice = 8
+			if @options.computeOptions.carType == 'van'
+				if result.route.totalPrice < 10
+					result.route.totalPrice = 10
+				else
+					result.route.totalPrice += Math.round( ( result.route.totalPrice*0.2 )*100)/100
 		return result
 
 			
