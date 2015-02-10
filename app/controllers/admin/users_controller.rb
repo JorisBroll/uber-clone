@@ -71,17 +71,14 @@ class Admin::UsersController < ApplicationController
 		@user = User.new()
 	end
 	def create
-		store_photo
-
 		@user = User.new(user_params)
 		if @user.save
-			update_photo(@user)
 			flash[:success] = "L'utilisateur "+build_name(@user, true)+" a été crée."
 			Log.create(user_id: current_user.id, target_type: 0, target_id: @user.id, action: 'create')
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'created', 'target_object' => {'type' => 'user', 'id' => @user.id.to_s} })
 			redirect_to admin_users_path
 		else
-			flash[:error] = "L'utilisateur n'a pas pu être crée."
+			flash[:error] = "L'utilisateur n'a pas pu être crée."+@user.errors.inspect
 			AppLogger.log ({ 'user_id' => @current_user, 'action' => 'fail_created', 'target_object' => {'type' => 'user'} })
 			render 'new'
 	    end
@@ -90,16 +87,13 @@ class Admin::UsersController < ApplicationController
 
 	end
 	def update
-		store_photo
-
 		if @user.update_attributes(user_params)
-			update_photo(@user)
 			flash[:success] = "L'utilisateur "+build_name(@user, true)+" a été modifié avec succès."
 			Log.create(user_id: current_user.id, target_type: 0, target_id: @user.id, action: 'update')
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'updated', 'target_object' => {'type' => 'user', 'id' => @user.id.to_s} })
 			redirect_to admin_users_path
 		else
-			flash[:error] = "L'utilisateur "+build_name(@user, true)+" n'a pas pu être modifié."
+			flash[:error] = "L'utilisateur "+build_name(@user, true)+" n'a pas pu être modifié."+@user.errors.inspect
 			AppLogger.log ({'user_id' => @current_user, 'action' => 'fail_updated', 'target_object' => {'type' => 'user', 'id' => @user.id.to_s} })
 			render 'edit'
 		end
@@ -127,18 +121,7 @@ class Admin::UsersController < ApplicationController
 		    def set_partner
 		    	@partner = Partner.find(params[:partner_id])
 		    end
-
-	        def update_photo(user)
-	        	if photo_name = save_photo(@photo, 'user'+user.id.to_s)
-	        		@user.update_attributes(photo: photo_name)
-	        	end
-	        end
-
-	        def store_photo
-				@photo = params[:user][:photo]
-				params[:user][:photo] = ""
-	        end
-
+	  
 	        def check_privileges
 				if userWeight <= User::Account_types[:admin][:weight]
 					@user = User.find_by(id: params[:id])

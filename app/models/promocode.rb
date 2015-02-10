@@ -12,6 +12,9 @@ class Promocode < ActiveRecord::Base
 	}
 	enum effect_type: Effect_types.collect { |key, o| key }
 	Effect_type_select = Effect_types.collect { |key, o| [o[:name], key] }
+	def effect_type_s
+		return Promocode::Effect_types[self.effect_type.to_sym][:name]
+	end
 
 
 	Effect_lengths = {
@@ -27,4 +30,9 @@ class Promocode < ActiveRecord::Base
 	}
 	enum effect_length: Effect_lengths.collect { |key, o| key }
 	Effect_length_select = Effect_lengths.collect { |key, o| [o[:name], key] }
+	def effect_length_s
+		return Promocode::Effect_lengths[self.effect_length.to_sym][:name]
+	end
+
+	attr_accessor :selected
 end

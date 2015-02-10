@@ -18,7 +18,9 @@ module Naveco
       end
     end
     
-	#config.i18n.default_locale = :fr
-	#config.i18n.locale = :fr
+  	#config.i18n.default_locale = :fr
+  	config.i18n.locale = :fr
+    config.time_zone = 'Europe/Paris'
+    ActiveSupport.encode_big_decimal_as_string = false
   end
 end

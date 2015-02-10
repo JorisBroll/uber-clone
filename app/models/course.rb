@@ -47,4 +47,16 @@ class Course < ActiveRecord::Base
 		}
 	}
 	enum payment_by: Payment_by.collect { |key, o| key }
+
+	Course_type = {
+		:now => {
+			:name => "Immédiate"
+		},
+		:later => {
+			:name => "Différée"
+		}
+	}
+	enum course_type: Course_type.collect { |key, o| key }
+
+	enum car_type: Car::Car_types.collect { |key, o| key }
 end

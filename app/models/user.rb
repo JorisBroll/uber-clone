@@ -51,6 +51,12 @@ class User < ActiveRecord::Base
 			:name => "Occupé"
 		}
 	}
+
+	has_attached_file :photo
+	validates_attachment_content_type :photo, :content_type => /\Aimage\/.*\Z/
+	def photo_url
+        photo.url
+    end
 	
 	enum account_type: Account_types.collect { |key, o| key }
 	enum status: Status.collect { |key, o| key }
@@ -68,6 +74,16 @@ class User < ActiveRecord::Base
 	                uniqueness: { case_sensitive: false }
 	has_secure_password
 	validates :password, length: { minimum: 6 }, allow_blank: true
+
+	attr_accessor :mpos_latLng
+	attr_accessor :mpos_deg
+
+	def pos_latLng
+		return {
+			:lat => self.pos_lat,
+			:lng => self.pos_lon
+		}
+	end
 
 	def minimal_valid?
 		if !self.name.blank? && !self.cellphone.blank?

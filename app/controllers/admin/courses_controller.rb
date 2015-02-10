@@ -81,7 +81,7 @@ class Admin::CoursesController < ApplicationController
 
 		    def course_params
 		    	params['course']['stops'] = params['course']['stops'].to_json
-		    	params.require(:course).permit(:from, :to, :date_when, :time_when, :computed_distance, :computed_duration, :computed_price, :stops_price, :promocode_amount, :commission, :stops, :nb_people, :nb_luggage, :user_id, :partner_id, :car_id, :company_id, :status, :notes, :created_by, :company_id, :promocode_id, :driver_id, :payment_when, :payment_by, :payment_status, :payment_type, :flight_number, :need_review)
+		    	params.require(:course).permit(:from, :to, :date_when, :time_when, :computed_distance, :computed_duration, :computed_price, :stops_price, :promocode_amount, :commission, :stops, :nb_people, :nb_luggage, :user_id, :partner_id, :car_id, :company_id, :status, :notes, :car_type, :created_by, :company_id, :promocode_id, :driver_id, :payment_when, :payment_by, :payment_status, :payment_type, :flight_number, :need_review)
 		    end
 
 			def check_privileges

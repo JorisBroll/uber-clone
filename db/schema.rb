@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150121164828) do
+ActiveRecord::Schema.define(version: 20150210100948) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -98,6 +98,9 @@ ActiveRecord::Schema.define(version: 20150121164828) do
     t.integer  "stops_price"
     t.float    "promocode_amount"
     t.json     "rejected_by"
+    t.integer  "course_type",       default: 0
+    t.string   "cancel_reason"
+    t.integer  "behavior_feedback"
   end
 
   create_table "logs", force: true do |t|
@@ -141,13 +144,10 @@ ActiveRecord::Schema.define(version: 20150121164828) do
   create_table "payment_infos", force: true do |t|
     t.integer "infos_type"
     t.integer "user_id"
-    t.string  "card_number"
-    t.string  "card_expiration_month"
-    t.string  "card_expiration_year"
-    t.string  "card_verification"
-    t.string  "card_ending_code"
-    t.string  "paypal_email"
-    t.string  "paypal_token"
+    t.string  "paypal_card_id"
+    t.string  "paypal_access_token"
+    t.string  "paypal_refresh_token"
+    t.string  "paypal_card_ending"
   end
 
   create_table "payments", force: true do |t|
@@ -191,7 +191,6 @@ ActiveRecord::Schema.define(version: 20150121164828) do
     t.string   "phone"
     t.decimal  "pos_lat"
     t.decimal  "pos_lon"
-    t.string   "photo"
     t.string   "last_name"
     t.string   "address"
     t.string   "postcode"
@@ -205,6 +204,13 @@ ActiveRecord::Schema.define(version: 20150121164828) do
     t.datetime "login_token_expiration"
     t.integer  "sponsored_by"
     t.string   "facebookID"
+    t.string   "photo_file_name"
+    t.string   "photo_content_type"
+    t.integer  "photo_file_size"
+    t.datetime "photo_updated_at"
+    t.decimal  "pos_deg",                default: 0.0
+    t.integer  "selected_promocode"
+    t.integer  "selected_payment"
   end
 
 end

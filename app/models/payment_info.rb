@@ -12,5 +12,7 @@ class PaymentInfo < ActiveRecord::Base
 	
 	enum infos_type: Infos_types.collect { |key, o| key }
 	Infos_types_select = Infos_types.collect { |key, o| [o[:name], key] }
-
+	def infos_type_s
+		return PaymentInfo::Infos_types[self.infos_type.to_sym][:name]
+	end
 end

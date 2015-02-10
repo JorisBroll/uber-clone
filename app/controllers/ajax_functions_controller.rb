@@ -91,6 +91,13 @@ class AjaxFunctionsController < ApplicationController
 		rendering(@response)
 	end
 
+	def change_photo
+		rData = 'eee'
+		#current_user.photo = params['image_url']
+
+		rendering(rData)
+	end
+
 	def operator_steps_save_user
 		rData = {}
 		rData['status'] = true

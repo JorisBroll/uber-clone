@@ -4,6 +4,8 @@ class Admin::StaticPagesController < ApplicationController
 
 	include ApplicationHelper
 	include CoursesHelper
+	include PayPal::SDK::REST
+	include PayPal::SDK::OpenIDConnect
 	
 	def home
 		case userWeight
@@ -334,14 +336,30 @@ class Admin::StaticPagesController < ApplicationController
 
 		@twilio_client = Twilio::REST::Client.new twilio_sid, twilio_token
 
-		@twilio_client.account.sms.messages.create(
-		  :from => "+13852157506",
-		  :to => "+33676665045",
-		  :body => "HELLO WORLD, TEST OF DOOM"
-		)
+		#@twilio_client.account.sms.messages.create(
+		#  :from => "+13852157506",
+		#  :to => "+33676665045",
+		#  :body => "HELLO WORLD, TEST OF DOOM"
+		#)
 	end
 
 	def test
-		
+		require 'net/http'
+
+		uri = URI.parse("https://api.sandbox.paypal.com/v1/oauth2/token")
+		http = Net::HTTP.new(uri.host, uri.port)
+		http.use_ssl = true
+
+		req = Net::HTTP::Post.new(uri.request_uri)
+		req.basic_auth('ATzIeRAmyzGCA8cUntc5dJtOOmglQiFlXP0fd1GY9TxnO9bHau14fcSDQujB', 'EM_VnhBtMoQFMbst48HgMeRg4UpgEEeaLqqey9d6OlswgN7O8ZWja1wNEZSF')
+		req.set_form_data({
+			"grant_type" => "authorization_code",
+			"redirect_uri" => "urn:ietf:wg:oauth:2.0:oob",
+			"code" => "YYY"
+		})
+
+		response = http.request(req)
+
+		@lol = response.body
 	end
 end
