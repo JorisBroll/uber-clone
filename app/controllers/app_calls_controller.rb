@@ -489,22 +489,22 @@ class AppCallsController < ApplicationController
 			rendering(rData)
 		end
 
-		# def test_pay
-		# 	result = Braintree::Transaction.sale(
-		# 	    :payment_method_token => "f83c2b",
-		# 	    :amount => "10.00"
-		# 	)
+		 def test_pay
+		 	customer = Braintree::Customer.find(@user.id)
 
-		# 	if result.success?
-		# 		rData = true
-		# 	else
-		# 		rData = false
-		# 	end
+		 	result = Braintree::Transaction.sale(
+		 	    :payment_method_token => customer.credit_cards[0].token,
+		 	    :amount => "0.01"
+		 	)
 
+		 	if result.success?
+		 		rData = true
+		 	else
+		 		rData = false
+		 	end
 
-
-		# 	rendering(rData)
-		# end
+		 	rendering(rData)
+		 end
 
 		####### User REST ###########
 		def update_user
@@ -907,21 +907,19 @@ class AppCallsController < ApplicationController
 		end
 
 		def end_trip
+			rData = {}
 			course = Course.find_by(id: params['course_id'])
 
 			if course
 				course.trip_finished = Time.now
 				if course.save
 					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'end');
-					rData = {
-						:status => true
-					}
+					rData[:status] = true
+					rData[:user] = User.find_by(id: course.user_id)
 				else
 					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'fail_end');
-					rData = {
-						:status => false,
-						:errorMessage => "La date de départ de la course n'a pas été enregistrée."
-					}
+					rData[:status] = false
+					rData[:errorMessage] = "La date de départ de la course n'a pas été enregistrée."
 				end
 			else
 				rData = {
