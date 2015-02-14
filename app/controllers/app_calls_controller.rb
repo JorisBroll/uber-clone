@@ -170,9 +170,9 @@ class AppCallsController < ApplicationController
 
 			user = User.find_by(email: params['email'].downcase);
 			if !user.nil?
-				user.activation_code = (0...5).map { ('A'..'Z').to_a[rand(26)] }.join
+				user.activation_code = (0...6).map { ('A'..'Z').to_a[rand(26)] }.join
 				user.save
-				UserMailer.custom_email('joris.broll@gmail.com', "Votre code de réinitialisation", "Bonjour, voici votre code nécéssaire à la réinitialisation de votre mot de passe : #{user.activation_code}".html_safe).deliver
+				UserMailer.custom_email(user.email, "Votre code de réinitialisation", "Bonjour, voici votre code nécéssaire à la réinitialisation de votre mot de passe : #{user.activation_code}".html_safe).deliver
 				rData[:status] = true
 			else
 				rData[:status] = false
@@ -574,7 +574,7 @@ class AppCallsController < ApplicationController
 			end
 			customer.credit_cards.each do |credit_card|
 				#Braintree::PaymentMethod.delete(credit_card.token)
-				rData[:methods_list] << {:token => credit_card.token, :name => "Carte bancaire (**** **** **** #{credit_card.last_4})"
+				rData[:methods_list] << {:token => credit_card.token, :name => "Carte bancaire (**** **** **** #{credit_card.last_4})"}
 			end
 
 			rData[:debug] = customer.paypal_accounts[0].inspect
