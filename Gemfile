@@ -6,7 +6,7 @@ gem 'rails-i18n'
 gem 'unicorn' # Dev server
 gem 'rack-cors', :require => 'rack/cors' # For Cross Domain JSON
 gem 'activesupport-json_encoder', github: 'rails/activesupport-json_encoder' # JSON encoding library
-gem 'aws-sdk' # Amazon S3 SDK
+gem 'aws-sdk', '< 2.0' # Amazon S3 SDK, < 2.0 for paperclip compatibility
 gem 'paperclip' # Easy S3 uploader
 gem 'paypal-sdk-rest' # For Paypal OAuth2
 gem "braintree" # For mobile payments

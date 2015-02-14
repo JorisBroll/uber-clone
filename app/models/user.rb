@@ -52,7 +52,7 @@ class User < ActiveRecord::Base
 		}
 	}
 
-	has_attached_file :photo
+	has_attached_file :photo, :default_url => 'https://s3.amazonaws.com/naveco-assets/users/photos/Naveco-Login-id.png'
 	validates_attachment_content_type :photo, :content_type => /\Aimage\/.*\Z/
 	def photo_url
         photo.url
@@ -84,6 +84,9 @@ class User < ActiveRecord::Base
 			:lng => self.pos_lon
 		}
 	end
+
+	attr_accessor :pos_time
+	attr_accessor :pos_distance
 
 	def minimal_valid?
 		if !self.name.blank? && !self.cellphone.blank?

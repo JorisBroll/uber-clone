@@ -360,6 +360,9 @@ class AppCallsController < ApplicationController
 				rData[:course_id] = course.id
 				if !course.driver_id.nil?
 					driver = User.find_by(id: course.driver_id)
+					driver.pos_distance = distance_between(@user.pos_lat, @user.pos_lon, driver.pos_lat, driver.pos_lon)
+					driver.pos_time = convert_distance_to_time(driver.pos_distance)
+
 					rData[:driver] = driver
 					rData[:driver_photo] = driver.photo_url
 					rData[:driver_status] = true
@@ -372,7 +375,7 @@ class AppCallsController < ApplicationController
 				}
 			end
 
-			rendering(rData)
+			rendering(rData, nil, nil, [:car, :pos_time])
 		end
 
 		def course_refresh_status
@@ -408,9 +411,6 @@ class AppCallsController < ApplicationController
 
 			if !params['marker_pos_lat'].nil? && !params['marker_pos_lng'].nil?
 
-				user_lat_deg = Math::PI*(params['marker_pos_lat'].to_f)/180
-				user_lon_deg = Math::PI*(params['marker_pos_lng'].to_f)/180
-
 				drivers = User.where("account_type = ?", User.account_types[:driver]).select(:id, :pos_lat, :pos_lon, :pos_deg)
 				rData[:drivers_pos] = {}
 
@@ -418,19 +418,16 @@ class AppCallsController < ApplicationController
 					rData[:status] = true
 					drivers.each do |driver|
 						if !driver.pos_lat.nil?
-							g = Math::PI*driver.pos_lat/180
-							h = Math::PI*driver.pos_lon/180
-							i = (Math.cos(user_lat_deg)*Math.cos(g)*Math.cos(user_lon_deg)*Math.cos(h)+Math.cos(user_lat_deg)*Math.sin(user_lon_deg)*Math.cos(g)*Math.sin(h)+Math.sin(user_lat_deg)*Math.sin(g));
-							j = (Math.acos(i))
-							distance = (6371*j).round(3);
+							driver.pos_distance = distance_between(params['marker_pos_lat'].to_f, params['marker_pos_lng'].to_f, driver.pos_lat, driver.pos_lon)
+							driver.pos_time = convert_distance_to_time(driver.pos_distance)
+
 							driver.mpos_latLng = {
 								lat:driver.pos_lat + rand(0.0001..0.001),
 								lng:driver.pos_lon + rand(0.0001..0.001)
 							}
 							driver.mpos_deg = rand(0..360)
 
-							if distance < 20 then rData[:drivers_pos][driver.id] = driver end
-							#rData[:drivers_pos][driver.id] = driver unless driver.id != 8
+							if driver.pos_distance < 20 then rData[:drivers_pos][driver.id] = driver end
 						end
 					end
 				end
@@ -438,7 +435,7 @@ class AppCallsController < ApplicationController
 
 			#rData[:debug] = params
 
-			rendering(rData, nil, nil, [:mpos_latLng, :mpos_deg, :pos_latLng])
+			rendering(rData, nil, nil, [:mpos_latLng, :mpos_deg, :pos_latLng, :pos_time, :pos_distance])
 		end
 
 		def client_send_feedback_and_pay
@@ -447,15 +444,16 @@ class AppCallsController < ApplicationController
 			course = Course.find_by(id: params['course_id'])
 
 			if course
+				rData[:status] = true
 				course.trip_feedback = params['feedback_value']
 				if course.save
 					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'feedback');
-					rData[:status] = true
+					rData[:status_feedback] = true
 					course.update(status: Course::statuses[:done])
 				else
 					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'fail_feedback');
-					rData[:status] = false
-					rData[:errorMessage] = "Le feedback du chauffeur concernant le client n'a pas été enregistré."
+					rData[:status_feedback] = false
+					rData[:errorMessage] = "Le feedback du client concernant le chauffeur n'a pas été enregistré."
 				end
 
 
@@ -473,7 +471,7 @@ class AppCallsController < ApplicationController
 				else
 					rData[:status_payment] = false
 					rData[:errorMessage] = "Paiement échoué"
-					rData[:debug] = payment.inspect
+					#rData[:debug] = payment.inspect
 				end
 			else
 				rData[:status] = false
@@ -483,22 +481,22 @@ class AppCallsController < ApplicationController
 			rendering(rData)
 		end
 
-		def test_pay
-			result = Braintree::Transaction.sale(
-			    :payment_method_token => "f83c2b",
-			    :amount => "10.00"
-			)
+		# def test_pay
+		# 	result = Braintree::Transaction.sale(
+		# 	    :payment_method_token => "f83c2b",
+		# 	    :amount => "10.00"
+		# 	)
 
-			if result.success?
-				rData = true
-			else
-				rData = false
-			end
+		# 	if result.success?
+		# 		rData = true
+		# 	else
+		# 		rData = false
+		# 	end
 
 
 
-			rendering(rData)
-		end
+		# 	rendering(rData)
+		# end
 
 		####### User REST ###########
 		def update_user
@@ -544,8 +542,11 @@ class AppCallsController < ApplicationController
 				)
 			end
 
+			payment_methods = customer.credit_cards.count + customer.paypal_accounts.count
+
 			if @client_token = Braintree::ClientToken.generate(:customer_id => @user.id)
 				rData[:client_token] = @client_token
+				rData[:methods] = payment_methods
 				rData[:status] = true
 			else
 				rData[:status] = false
@@ -568,9 +569,11 @@ class AppCallsController < ApplicationController
 			end
 			rData[:methods_list] = []
 			customer.paypal_accounts.each do |paypal_account|
+				#Braintree::PaymentMethod.delete(paypal_account.token)
 				rData[:methods_list] << {:token => paypal_account.token, :name => paypal_account.email}
 			end
 			customer.credit_cards.each do |credit_card|
+				#Braintree::PaymentMethod.delete(credit_card.token)
 				rData[:methods_list] << {:token => credit_card.token, :name => credit_card.last_4}
 			end
 
@@ -1006,7 +1009,8 @@ class AppCallsController < ApplicationController
 			"date_when" => params['course_data']['date'],
 			"time_when" => params['course_data']['time'],
 			"car_type" => params['course_data']['car_type'],
-			"course_type" => params['course_data']['course_type']
+			"course_type" => params['course_data']['course_type'],
+			"stops" => params['course_data']['stops']
 		}
     end
 
@@ -1026,6 +1030,24 @@ class AppCallsController < ApplicationController
 		  :body => contents
 		)
 		rData = {:status => true}
+	end
+
+	def distance_between(p1_lat, p1_lng, p2_lat, p2_lng)
+		e = Math::PI*(p2_lat)/180
+		f = Math::PI*(p2_lng)/180
+		g = Math::PI*p1_lat/180
+		h = Math::PI*p1_lng/180
+
+		i = (Math.cos(e)*Math.cos(g)*Math.cos(f)*Math.cos(h)+Math.cos(e)*Math.sin(f)*Math.cos(g)*Math.sin(h)+Math.sin(e)*Math.sin(g));
+		j = (Math.acos(i))
+
+		return (6371*j).round(3)
+	end
+
+	def convert_distance_to_time(distance)
+		time = (distance*60/50).round
+		if time == 0 then time = 1 end # Can't wait for 0 minutes yo
+		return time
 	end
 
     def crypt_token(token)
