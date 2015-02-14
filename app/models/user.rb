@@ -52,7 +52,7 @@ class User < ActiveRecord::Base
 		}
 	}
 
-	has_attached_file :photo, :default_url => 'https://s3.amazonaws.com/naveco-assets/users/photos/Naveco-Login-id.png'
+	has_attached_file :photo, :default_url => 'https://s3.amazonaws.com/naveco-assets/users/photos/default.png'
 	validates_attachment_content_type :photo, :content_type => /\Aimage\/.*\Z/
 	def photo_url
         photo.url

@@ -101,15 +101,23 @@ class AppCallsController < ApplicationController
 				user = User.new(user_params)
 				user.enabled = false
 				user.account_type = 'client'
-				user.activation_code = (0...5).map { ('A'..'Z').to_a[rand(26)] }.join
 
 				if user.valid?
 					user.save
-					send_sms("code #{user.activation_code}")
-					rData[:user_created] = {:status => true, :activation_code => user.activation_code, :id => user.id}
+
+					user_data = {
+						:name => user.name,
+						:last_name => user.last_name,
+						:photo => user.photo_url
+					}
+
+					uncrypted_token = {:user_id => user.id.to_s, :deliver_date => Time.zone.now, :account_type => 'client'}.to_json
+					token = crypt_token(uncrypted_token)
+					user.update(login_token: token)
+
+					rData = {:status => true, :loginData => {:token => token, :user_data => user_data} }
 				else
-					rData[:user_created] = {:status => false, :errors => user.errors.full_messages}
-					rData[:status] = false
+					rData = {:status => false, :errors => user.errors.full_messages}
 				end
 			end
 			
