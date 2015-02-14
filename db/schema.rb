@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150210100948) do
+ActiveRecord::Schema.define(version: 20150214103200) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -203,7 +203,6 @@ ActiveRecord::Schema.define(version: 20150210100948) do
     t.text     "login_token"
     t.datetime "login_token_expiration"
     t.integer  "sponsored_by"
-    t.string   "facebookID"
     t.string   "photo_file_name"
     t.string   "photo_content_type"
     t.integer  "photo_file_size"
@@ -211,6 +210,7 @@ ActiveRecord::Schema.define(version: 20150210100948) do
     t.decimal  "pos_deg",                default: 0.0
     t.integer  "selected_promocode"
     t.integer  "selected_payment"
+    t.string   "facebookID"
   end
 
 end

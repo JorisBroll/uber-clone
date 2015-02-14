@@ -574,7 +574,7 @@ class AppCallsController < ApplicationController
 			end
 			customer.credit_cards.each do |credit_card|
 				#Braintree::PaymentMethod.delete(credit_card.token)
-				rData[:methods_list] << {:token => credit_card.token, :name => credit_card.last_4}
+				rData[:methods_list] << {:token => credit_card.token, :name => "Carte bancaire (**** **** **** #{credit_card.last_4})"
 			end
 
 			rData[:debug] = customer.paypal_accounts[0].inspect
