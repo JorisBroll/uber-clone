@@ -128,12 +128,12 @@ class AppCallsController < ApplicationController
 		def logout
 			@user.login_token = nil
 			if @account_type == "driver"
-				if !@user.car.driven_by.nil?
-					@user.car.driven_by = nil
+				if !@user.car.nil?
+					@user.car = nil
 				end
 			end
 			@user.save
-			rendering(@user)
+			rendering({})
 		end
 
 		def update_photo
