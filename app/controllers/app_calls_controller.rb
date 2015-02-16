@@ -56,7 +56,7 @@ class AppCallsController < ApplicationController
 					:photo => user.photo_url
 				}
 				uncrypted_token = {:user_id => user.id.to_s, :deliver_date => Time.zone.now}
-				if params['credentials']['account_type'] == 'driver' && user.account_type == 'driver'
+				if params['credentials']['account_type'] == 'driver' && ['driver', 'partneradmin', 'admin', 'superadmin'].include?(user.account_type)
 					uncrypted_token[:account_type] = 'driver'
 				else
 					uncrypted_token[:account_type] = 'client'
