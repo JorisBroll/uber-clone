@@ -373,7 +373,7 @@ class AppCallsController < ApplicationController
 				rData[:course_id] = course.id
 				if !course.driver_id.nil?
 					driver = User.find_by(id: course.driver_id)
-					if !@user.pos_lat.nil?
+					if !driver.pos_lat.nil?
 						driver.pos_distance = distance_between(@user.pos_lat, @user.pos_lon, driver.pos_lat, driver.pos_lon)
 						driver.pos_time = convert_distance_to_time(driver.pos_distance)
 					else
