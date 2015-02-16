@@ -127,8 +127,13 @@ class AppCallsController < ApplicationController
 
 		def logout
 			@user.login_token = nil
+			if @account_type == "driver"
+				if !@user.car.driven_by.nil?
+					@user.car.driven_by = nil
+				end
+			end
 			@user.save
-			rendering({})
+			rendering(@user)
 		end
 
 		def update_photo
@@ -577,11 +582,11 @@ class AppCallsController < ApplicationController
 			end
 			rData[:methods_list] = []
 			customer.paypal_accounts.each do |paypal_account|
-				#Braintree::PaymentMethod.delete(paypal_account.token)
+				Braintree::PaymentMethod.delete(paypal_account.token)
 				rData[:methods_list] << {:token => paypal_account.token, :name => paypal_account.email}
 			end
 			customer.credit_cards.each do |credit_card|
-				#Braintree::PaymentMethod.delete(credit_card.token)
+				Braintree::PaymentMethod.delete(credit_card.token)
 				rData[:methods_list] << {:token => credit_card.token, :name => "Carte bancaire (**** **** **** #{credit_card.last_4})"}
 			end
 
@@ -1022,21 +1027,21 @@ class AppCallsController < ApplicationController
     end
 
    	def send_sms(to, contents)
-   		@twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid, Rails.application.secrets.twilio_token
+  		#@twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid, Rails.application.secrets.twilio_token
+		# @twilio_client.account.sms.messages.create(
+		#  :from => "+13852157506",
+		#  :to => "+33676665045",
+		#  :body => contents
+		# )
+		# rData = {:status => true}
+
+        twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid_dev, Rails.application.secrets.twilio_token_dev
 		@twilio_client.account.sms.messages.create(
-		 :from => "+13852157506",
-		 :to => to,
-		 :body => contents
+		  :from => "+15005550006",
+		  :to => to,
+		  :body => contents
 		)
 		rData = {:status => true}
-
-        #twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid_dev, Rails.application.secrets.twilio_token_dev
-		# @twilio_client.account.sms.messages.create(
-		#   :from => "+15005550006",
-		#   :to => "+33676665045",
-		#   :body => contents
-		# )
-		#rData = {:status => true}
 	end
 
 	def distance_between(p1_lat, p1_lng, p2_lat, p2_lng)
