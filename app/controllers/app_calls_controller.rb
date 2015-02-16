@@ -20,7 +20,7 @@ class AppCallsController < ApplicationController
 			user.activation_code = (0...5).map { ('A'..'Z').to_a[rand(26)] }.join
 			if user.valid?
 				user.save
-				send_sms("code #{user.activation_code}")
+				send_sms(user.cellphone, "Merci de votre inscription, voici votre code d'activation : #{user.activation_code}")
 				rData['user_created'] = {:status => true, :activation_code => user.activation_code, :id => user.id}
 			else
 				rData['user_created'] = {:status => false, :errors => user.errors.full_messages}
@@ -851,7 +851,7 @@ class AppCallsController < ApplicationController
 			course = Course.find_by(id: params['course_id'])
 
 			if course
-				send_sms("Course [##{course.id}] : Votre chauffeur est en route !")
+				send_sms(course.user.cellphone, "Course [##{course.id}] : Votre chauffeur est en route !")
 				rData = {:status => true}
 			else
 				rData = {
@@ -867,7 +867,7 @@ class AppCallsController < ApplicationController
 			course = Course.find_by(id: params['course_id'])
 
 			if course
-				send_sms("Course [##{course.id}] : Votre chauffeur est arrivé ")
+				send_sms(course.user.cellphone, "Course [##{course.id}] : Votre chauffeur est arrivé au point de départ.")
 				rData = {:status => true}
 			else
 				rData = {
@@ -915,6 +915,7 @@ class AppCallsController < ApplicationController
 				if course.save
 					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'end');
 					rData[:status] = true
+					rData[:course] = course
 					rData[:user] = User.find_by(id: course.user_id)
 				else
 					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'fail_end');
@@ -928,7 +929,7 @@ class AppCallsController < ApplicationController
 				}
 			end
 
-			rendering(rData)
+			rendering(rData, nil, nil, [:photo_url])
 		end
 
 		def driver_send_feedback
@@ -1020,22 +1021,22 @@ class AppCallsController < ApplicationController
 		}
     end
 
-   	def send_sms(contents)
-   		#@twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid, Rails.application.secrets.twilio_token
-		#@twilio_client.account.sms.messages.create(
-		#  :from => "+13852157506",
-		#  :to => "+33676665045",
-		#  :body => contents
-		#)
-		#rData = {:status => true}
-
-   		@twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid_dev, Rails.application.secrets.twilio_token_dev
+   	def send_sms(to, contents)
+   		@twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid, Rails.application.secrets.twilio_token
 		@twilio_client.account.sms.messages.create(
-		  :from => "+15005550006",
-		  :to => "+33676665045",
-		  :body => contents
+		 :from => "+13852157506",
+		 :to => to,
+		 :body => contents
 		)
 		rData = {:status => true}
+
+        #twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid_dev, Rails.application.secrets.twilio_token_dev
+		# @twilio_client.account.sms.messages.create(
+		#   :from => "+15005550006",
+		#   :to => "+33676665045",
+		#   :body => contents
+		# )
+		#rData = {:status => true}
 	end
 
 	def distance_between(p1_lat, p1_lng, p2_lat, p2_lng)
