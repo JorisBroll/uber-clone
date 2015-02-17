@@ -587,11 +587,11 @@ class AppCallsController < ApplicationController
 			end
 			rData[:methods_list] = []
 			customer.paypal_accounts.each do |paypal_account|
-				#Braintree::PaymentMethod.delete(paypal_account.token)
+				Braintree::PaymentMethod.delete(paypal_account.token)
 				rData[:methods_list] << {:token => paypal_account.token, :name => paypal_account.email}
 			end
 			customer.credit_cards.each do |credit_card|
-				#Braintree::PaymentMethod.delete(credit_card.token)
+				Braintree::PaymentMethod.delete(credit_card.token)
 				rData[:methods_list] << {:token => credit_card.token, :name => "Carte bancaire (**** **** **** #{credit_card.last_4})"}
 			end
 
