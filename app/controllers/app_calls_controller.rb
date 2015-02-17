@@ -1035,13 +1035,13 @@ class AppCallsController < ApplicationController
     end
 
    	def send_sms(to, contents)
-  		#@twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid, Rails.application.secrets.twilio_token
-		# @twilio_client.account.sms.messages.create(
-		#  :from => "+13852157506",
-		#  :to => "+33676665045",
-		#  :body => contents
-		# )
-		# rData = {:status => true}
+  		@twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid, Rails.application.secrets.twilio_token
+		@twilio_client.account.sms.messages.create(
+			:from => "+13852157506",
+			:to => to,
+			:body => contents
+		)
+		rData = {:status => true}
 
         #twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid_dev, Rails.application.secrets.twilio_token_dev
 		#@twilio_client.account.sms.messages.create(
