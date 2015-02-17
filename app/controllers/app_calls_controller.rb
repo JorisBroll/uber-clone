@@ -103,9 +103,7 @@ class AppCallsController < ApplicationController
 				user.enabled = false
 				user.account_type = 'client'
 
-				if user.valid?
-					user.save
-
+				if user.save
 					user_data = {
 						:name => user.name,
 						:last_name => user.last_name,
@@ -118,6 +116,7 @@ class AppCallsController < ApplicationController
 
 					rData = {:status => true, :loginData => {:token => token, :user_data => user_data} }
 				else
+					user.destroy
 					rData = {:status => false, :errors => user.errors.full_messages}
 				end
 			end
@@ -249,7 +248,7 @@ class AppCallsController < ApplicationController
 				rData[:status] = true
 				rData[:course_id] = course.id
 
-				if course.course_type == 'now'  # If course 'now'
+				if course.course_type == 'now'
 					if course.created_at <= Time.zone.now-(8*60) # If canceled 8 mins after booking
 						rData[:cancel_status] = false
 						if course.car_type == 'berline'
@@ -266,7 +265,7 @@ class AppCallsController < ApplicationController
 					#	:now => Time.zone.now,
 					#	:eightminsago => Time.zone.now-(8*60)
 					#}
-				elsif course.course_type == 'later' # If course 'later'
+				elsif course.course_type == 'later'
 					course_datetime = Time.zone.local(course.date_when.year, course.date_when.month, course.date_when.day, course.time_when.hour, course.time_when.min, course.time_when.sec)
 
 					diff = (course_datetime - Time.zone.now).round
@@ -346,8 +345,7 @@ class AppCallsController < ApplicationController
 
 			course = @user.courses.build(course_params)
 
-			if course.valid?
-				course.save
+			if course.save
 				Log.create(user_id: @user.id, target_type: 1, target_id: @user.id, action: 'create');
 				rData = {
 					:status => true,
@@ -358,6 +356,7 @@ class AppCallsController < ApplicationController
 				rData = {
 					:status => false
 				}
+				course.destroy
 			end
 
 			rendering(rData)
@@ -588,11 +587,11 @@ class AppCallsController < ApplicationController
 			end
 			rData[:methods_list] = []
 			customer.paypal_accounts.each do |paypal_account|
-				Braintree::PaymentMethod.delete(paypal_account.token)
+				#Braintree::PaymentMethod.delete(paypal_account.token)
 				rData[:methods_list] << {:token => paypal_account.token, :name => paypal_account.email}
 			end
 			customer.credit_cards.each do |credit_card|
-				Braintree::PaymentMethod.delete(credit_card.token)
+				#Braintree::PaymentMethod.delete(credit_card.token)
 				rData[:methods_list] << {:token => credit_card.token, :name => "Carte bancaire (**** **** **** #{credit_card.last_4})"}
 			end
 
@@ -1021,7 +1020,7 @@ class AppCallsController < ApplicationController
 	def user_params
     	params.require(:user).permit(:name, :last_name, :email, :cellphone, :password, :password_confirmation, :facebookID)
     end
-#
+
     def course_params
     	vars = {
 			"from" => params['course_data']['from_address'],
@@ -1031,7 +1030,9 @@ class AppCallsController < ApplicationController
 			"car_type" => params['course_data']['car_type'],
 			"course_type" => params['course_data']['course_type'],
 			"stops" => params['course_data']['stops'],
-			"computed_price" => params['course_data']['computed_price']
+			"computed_price" => params['course_data']['computed_price'],
+			"computed_distance" => params['course_data']['computed_distance'],
+			"computed_duration" => params['course_data']['computed_duration']
 		}
     end
 
