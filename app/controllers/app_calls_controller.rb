@@ -1020,7 +1020,7 @@ class AppCallsController < ApplicationController
 	def user_params
     	params.require(:user).permit(:name, :last_name, :email, :cellphone, :password, :password_confirmation, :facebookID)
     end
-
+#
     def course_params
     	vars = {
 			"from" => params['course_data']['from_address'],
@@ -1043,13 +1043,13 @@ class AppCallsController < ApplicationController
 		# )
 		# rData = {:status => true}
 
-        twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid_dev, Rails.application.secrets.twilio_token_dev
-		@twilio_client.account.sms.messages.create(
-		  :from => "+15005550006",
-		  :to => to,
-		  :body => contents
-		)
-		rData = {:status => true}
+        #twilio_client = Twilio::REST::Client.new Rails.application.secrets.twilio_sid_dev, Rails.application.secrets.twilio_token_dev
+		#@twilio_client.account.sms.messages.create(
+		#  :from => "+15005550006",
+		#  :to => to,
+		#  :body => contents
+		#)
+		#rData = {:status => true}
 	end
 
 	def distance_between(p1_lat, p1_lng, p2_lat, p2_lng)
