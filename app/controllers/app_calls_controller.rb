@@ -23,6 +23,7 @@ class AppCallsController < ApplicationController
 				rData[:user_created] = {:status => true, :activation_code => user.activation_code, :id => user.id}
 			else
 				rData[:user_created] = {:status => false, :errors => user.errors.full_messages}
+				user.destroy
 				rData[:status] = false
 			end
 
