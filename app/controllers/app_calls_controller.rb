@@ -608,9 +608,11 @@ class AppCallsController < ApplicationController
 
 			if !promocodes.nil?
 				rData[:codes] = promocodes
-				rData[:codes].each do |code|
-					if code.id == @user.selected_promocode
-						code.selected = true
+				if !@user.selected_promocode.nil?
+					rData[:codes].each do |code|
+						if code.id == @user.selected_promocode
+							code.selected = true
+						end
 					end
 				end
 			end
