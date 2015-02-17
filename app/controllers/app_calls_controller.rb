@@ -21,12 +21,13 @@ class AppCallsController < ApplicationController
 			if user.valid?
 				user.save
 				send_sms(user.cellphone, "Merci de votre inscription, voici votre code d'activation : #{user.activation_code}")
-				rData['user_created'] = {:status => true, :activation_code => user.activation_code, :id => user.id}
+				rData[:user_created] = {:status => true, :activation_code => user.activation_code, :id => user.id}
 			else
-				rData['user_created'] = {:status => false, :errors => user.errors.full_messages}
-				rData['status'] = false
+				rData[:user_created] = {:status => false, :errors => user.errors.full_messages}
+				rData[:status] = false
 			end
 
+			rData[:debug] = user
 
 			rendering(rData)
 		end
@@ -1029,7 +1030,8 @@ class AppCallsController < ApplicationController
 			"time_when" => params['course_data']['time'],
 			"car_type" => params['course_data']['car_type'],
 			"course_type" => params['course_data']['course_type'],
-			"stops" => params['course_data']['stops']
+			"stops" => params['course_data']['stops'],
+			"computed_price" => params['course_data']['computed_price']
 		}
     end
 
