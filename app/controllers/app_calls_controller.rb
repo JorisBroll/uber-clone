@@ -18,8 +18,7 @@ class AppCallsController < ApplicationController
 			user.enabled = false
 			user.account_type = 'client'
 			user.activation_code = (0...5).map { ('A'..'Z').to_a[rand(26)] }.join
-			if user.valid?
-				user.save
+			if user.save
 				send_sms(user.cellphone, "Merci de votre inscription, voici votre code d'activation : #{user.activation_code}")
 				rData[:user_created] = {:status => true, :activation_code => user.activation_code, :id => user.id}
 			else
