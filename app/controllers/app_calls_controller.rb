@@ -1022,18 +1022,26 @@ class AppCallsController < ApplicationController
     end
 
     def course_params
-    	vars = {
-			"from" => params['course_data']['from_address'],
-			"to" => params['course_data']['to_address'],
-			"date_when" => params['course_data']['date'],
-			"time_when" => params['course_data']['time'],
-			"car_type" => params['course_data']['car_type'],
-			"course_type" => params['course_data']['course_type'],
-			"stops" => params['course_data']['stops'],
-			"computed_price" => params['course_data']['computed_price'],
-			"computed_distance" => params['course_data']['computed_distance'],
-			"computed_duration" => params['course_data']['computed_duration']
-		}
+    	vars = {}
+    	if params['course_data']['computed_price'] == '(prix après validation)'
+			vars["computed_price"] = 0
+			vars["need-review"] = true
+    	else
+			vars["computed_price"] = params['course_data']['computed_price']
+			vars["need-review"] = false
+    	end
+
+		vars["from"] = params['course_data']['from_address']
+		vars["to"] = params['course_data']['to_address']
+		vars["date_when"] = params['course_data']['date']
+		vars["time_when"] = params['course_data']['time']
+		vars["car_type"] = params['course_data']['car_type']
+		vars["course_type"] = params['course_data']['course_type']
+		vars["stops"] = params['course_data']['stops']
+		vars["computed_distance"] = params['course_data']['computed_distance']
+		vars["computed_duration"] = params['course_data']['computed_duration']
+
+		return vars
     end
 
    	def send_sms(to, contents)
