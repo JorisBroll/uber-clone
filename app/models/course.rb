@@ -59,4 +59,8 @@ class Course < ActiveRecord::Base
 	enum course_type: Course_type.collect { |key, o| key }
 
 	enum car_type: Car::Car_types.collect { |key, o| key }
+
+	def client
+		self.user
+	end
 end
