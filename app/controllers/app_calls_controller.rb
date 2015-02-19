@@ -877,6 +877,7 @@ class AppCallsController < ApplicationController
 
 			if course
 				#send_sms(course.user.cellphone, "Naveco : Course [##{course.id}] : Votre chauffeur est arrivé au point de départ.")
+				course.trip_wait_time = params['wait-time']
 				rData = {:status => true}
 			else
 				rData = {
