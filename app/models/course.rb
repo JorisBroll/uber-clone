@@ -60,7 +60,11 @@ class Course < ActiveRecord::Base
 
 	enum car_type: Car::Car_types.collect { |key, o| key }
 
-	def client
-		self.user
+	def date_when_s
+		self.date_when.strftime('%d/%m/%Y')
 	end
+	def time_when_s
+		self.time_when.strftime('%H-%M-%S')
+	end
+
 end
