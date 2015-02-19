@@ -19,7 +19,7 @@ class AppCallsController < ApplicationController
 			user.account_type = 'client'
 			user.activation_code = (0...5).map { ('A'..'Z').to_a[rand(26)] }.join
 			if user.save
-				send_sms(user.cellphone, "Merci de votre inscription, voici votre code d'activation : #{user.activation_code}")
+				send_sms(user.cellphone, "Naveco : Merci de votre inscription, voici votre code d'activation : #{user.activation_code}")
 				rData[:user_created] = {:status => true, :activation_code => user.activation_code, :id => user.id}
 			else
 				rData[:user_created] = {:status => false, :errors => user.errors.full_messages}
@@ -863,7 +863,7 @@ class AppCallsController < ApplicationController
 			course = Course.find_by(id: params['course_id'])
 
 			if course
-				send_sms(course.user.cellphone, "Course [##{course.id}] : Votre chauffeur est en route !")
+				#send_sms(course.user.cellphone, "Naveco : Course [##{course.id}] : Votre chauffeur est en route !")
 				rData = {:status => true}
 			else
 				rData = {
@@ -879,7 +879,7 @@ class AppCallsController < ApplicationController
 			course = Course.find_by(id: params['course_id'])
 
 			if course
-				send_sms(course.user.cellphone, "Course [##{course.id}] : Votre chauffeur est arrivé au point de départ.")
+				#send_sms(course.user.cellphone, "Naveco : Course [##{course.id}] : Votre chauffeur est arrivé au point de départ.")
 				rData = {:status => true}
 			else
 				rData = {
