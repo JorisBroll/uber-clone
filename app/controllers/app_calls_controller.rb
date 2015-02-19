@@ -229,7 +229,7 @@ class AppCallsController < ApplicationController
 					:inactive => @user.drives_courses.where('status = ?', Course.statuses[:inactive]).order(date_when: :desc, time_when: :desc).select(:id, :from, :to, :course_type, :date_when, :time_when, :user_id, :created_at),
 					:in_progress => @user.drives_courses.where('status = ?', Course.statuses[:in_progress]).order(date_when: :desc, time_when: :desc).select(:id, :from, :to, :course_type, :date_when, :time_when, :user_id, :created_at)
 				}
-				rendering(rData, [ :user => {:only => [:id, :name, :last_name, :cellphone, :email, :photo]} ])
+				rendering(rData, [ :in_progress => {:user => {:only => [:id, :name, :last_name, :cellphone, :email, :photo]}} ])
 			elsif @account_type == "client"
 				rData[:courses] = {
 					:incoming => @user.courses.where('status = ? OR status = ?', Course.statuses[:inactive], Course.statuses[:in_progress]).order(date_when: :desc, time_when: :desc).select(:id, :from, :to, :date_when, :time_when, :user_id, :created_at),
