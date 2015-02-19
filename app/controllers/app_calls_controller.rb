@@ -1025,10 +1025,10 @@ class AppCallsController < ApplicationController
     	vars = {}
     	if params['course_data']['computed_price'] == '(prix après validation)'
 			vars["computed_price"] = 0
-			vars["need-review"] = true
+			vars["need_review"] = true
     	else
 			vars["computed_price"] = params['course_data']['computed_price']
-			vars["need-review"] = false
+			vars["need_review"] = false
     	end
 
 		vars["from"] = params['course_data']['from_address']
