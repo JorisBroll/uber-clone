@@ -225,8 +225,8 @@ class AppCallsController < ApplicationController
 			rData = {}
 
 			if @account_type == "driver"
-				rData[:courses] = @user.drives_courses.where('status = ? OR status = ?', Course.statuses[:inactive], Course.statuses[:in_progress]).order(date_when: :desc, time_when: :desc).select(:id, :from, :to, :status, :course_type, :date_when, :time_when, :user_id, :created_at)
-				rendering(rData, {:user => {:only => [:id, :name, :last_name, :cellphone, :email, :photo]}}, nil, [:date_when_s, :time_when_s])
+				rData[:courses] = @user.drives_courses.where('status = ? OR status = ?', Course.statuses[:inactive], Course.statuses[:in_progress]).order(date_when: :desc, time_when: :desc).select(:id, :from, :to, :status, :course_type, :date_when, :time_when, :trip_wait_start, :trip_started, :trip_finished, :behavior_feedback, :user_id, :created_at)
+				rendering(rData, {:user => {:only => [:id, :name, :last_name, :cellphone, :email, :photo_url], :methods => [:photo_url] }}, nil, [:date_when_s, :time_when_s, :trip_wait_start_sec, :trip_started_sec, :trip_finished_sec])
 			elsif @account_type == "client"
 				rData[:courses] = {
 					:incoming => @user.courses.where('status = ? OR status = ?', Course.statuses[:inactive], Course.statuses[:in_progress]).order(date_when: :desc, time_when: :desc).select(:id, :from, :to, :date_when, :time_when, :user_id, :created_at),
@@ -877,7 +877,7 @@ class AppCallsController < ApplicationController
 
 			if course
 				#send_sms(course.user.cellphone, "Naveco : Course [##{course.id}] : Votre chauffeur est arrivé au point de départ.")
-				course.trip_waited = params['wait-time']
+				course.trip_wait_start = Time.now
 				course.save
 				rData = {:status => true}
 			else
@@ -894,7 +894,7 @@ class AppCallsController < ApplicationController
 			course = Course.find_by(id: params['course_id'])
 
 			if course
-				course.trip_started = Time.now
+				course.trip_started = Time.now				
 				if course.save
 					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'start');
 					rData = {

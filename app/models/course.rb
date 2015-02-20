@@ -67,4 +67,14 @@ class Course < ActiveRecord::Base
 		self.time_when.strftime('%H-%M-%S')
 	end
 
+	def trip_wait_start_sec
+		self.trip_wait_start.to_f * 1000
+	end
+	def trip_started_sec
+		self.trip_started.to_f * 1000
+	end
+	def trip_finished_sec
+		self.trip_finished.to_f * 1000
+	end
+
 end
