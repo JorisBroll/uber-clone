@@ -225,7 +225,7 @@ class AppCallsController < ApplicationController
 			rData = {}
 
 			if @account_type == "driver"
-				rData[:courses] = @user.drives_courses.where('status = ? OR status = ?', Course.statuses[:inactive], Course.statuses[:in_progress]).order(date_when: :desc, time_when: :desc).select(:id, :from, :to, :status, :course_type, :date_when, :time_when, :trip_wait_start, :trip_started, :trip_finished, :behavior_feedback, :user_id, :created_at)
+				rData[:courses] = @user.drives_courses.where('status = ? OR status = ?', Course.statuses[:inactive], Course.statuses[:in_progress]).order(date_when: :desc, time_when: :desc).select(:id, :from, :to, :status, :course_type, :date_when, :time_when, :trip_wait_start, :trip_started, :trip_finished, :behavior_feedback, :user_id, :stops, :created_at)
 				rendering(rData, {:user => {:only => [:id, :name, :last_name, :cellphone, :email, :photo_url], :methods => [:photo_url] }}, nil, [:date_when_s, :time_when_s, :trip_wait_start_sec, :trip_started_sec, :trip_finished_sec])
 			elsif @account_type == "client"
 				rData[:courses] = {
