@@ -923,6 +923,7 @@ class AppCallsController < ApplicationController
 
 			if course
 				course.trip_finished = Time.now
+				course.stops_price = params['stops_price']
 				if course.save
 					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'end');
 					rData[:status] = true
@@ -948,7 +949,7 @@ class AppCallsController < ApplicationController
 
 			if course
 				course.behavior_feedback = params['feedback_value']
-				course.final_price = 20.54
+				course.final_price = course.computed_price + course.stops_price
 				if course.save
 					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'feedback');
 					rData = {
