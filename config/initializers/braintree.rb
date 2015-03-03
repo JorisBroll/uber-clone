@@ -1,4 +1,4 @@
-Braintree::Configuration.environment = :production
-Braintree::Configuration.merchant_id = ENV["BRAINTREE_MERCHANT_ID"]
-Braintree::Configuration.public_key = ENV["BRAINTREE_PUBLIC_KEY"]
-Braintree::Configuration.private_key = ENV["BRAINTREE_PRIVATE_KEY"]
+Braintree::Configuration.environment = Rails.application.secrets.braintree_environment
+Braintree::Configuration.merchant_id = Rails.application.secrets.braintree_merchant_id
+Braintree::Configuration.public_key = Rails.application.secrets.braintree_public_key
+Braintree::Configuration.private_key = Rails.application.secrets.braintree_private_key

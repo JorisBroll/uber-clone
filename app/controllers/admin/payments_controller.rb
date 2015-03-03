@@ -7,13 +7,13 @@ class Admin::PaymentsController < ApplicationController
 		sdd = SEPA::DirectDebit.new(
 		  # Name of the initiating party and creditor
 		  # String, max. 70 char
-		  name:       'Gläubiger GmbH',
+		  name:       'NAVECO SARL',
 
 		  # String, 8 or 11 char
-		  bic:        'BANKDEFFXXX',
+		  bic:        'BNPAFRPPVBE',
 
 		  # String, max. 34 chars
-		  iban:       'DE87200500001234567890',
+		  iban:       'FR7630004014210001009240362',
 
 		  # Creditor Identifier
 		  # String, max. 35 chars
@@ -23,62 +23,39 @@ class Admin::PaymentsController < ApplicationController
 		sdd.add_transaction(
 		  # Name of the debtor
 		  # String, max. 70 char
-		  name:                      'Zahlemann & Söhne GbR',
-
-		  # OPTIONAL: Business Identifier Code (SWIFT-Code) of the debtor's account
-		  # String, 8 or 11 char
-		  bic:                       'SPUEDE2UXXX',
+		  name: 'HALIM AMIRA',
 
 		  # International Bank Account Number of the debtor's account
 		  # String, max. 34 chars
-		  iban:                      'DE21500500009876543210',
+		  iban: 'DE21500500009876543210',
 
 		  # Amount in EUR
 		  # Number with two decimal digit
-		  amount:                    39.99,
+		  amount: 10,
 
 		  # OPTIONAL: Instruction Identification, will not be submitted to the debtor
 		  # String, max. 35 char
-		  instruction:               '12345',
+		  instruction: 'TEST',
 
 		  # OPTIONAL: End-To-End-Identification, will be submitted to the debtor
 		  # String, max. 35 char
-		  reference:                 'XYZ/2013-08-ABO/6789',
+		  reference: 'XYZ/2013-08-ABO/6789',
 
 		  # OPTIONAL: Unstructured remittance information
 		  # String, max. 140 char
-		  remittance_information:    'Vielen Dank für Ihren Einkauf!',
+		  remittance_information: 'Merci de votre confiance !',
 
-		  # Mandate identifikation, in German "Mandatsreferenz"
 		  # String, max. 35 char
-		  mandate_id:                'K-02-2011-12345',
+		  mandate_id: 'K-02-2011-12345',
 
 		  # Mandate Date of signature
 		  # Date
-		  mandate_date_of_signature: Date.new(2015,1,23),
+		  mandate_date_of_signature: DateTime.now.to_date,
 
-		  # Local instrument
-		  # One of these strings:
-		  #   'CORE' ("Basis-Lastschrift")
-		  #   'COR1' ("Basis-Lastschrift mit verkürzter Vorlagefrist")
-		  #   'B2B' ("Firmen-Lastschrift")
+		  # Shit we don't mess with
 		  local_instrument: 'CORE',
-
-		  # Sequence type
-		  # One of these strings:
-		  #   'FRST' ("Erst-Lastschrift")
-		  #   'RCUR' ("Folge-Lastschrift")
-		  #   'OOFF' ("Einmalige Lastschrift")
-		  #   'FNAL' ("Letztmalige Lastschrift")
 		  sequence_type: 'OOFF',
-
-		  # OPTIONAL: Requested collection date
-		  # Date
-		  requested_date: Date.new(2015,9,5),
-
-		  # OPTIONAL: Enables or disables batch booking
-		  # True or False
-		  batch_booking: true
+		  batch_booking: false
 		)
 
 		# Last: create XML string

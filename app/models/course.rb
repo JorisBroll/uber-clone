@@ -61,10 +61,10 @@ class Course < ActiveRecord::Base
 	enum car_type: Car::Car_types.collect { |key, o| key }
 
 	def date_when_s
-		self.date_when.strftime('%d/%m/%Y')
+		unless self.date_when.nil? then self.date_when.strftime('%d/%m/%Y') else "PAS DE DATE" end
 	end
 	def time_when_s
-		self.time_when.strftime('%H-%M-%S')
+		unless self.time_when.nil? then self.time_when.strftime('%Hh%M') else "PAS D'HEURE" end
 	end
 
 	def trip_wait_start_sec

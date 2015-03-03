@@ -14,6 +14,12 @@ class User < ActiveRecord::Base
 
 	before_save { self.email = email.downcase }
 
+	def full_name(with_id = false)
+		name = "#{self.name} #{self.last_name}"
+		name = self.id.to_s+'/'+name unless !with_id
+		return name
+	end
+
 	Account_types = {
 		:superadmin => {
 			:name => "Gérant",

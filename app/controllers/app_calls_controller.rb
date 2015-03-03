@@ -84,7 +84,7 @@ class AppCallsController < ApplicationController
 				user = User.find_by(facebookID: params['user']['facebookID'])
 			end
 
-			if user
+			if !user.nil?
 				user_data = {
 					:name => user.name,
 					:last_name => user.last_name,
@@ -116,7 +116,7 @@ class AppCallsController < ApplicationController
 
 					rData = {:status => true, :loginData => {:token => token, :user_data => user_data} }
 				else
-					user.destroy
+					#user.destroy
 					rData = {:status => false, :errors => user.errors.full_messages}
 				end
 			end
@@ -132,6 +132,7 @@ class AppCallsController < ApplicationController
 					@user.car = nil
 				end
 			end
+			@user.status = 'offline'
 			@user.save
 			rendering({})
 		end
@@ -220,6 +221,28 @@ class AppCallsController < ApplicationController
 			rendering(rData)
 		end
 
+		def course_report
+			rData = {}
+
+			course = Course.find_by(id: params['course_id'])
+			type_user = ""
+			sentence = ""
+
+			if !course.nil?
+				if @account_type == 'driver'
+					type_user = 'Le chauffeur'
+				elsif
+					type_user = 'Le client'
+				end
+				sentence = "#{type_user} ##{@user.id}/#{@user.full_name} a signalé la course numéro n°#{course.id}"
+
+				UserMailer.custom_backoffice_email('joris.broll@gmail.com', "Course signalée : n°#{course.id}", sentence.html_safe).deliver
+				rData[:status] = true;
+			end
+
+			rendering(rData)
+		end
+
 		####### Courses REST ###########
 		def courses_index
 			rData = {}
@@ -232,7 +255,7 @@ class AppCallsController < ApplicationController
 					:incoming => @user.courses.where('status = ? OR status = ?', Course.statuses[:inactive], Course.statuses[:in_progress]).order(date_when: :desc, time_when: :desc).select(:id, :from, :to, :date_when, :time_when, :user_id, :created_at),
 					:done => @user.courses.where('status = ?', Course.statuses[:done]).order(date_when: :desc, time_when: :desc).select(:id, :from, :to, :date_when, :time_when, :user_id, :created_at)
 				}
-				rendering(rData)
+				rendering(rData, nil, nil, [:date_when_s, :time_when_s])
 			end
 		end
 
@@ -263,33 +286,37 @@ class AppCallsController < ApplicationController
 					#	:eightminsago => Time.zone.now-(8*60)
 					#}
 				elsif course.course_type == 'later'
-					course_datetime = Time.zone.local(course.date_when.year, course.date_when.month, course.date_when.day, course.time_when.hour, course.time_when.min, course.time_when.sec)
+					if !course.date_when.nil? && !course.time_when.nil?
+						course_datetime = Time.zone.local(course.date_when.year, course.date_when.month, course.date_when.day, course.time_when.hour, course.time_when.min, course.time_when.sec)
 
-					diff = (course_datetime - Time.zone.now).round
+						diff = (course_datetime - Time.zone.now).round
 
-					rData[:debug] = {
-						:diff => diff,
-						:course_datetime => course_datetime,
-						:now => DateTime.now,
-						:limit => course_datetime-(30*60)
-					}
+						rData[:debug] = {
+							:diff => diff,
+							:course_datetime => course_datetime,
+							:now => DateTime.now,
+							:limit => course_datetime-(30*60)
+						}
 
-					if diff <= 1800 # If canceled 30 mins before the start
-						rData[:cancel_status] = false
+						if diff <= 1800 # If canceled 30 mins before the start
+							rData[:cancel_status] = false
 
-						if diff < 0 then diff = 0 end
-						price_diff = (1800 - diff)/60
+							if diff < 0 then diff = 0 end
+							price_diff = (1800 - diff)/60
 
-						if course.car_type == 'berline'
-							rData[:price] = 13
-							rData[:price] = 0.45*price_diff
-						elsif course.car_type == 'van'
-							rData[:price] = 15
-							rData[:price] = 0.5*price_diff
+							if course.car_type == 'berline'
+								rData[:price] = 13
+								rData[:price] = 0.45*price_diff
+							elsif course.car_type == 'van'
+								rData[:price] = 15
+								rData[:price] = 0.5*price_diff
+							end
+
+							rData[:price] = rData[:price].round(2)
+
+						else
+							rData[:cancel_status] = true
 						end
-
-						rData[:price] = rData[:price].round(2)
-
 					else
 						rData[:cancel_status] = true
 					end
@@ -325,10 +352,8 @@ class AppCallsController < ApplicationController
 					}
 				end
 			else
-				rData = {
-					:status => false,
-					:errorMessage => 'Paramètres incorrects'
-				}
+				rData[:status] = false
+				rData[:errorMessage] = 'Paramètres incorrects'
 			end
 
 			rendering(rData)
@@ -437,8 +462,8 @@ class AppCallsController < ApplicationController
 							driver.pos_time = convert_distance_to_time(driver.pos_distance)
 
 							driver.mpos_latLng = {
-								lat:driver.pos_lat + rand(0.0001..0.001),
-								lng:driver.pos_lon + rand(0.0001..0.001)
+								lat:driver.pos_lat,
+								lng:driver.pos_lon
 							}
 							driver.mpos_deg = rand(0..360)
 
@@ -470,24 +495,6 @@ class AppCallsController < ApplicationController
 					rData[:status_feedback] = false
 					rData[:errorMessage] = "Le feedback du client concernant le chauffeur n'a pas été enregistré."
 				end
-
-
-				payment = Braintree::Transaction.sale(
-				  :payment_method_token => params['payment_method_token'],
-				  :amount => course.final_price
-				)
-
-				if payment.success?
-					rData[:status_payment] = true
-					rData[:debug] = {
-						:payment_method_token => params['payment_method_token'],
-				  		:amount => course.final_price
-					}
-				else
-					rData[:status_payment] = false
-					rData[:errorMessage] = "Paiement échoué"
-					#rData[:debug] = payment.inspect
-				end
 			else
 				rData[:status] = false
 				rData[:errorMessage] = 'Paramètres incorrects'
@@ -496,22 +503,22 @@ class AppCallsController < ApplicationController
 			rendering(rData)
 		end
 
-		 def test_pay
-		 	customer = Braintree::Customer.find(@user.id)
+		# def test_pay
+		#  	customer = Braintree::Customer.find(@user.id)
 
-		 	result = Braintree::Transaction.sale(
-		 	    :payment_method_token => customer.credit_cards[0].token,
-		 	    :amount => "0.01"
-		 	)
+		#  	result = Braintree::Transaction.sale(
+		#  	    :payment_method_token => customer.credit_cards[0].token,
+		#  	    :amount => "0.01"
+		#  	)
 
-		 	if result.success?
-		 		rData = true
-		 	else
-		 		rData = false
-		 	end
+		#  	if result.success?
+		#  		rData = true
+		#  	else
+		#  		rData = false
+		#  	end
 
-		 	rendering(rData)
-		 end
+		#  	rendering(rData)
+		# end
 
 		####### User REST ###########
 		def update_user
@@ -766,29 +773,70 @@ class AppCallsController < ApplicationController
 
 		####### Courses REST ###########
 		def courses_query_new
+			# @user => Current user of the driver app looking form new courses to take
+			# 
+
 			rData = {}
+			rData[:course] = nil
 
-			#course = Course.find(1)
-			courses_noDriver = Course.where('driver_id IS NULL AND status = ?', Course::statuses[:inactive]).order(id: :asc)
-			r = nil
-			found = false
+			# Look for courses that :
+			# - Have no assigned driver
+			# - Aren't from before this morning
+			courses = Course.where('driver_id IS NULL AND status = ? AND date_when > ?', Course::statuses[:inactive], Time.now.beginning_of_day).order(id: :desc)
+			
+			# Look for users that :
+			# - Are not clients (everyone other account_type can use the driver app)
+			# - Are 'ready'
+			# - Have updated their status in the last 5 minutes (via update_status, sending GPS coords, etc.)
+			drivers = User.where("account_type != ? AND status = ? AND updated_at >= ?", User.account_types[:client], User.statuses[:ready], Time.now-500)
+			
+			# The shortest distance from driver to course client, we start with a big value because fuck checking for nil
+			distanceMin = 1000
 
-			courses_noDriver.each do |course|
-				r = course
+			distance = nil
+
+
+			rData[:debug] = {}
+			rData[:debug][:courses] = courses
+			rData[:debug][:conducteurs_ready_et_recents] = drivers
+
+			# We loop for each course that is possible to take and check :
+			# 1) If the @user has not already rejected this course
+			# 2) If the @user is actually the closest driver from the client
+			closest_driver = nil
+
+			courses.each do |course|
+				rData[:debug][:course] = course
+				rData[:debug][:user] = course.user
+
+				# 1)
 				if course.rejected_by.nil? || !course.rejected_by.include?(@user.id)
-					found = true
-					break
+					# rData[:debug][:rejected_array] = course.rejected_by
+					# rData[:debug][:rejected_8] = rData[:debug][:rejected_array].include?(8)
+					# rData[:debug][:rejected_9] = rData[:debug][:rejected_array].include?(9)
+
+					# 2)
+					drivers.each do |driver|
+						driver.pos_distance = distance_between(driver.pos_lat, driver.pos_lon, course.user.pos_lat, course.user.pos_lon)
+						if(driver.pos_distance != 0 && driver.pos_distance < distanceMin)
+							closest_driver = driver.id
+							distanceMin = driver.pos_distance
+						end
+					end
+
+					#if !closest_driver.nil? && closest_driver == @user.id
+						rData[:course] = course
+					#end
+
+					#distance = distance_between(@user.pos_lat, @user.pos_lon, course.user.pos_lat, course.user.pos_lon)
+					#break
 				end
 			end
 
-			if !found then r = nil end
+			rData[:status] = true
+			rData[:distance] = distanceMin
 
-			rData = {
-				:status => true,
-				:course => r
-			}
-
-			rendering(rData)
+			rendering(rData, nil, nil, [:photo_url, :pos_distance])
 		end
 
 		def course_accept
@@ -796,7 +844,7 @@ class AppCallsController < ApplicationController
 
 			course = Course.find_by(id: params['course_id'])
 
-			if course
+			if course && course.driver_id.nil?
 				course.driver_id = @user.id
 				course.status = 2 # In progress
 				if course.save
@@ -854,7 +902,21 @@ class AppCallsController < ApplicationController
 			rendering(rData)
 		end
 
+		def course_check_canceled
+			rData = {}
 
+			course = @user.drives_courses.find_by(id: params['course_id'])
+
+			if !course.nil? && course.status == 'canceled'
+				rData[:status] = true
+			else
+				rData[:status] = false
+			end
+
+			#rData[:debug] = course
+
+			rendering(rData)
+		end
 
 		def incoming_sms
 			course = Course.find_by(id: params['course_id'])
@@ -956,6 +1018,23 @@ class AppCallsController < ApplicationController
 						:status => true
 					}
 					course.update(status: Course::statuses[:done])
+
+					payment = Braintree::Transaction.sale(
+					    :payment_method_token => params['payment_method_token'],
+					    :amount => course.final_price
+					)
+
+					if payment.success?
+						rData[:status_payment] = true
+						rData[:debug] = {
+							:payment_method_token => params['payment_method_token'],
+					  		:amount => course.final_price
+						}
+					else
+						rData[:status_payment] = false
+						rData[:errorMessage] = "Paiement échoué"
+						#rData[:debug] = payment.inspect
+					end
 				else
 					Log.create(user_id: @user.id, target_type: 1, target_id: course.id, action: 'fail_feedback');
 					rData = {
@@ -1001,6 +1080,11 @@ class AppCallsController < ApplicationController
 
 			@user = User.find_by(id: @token['user_id'])
 			@account_type = @token['account_type']
+
+			# If the token is expired (recieved token does not match user token)
+			if params['token'] != @user.login_token
+				rendering('')
+			end
 		end
 
 		# Okay, you can go on with the call...
@@ -1067,6 +1151,7 @@ class AppCallsController < ApplicationController
 	end
 
 	def distance_between(p1_lat, p1_lng, p2_lat, p2_lng)
+		if p1_lat.nil? || p1_lng.nil? || p2_lat.nil? || p2_lng.nil? then return 0 end
 		e = Math::PI*(p2_lat)/180
 		f = Math::PI*(p2_lng)/180
 		g = Math::PI*p1_lat/180
