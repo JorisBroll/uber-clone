@@ -59,6 +59,7 @@ class AppCallsController < ApplicationController
 				uncrypted_token = {:user_id => user.id.to_s, :deliver_date => Time.zone.now}
 				if params['credentials']['account_type'] == 'driver' && ['driver', 'partneradmin', 'admin', 'superadmin'].include?(user.account_type)
 					uncrypted_token[:account_type] = 'driver'
+					user.status = 'ready'
 				else
 					uncrypted_token[:account_type] = 'client'
 				end
@@ -725,17 +726,21 @@ class AppCallsController < ApplicationController
 		def cars_index
 			rData = {}
 
-			cars = @user.partner.cars
+			if !@user.partner.nil?
+				cars = @user.partner.cars
 
-			thisMorning = DateTime.new(Time.now.year, Time.now.month, Time.now.day, 8, 0, 0)
+				thisMorning = DateTime.new(Time.now.year, Time.now.month, Time.now.day, 8, 0, 0)
 
-			cars.each do |car|
-				if !car.last_selected.nil? && car.last_selected < thisMorning
-					car.update(driven_by: nil)
+				cars.each do |car|
+					if !car.last_selected.nil? && car.last_selected < thisMorning
+						car.update(driven_by: nil)
+					end
 				end
+
+				rData[:cars] = @user.partner.cars
 			end
 
-			rData[:cars] = @user.partner.cars
+			rData[:status] = false
 
 			rendering(rData)
 		end
