@@ -231,7 +231,7 @@ class AppCallsController < ApplicationController
 			if !course.nil?
 				if @account_type == 'driver'
 					type_user = 'Le chauffeur'
-				elsif
+				elsif @account_type == 'client'
 					type_user = 'Le client'
 				end
 				sentence = "#{type_user} ##{@user.id}/#{@user.full_name} a signalé la course numéro n°#{course.id}"
@@ -777,28 +777,28 @@ class AppCallsController < ApplicationController
 			# 
 
 			rData = {}
+			rData[:debug] = {}
+
 			rData[:course] = nil
 
 			# Look for courses that :
 			# - Have no assigned driver
 			# - Aren't from before this morning
 			courses = Course.where('driver_id IS NULL AND status = ? AND date_when > ?', Course::statuses[:inactive], Time.now.beginning_of_day).order(id: :desc)
-			
+			rData[:debug][:courses] = courses
+			rData[:debug][:courses_a] = Course.where('driver_id IS NULL')
+			rData[:debug][:courses_b] = Course.where('status = ?', Course::statuses[:inactive])
+			rData[:debug][:courses_c] = Course.where('date_when > ?', Time.now.beginning_of_day)
+
 			# Look for users that :
 			# - Are not clients (everyone other account_type can use the driver app)
 			# - Are 'ready'
 			# - Have updated their status in the last 5 minutes (via update_status, sending GPS coords, etc.)
 			drivers = User.where("account_type != ? AND status = ? AND updated_at >= ?", User.account_types[:client], User.statuses[:ready], Time.now-500)
+			rData[:debug][:drivers] = drivers
 			
 			# The shortest distance from driver to course client, we start with a big value because fuck checking for nil
 			distanceMin = 1000
-
-			distance = nil
-
-
-			rData[:debug] = {}
-			rData[:debug][:courses] = courses
-			rData[:debug][:conducteurs_ready_et_recents] = drivers
 
 			# We loop for each course that is possible to take and check :
 			# 1) If the @user has not already rejected this course
@@ -806,14 +806,11 @@ class AppCallsController < ApplicationController
 			closest_driver = nil
 
 			courses.each do |course|
-				rData[:debug][:course] = course
-				rData[:debug][:user] = course.user
+				rData[:debug][:last_looped_course] = course
+				rData[:debug][:last_looped_user] = course.user
 
 				# 1)
 				if course.rejected_by.nil? || !course.rejected_by.include?(@user.id)
-					# rData[:debug][:rejected_array] = course.rejected_by
-					# rData[:debug][:rejected_8] = rData[:debug][:rejected_array].include?(8)
-					# rData[:debug][:rejected_9] = rData[:debug][:rejected_array].include?(9)
 
 					# 2)
 					drivers.each do |driver|
@@ -829,12 +826,12 @@ class AppCallsController < ApplicationController
 					#end
 
 					#distance = distance_between(@user.pos_lat, @user.pos_lon, course.user.pos_lat, course.user.pos_lon)
-					#break
 				end
 			end
 
 			rData[:status] = true
 			rData[:distance] = distanceMin
+			rData[:driver] = closest_driver
 
 			rendering(rData, nil, nil, [:photo_url, :pos_distance])
 		end
