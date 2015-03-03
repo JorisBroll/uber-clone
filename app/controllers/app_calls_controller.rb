@@ -784,11 +784,11 @@ class AppCallsController < ApplicationController
 			# Look for courses that :
 			# - Have no assigned driver
 			# - Aren't from before this morning
-			courses = Course.where('driver_id IS NULL AND status = ? AND date_when > ?', Course::statuses[:inactive], Time.now.beginning_of_day).order(id: :desc)
+			courses = Course.where('driver_id IS NULL AND status = ? AND date_when >= ?', Course::statuses[:inactive], Time.now.beginning_of_day).order(id: :desc)
 			rData[:debug][:courses] = courses
-			rData[:debug][:courses_a] = Course.where('driver_id IS NULL')
-			rData[:debug][:courses_b] = Course.where('status = ?', Course::statuses[:inactive])
-			rData[:debug][:courses_c] = Course.where('date_when > ?', Time.now.beginning_of_day)
+			#rData[:debug][:courses_a] = Course.where('driver_id IS NULL')
+			#rData[:debug][:courses_b] = Course.where('status = ?', Course::statuses[:inactive])
+			#rData[:debug][:courses_c] = Course.where('date_when >= ?', Time.now.beginning_of_day)
 
 			# Look for users that :
 			# - Are not clients (everyone other account_type can use the driver app)
