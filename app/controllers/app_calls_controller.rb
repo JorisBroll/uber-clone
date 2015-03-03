@@ -821,11 +821,9 @@ class AppCallsController < ApplicationController
 						end
 					end
 
-					#if !closest_driver.nil? && closest_driver == @user.id
+					if !closest_driver.nil? && closest_driver == @user.id
 						rData[:course] = course
-					#end
-
-					#distance = distance_between(@user.pos_lat, @user.pos_lon, course.user.pos_lat, course.user.pos_lon)
+					end
 				end
 			end
 
