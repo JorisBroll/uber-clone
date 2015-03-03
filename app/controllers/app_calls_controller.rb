@@ -798,8 +798,7 @@ class AppCallsController < ApplicationController
 			# Look for users that :
 			# - Are not clients (everyone other account_type can use the driver app)
 			# - Are 'ready'
-			# - Have updated their status in the last 5 minutes (via update_status, sending GPS coords, etc.)
-			drivers = User.where("account_type != ? AND status = ? AND updated_at >= ?", User.account_types[:client], User.statuses[:ready], Time.now-500)
+			drivers = User.where("account_type != ? AND status = ?", User.account_types[:client], User.statuses[:ready])
 			rData[:debug][:drivers] = drivers
 			
 			# The shortest distance from driver to course client, we start with a big value because fuck checking for nil
