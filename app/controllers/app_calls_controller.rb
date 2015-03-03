@@ -819,11 +819,12 @@ class AppCallsController < ApplicationController
 					# 2)
 					drivers.each do |driver|
 						driver.pos_distance = distance_between(driver.pos_lat, driver.pos_lon, course.user.pos_lat, course.user.pos_lon)
-						if(driver.pos_distance != 0 && driver.pos_distance < distanceMin)
+						if(driver.pos_distance != 0 && driver.pos_distance < distanceMin && !course.rejected_by.include?(driver.id))
 							closest_driver = driver.id
 							distanceMin = driver.pos_distance
 						end
 					end
+					rData[:debug][:drivers] = drivers
 
 					if !closest_driver.nil? && closest_driver == @user.id
 						rData[:course] = course
