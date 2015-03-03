@@ -824,7 +824,6 @@ class AppCallsController < ApplicationController
 							distanceMin = driver.pos_distance
 						end
 					end
-					rData[:debug][:drivers] = drivers
 
 					if !closest_driver.nil? && closest_driver == @user.id
 						rData[:course] = course
