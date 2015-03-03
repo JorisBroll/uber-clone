@@ -7,17 +7,17 @@ class Admin::PaymentsController < ApplicationController
 		sdd = SEPA::DirectDebit.new(
 		  # Name of the initiating party and creditor
 		  # String, max. 70 char
-		  name:       'NAVECO SARL',
+		  name: 'NAVECO SAS',
 
 		  # String, 8 or 11 char
-		  bic:        'BNPAFRPPVBE',
+		  bic: 'BNPAFRPPVBE',
 
 		  # String, max. 34 chars
-		  iban:       'FR7630004014210001009240362',
+		  iban: 'FR7630004014210001009240362',
 
 		  # Creditor Identifier
 		  # String, max. 35 chars
-		  creditor_identifier: 'DE98ZZZ09999999999'
+		  creditor_identifier: 'FR81ZZZ668434'
 		)
 
 		sdd.add_transaction(
@@ -27,7 +27,7 @@ class Admin::PaymentsController < ApplicationController
 
 		  # International Bank Account Number of the debtor's account
 		  # String, max. 34 chars
-		  iban: 'DE21500500009876543210',
+		  iban: 'FR7630003012000001003117925',
 
 		  # Amount in EUR
 		  # Number with two decimal digit
@@ -39,17 +39,16 @@ class Admin::PaymentsController < ApplicationController
 
 		  # OPTIONAL: End-To-End-Identification, will be submitted to the debtor
 		  # String, max. 35 char
-		  reference: 'XYZ/2013-08-ABO/6789',
+		  reference: 'TEST VIREMENT CHAUFFEUR NAVECO',
 
 		  # OPTIONAL: Unstructured remittance information
 		  # String, max. 140 char
 		  remittance_information: 'Merci de votre confiance !',
 
 		  # String, max. 35 char
-		  mandate_id: 'K-02-2011-12345',
+		  mandate_id: 'NAV-03-2015-01',
 
 		  # Mandate Date of signature
-		  # Date
 		  mandate_date_of_signature: DateTime.now.to_date,
 
 		  # Shit we don't mess with
