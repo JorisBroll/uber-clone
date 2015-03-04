@@ -452,7 +452,7 @@ class AppCallsController < ApplicationController
 
 			if !params['marker_pos_lat'].nil? && !params['marker_pos_lng'].nil?
 
-				drivers = User.where("account_type = ?", User.account_types[:driver]).select(:id, :pos_lat, :pos_lon, :pos_deg)
+				drivers = User.where("account_type <= 4 AND status = 0").select(:id, :pos_lat, :pos_lon, :pos_deg)
 				rData[:drivers_pos] = {}
 
 				if !drivers.nil?
