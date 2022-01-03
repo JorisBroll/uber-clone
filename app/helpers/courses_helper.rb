@@ -27,12 +27,13 @@ module CoursesHelper
 	end
 
 	def price_afterExtras(course, to = false)
-		price = course.computed_price
+		price = course.final_price #course.computed_price
+		if price.nil? then price = 0 end
 
-		price -= course.promocode_amount unless course.promocode_amount.nil?
+		#price -= course.promocode_amount unless course.promocode_amount.nil?
 
-		price += course.stops_price unless course.stops_price.nil?
-		price += course.damage_price unless course.damage_price.nil?
+		#price += course.stops_price unless course.stops_price.nil?
+		#price += course.damage_price unless course.damage_price.nil?
 
 		case to
 			when 'naveco'

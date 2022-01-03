@@ -4,8 +4,6 @@ class Admin::StaticPagesController < ApplicationController
 
 	include ApplicationHelper
 	include CoursesHelper
-	include PayPal::SDK::REST
-	include PayPal::SDK::OpenIDConnect
 	
 	def home
 		case userWeight
@@ -343,23 +341,104 @@ class Admin::StaticPagesController < ApplicationController
 		#)
 	end
 
+	def download_sepa_order
+		sct = SEPA::CreditTransfer.new(
+		  # Name of the initiating party and debtor, in German: "Auftraggeber"
+		  # String, max. 70 char
+		  name: 'NAVECO SARL',
+
+		  # OPTIONAL: Business Identifier Code (SWIFT-Code) of the debtor
+		  # String, 8 or 11 char
+		  bic:  'BNPAFRPPVBE',
+
+		  # International Bank Account Number of the debtor
+		  # String, max. 34 chars
+		  iban: 'FR7630004014210001009240362'
+		)
+
+		sct.add_transaction(
+		  # Name of the debtor
+		  # String, max. 70 char
+		  name: 'HALIM AMIRA',
+
+		  # International Bank Account Number of the debtor's account
+		  # String, max. 34 chars
+		  iban: 'FR7630003012000001003117925',
+
+		  # Amount in EUR
+		  # Number with two decimal digit
+		  amount: 10.00,
+
+		  # OPTIONAL: End-To-End-Identification, will be submitted to the debtor
+		  # String, max. 35 char
+		  reference: 'VIREMENT CHAUFFEUR NAVECO',
+
+		  # OPTIONAL: Unstructured remittance information
+		  # String, max. 140 char
+		  remittance_information: 'Merci de votre confiance.',
+
+		  # Mandate Date of signature
+		  requested_date: DateTime.now.to_date,
+
+		  batch_booking: false,
+
+		  service_level: 'SEPA'
+		)
+
+		# partners = Partner.all
+		# partners.each do |partner|
+		# 	courses = partner.courses.where("status = ? AND date_when >= ? AND date_when <= ?", Course.statuses[:done], @date[:start], @date[:end])
+
+		# 	total_to_partner = courses.map {|s| price_afterExtras(s, 'partner')}.reduce(0, :+).round(2)
+		# 	total_courses_paid_to_partner = courses.where("payment_by = ?", Course.payment_bies[:partner]).map {|s| price_afterExtras(s)}.reduce(0, :+).round(2)
+		# 	if courses.count > 0
+				
+
+		# 		sdd.add_transaction(
+		# 		  # Name of the debtor
+		# 		  # String, max. 70 char
+		# 		  name: partner.name,
+
+		# 		  # International Bank Account Number of the debtor's account
+		# 		  # String, max. 34 chars
+		# 		  iban: partner.iban,
+
+		# 		  # Amount in EUR
+		# 		  # Number with two decimal digit
+		# 		  amount: 10,
+
+		# 		  # OPTIONAL: Instruction Identification, will not be submitted to the debtor
+		# 		  # String, max. 35 char
+		# 		  instruction: "Virement #{partner.name}",
+
+		# 		  # OPTIONAL: End-To-End-Identification, will be submitted to the debtor
+		# 		  # String, max. 35 char
+		# 		  reference: 'VIREMENT CHAUFFEUR NAVECO: #{partner.name}',
+
+		# 		  # OPTIONAL: Unstructured remittance information
+		# 		  # String, max. 140 char
+		# 		  remittance_information: 'Merci de votre confiance !',
+
+		# 		  # String, max. 35 char
+		# 		  mandate_id: 'NAV-03-2015-01',
+
+		# 		  # Mandate Date of signature
+		# 		  mandate_date_of_signature: DateTime.now.to_date,
+
+		# 		  # Shit we don't mess with
+		# 		  local_instrument: 'CORE',
+		# 		  sequence_type: 'OOFF',
+		# 		  batch_booking: false
+		# 		)
+		# 	end
+
+		# end
+
+		# Last: create XML string
+		@xml_string = sct.to_xml('pain.001.003.03')
+		send_data @xml_string, :filename => 'virements.xml'
+	end
+
 	def test
-		require 'net/http'
-
-		uri = URI.parse("https://api.sandbox.paypal.com/v1/oauth2/token")
-		http = Net::HTTP.new(uri.host, uri.port)
-		http.use_ssl = true
-
-		req = Net::HTTP::Post.new(uri.request_uri)
-		req.basic_auth('ATzIeRAmyzGCA8cUntc5dJtOOmglQiFlXP0fd1GY9TxnO9bHau14fcSDQujB', 'EM_VnhBtMoQFMbst48HgMeRg4UpgEEeaLqqey9d6OlswgN7O8ZWja1wNEZSF')
-		req.set_form_data({
-			"grant_type" => "authorization_code",
-			"redirect_uri" => "urn:ietf:wg:oauth:2.0:oob",
-			"code" => "YYY"
-		})
-
-		response = http.request(req)
-
-		@lol = response.body
 	end
 end

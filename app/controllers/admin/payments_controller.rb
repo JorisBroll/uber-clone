@@ -3,62 +3,6 @@ class Admin::PaymentsController < ApplicationController
 
 	def index
 		@payments = Payment.all.order('created_at DESC')
-
-		sdd = SEPA::DirectDebit.new(
-		  # Name of the initiating party and creditor
-		  # String, max. 70 char
-		  name: 'NAVECO SAS',
-
-		  # String, 8 or 11 char
-		  bic: 'BNPAFRPPVBE',
-
-		  # String, max. 34 chars
-		  iban: 'FR7630004014210001009240362',
-
-		  # Creditor Identifier
-		  # String, max. 35 chars
-		  creditor_identifier: 'FR81ZZZ668434'
-		)
-
-		sdd.add_transaction(
-		  # Name of the debtor
-		  # String, max. 70 char
-		  name: 'HALIM AMIRA',
-
-		  # International Bank Account Number of the debtor's account
-		  # String, max. 34 chars
-		  iban: 'FR7630003012000001003117925',
-
-		  # Amount in EUR
-		  # Number with two decimal digit
-		  amount: 10,
-
-		  # OPTIONAL: Instruction Identification, will not be submitted to the debtor
-		  # String, max. 35 char
-		  instruction: 'TEST',
-
-		  # OPTIONAL: End-To-End-Identification, will be submitted to the debtor
-		  # String, max. 35 char
-		  reference: 'TEST VIREMENT CHAUFFEUR NAVECO',
-
-		  # OPTIONAL: Unstructured remittance information
-		  # String, max. 140 char
-		  remittance_information: 'Merci de votre confiance !',
-
-		  # String, max. 35 char
-		  mandate_id: 'NAV-03-2015-01',
-
-		  # Mandate Date of signature
-		  mandate_date_of_signature: DateTime.now.to_date,
-
-		  # Shit we don't mess with
-		  local_instrument: 'CORE',
-		  sequence_type: 'OOFF',
-		  batch_booking: false
-		)
-
-		# Last: create XML string
-		@xml_string = sdd.to_xml('pain.008.001.02') # Use former schema pain.008.002.02
 	end
 	def new
 		@payment = Payment.new()

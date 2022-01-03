@@ -16,6 +16,7 @@ Rails.application.routes.draw do
     get '/partner_home', to: 'static_pages#partner_home'
     post '/email', to: 'static_pages#email'
     post '/invoice_email', to: 'static_pages#invoice_email'
+    get '/download_sepa_order', to: 'static_pages#download_sepa_order'
     get '/sms', to: 'static_pages#sms'
     get '/test', to: 'static_pages#test'
     resources :users

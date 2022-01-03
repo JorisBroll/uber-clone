@@ -113,13 +113,6 @@
 		</div>
 	</div>
 
-	<div class="row form-group">
-		<%= f.label :iban, class: "col-sm-3 control-label" %>
-		<div class="col-sm-9">
-			<%= f.text_field :iban, class: "form-control", :placeholder => "Numéro IBAN (chauffeur uniquement)" %>
-		</div>
-	</div>
-
 	<div class="row form-group passRow">
 		<%= f.label :password, class: "col-sm-3 control-label" %>
 		<div class="col-sm-4">
@@ -130,12 +123,13 @@
 		</div>
 	</div>
 
-	<%= f.file_field :photo %>
-
 	<div class="row form-group photoRow">
 		<%= f.label :photo, class: "col-sm-3 control-label" %>
-		<div class="col-sm-9">	
+		<div class="col-sm-3">	
 			<%= f.file_field :photo %>
+		</div>
+		<div class="col-sm-6">	
+			<%= "<img src=\"#{@user.photo_url}\" style=\"max-width:55px\"/>".html_safe unless @user.photo_url.nil? %>
 		</div>
 	</div>
 

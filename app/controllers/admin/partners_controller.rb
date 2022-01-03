@@ -66,7 +66,7 @@ class Admin::PartnersController < ApplicationController
 		private
 
 		    def partner_params
-		    	params.require(:partner).permit(:name, :email, :phone, :company_code, :tva_number, :note, :address, :postcode, :city, :status, :logo)
+		    	params.require(:partner).permit(:name, :email, :phone, :company_code, :tva_number, :iban, :note, :address, :postcode, :city, :status, :logo)
 		    end
 
 		    def update_logo(partner)

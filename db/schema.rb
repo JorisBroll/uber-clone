@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150303162616) do
+ActiveRecord::Schema.define(version: 20150304164154) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -93,10 +93,10 @@ ActiveRecord::Schema.define(version: 20150303162616) do
     t.integer  "computed_price",    default: 0
     t.integer  "car_type",          default: 0
     t.integer  "driver_id"
-    t.float    "final_price"
-    t.integer  "damage_price"
-    t.integer  "stops_price"
-    t.float    "promocode_amount"
+    t.float    "final_price",       default: 0.0
+    t.integer  "damage_price",      default: 0
+    t.integer  "stops_price",       default: 0
+    t.float    "promocode_amount",  default: 0.0
     t.json     "rejected_by"
     t.integer  "course_type",       default: 0
     t.string   "cancel_reason"
@@ -140,6 +140,7 @@ ActiveRecord::Schema.define(version: 20150303162616) do
     t.string   "city"
     t.integer  "status"
     t.string   "tva_number"
+    t.string   "iban"
   end
 
   create_table "payment_infos", force: true do |t|
@@ -212,7 +213,6 @@ ActiveRecord::Schema.define(version: 20150303162616) do
     t.integer  "selected_promocode"
     t.integer  "selected_payment"
     t.string   "facebookID"
-    t.string   "iban"
   end
 
 end

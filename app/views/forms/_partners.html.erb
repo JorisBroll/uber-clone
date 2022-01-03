@@ -103,6 +103,13 @@
 			</div>
 
 			<div class="row form-group">
+				<%= f.label :iban, class: "col-sm-3 control-label" %>
+				<div class="col-sm-9">
+					<%= f.text_field :iban, class: "form-control", :placeholder => "Numéro IBAN" %>
+				</div>
+			</div>
+
+			<div class="row form-group">
 				<%= f.label :status, class: "col-sm-3 control-label" %>
 				<div class="col-sm-9">
 					<%= f.select(:status, Partner::Statuses_select, {}, { :class => 'select2' }) %>

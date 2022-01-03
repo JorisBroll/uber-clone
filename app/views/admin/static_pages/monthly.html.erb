@@ -66,6 +66,18 @@
 		<div class="panel widget-support-tickets" id="balance_partners">
 			<div class="panel-heading">
 				<span class="panel-title">Balance des entreprises partenaires</span>
+				<div class="panel-heading-controls">
+					<div class="btn-group btn-group-xs">
+						<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Fichiers de virements SEPA&nbsp;<i class="fa fa-caret-down"></i></button>
+						<ul class="dropdown-menu">
+							<% (0..6).each do |i| %>
+								<% if (@date_week[i][:start].strftime("%m")) == (@date[:start].beginning_of_month.strftime("%m")) %>
+									<li><a href="<%= admin_download_sepa_order_path %>?recap[date(3i)]=<%= @date_week[i][:start].strftime("%d") %>&recap[date(2i)]=<%= @date_week[i][:start].strftime("%m") %>&recap[date(1i)]=<%= @date_week[i][:start].strftime("%Y") %>">Ordre du <%= @date_week[i][:start].strftime("%d/%m/%Y") %> au <%= @date_week[i][:end].strftime("%d/%m/%Y") %></a></li>
+								<% end %>
+							<% end %>
+						</ul>
+					</div>
+				</div>
 			</div>
 			<div class="panel-body">
 				<% @partners.each do |partner| %>
@@ -101,7 +113,7 @@
 									<td><%= course.from %></td>
 									<td><%= course.to %></td>
 									<td><%= Course::Payment_by[course.payment_by.to_sym][:name_admin] %></td>
-									<td><%= price_afterExtras(course).round(2) %> € </td>
+									<td><%= price_afterExtras(course).round(2) %> €</td>
 									<td><%= price_afterExtras(course, 'partner').round(2) %> €</td>
 									<td><%= price_afterExtras(course, 'naveco').round(2) %> €</td>
 								</tr>
@@ -112,7 +124,7 @@
 						<div class="text-right">
 							<a href="<%= admin_monthly_pdf_path %>?p=<%= partner.id.to_s %>&recap[date(3i)]=<%= @date[:start].beginning_of_month.strftime("%d") %>&recap[date(2i)]=<%= @date[:start].beginning_of_month.strftime("%m") %>&recap[date(1i)]=<%= @date[:start].beginning_of_month.strftime("%Y") %>" class="btn btn-sm">Générer la facture</a>
 
-							<div class="btn-group">
+							<div class="btn-group dropup">
 								<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">Factures commissions par semaines&nbsp;<i class="fa fa-caret-down"></i></button>
 								<ul class="dropdown-menu">
 									<% (0..6).each do |i| %>
@@ -121,7 +133,7 @@
 										<% end %>
 									<% end %>
 								</ul>
-							</div>&nbsp;&nbsp;
+							</div>
 
 							<p>Balance au <%= @date[:start].beginning_of_month.strftime("%d/%m/%Y") %> : <%= alltime_balance.round(2) %> €</p>
 						</div>
